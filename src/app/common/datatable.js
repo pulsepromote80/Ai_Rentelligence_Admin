@@ -1,0 +1,344 @@
+'use client'
+import React, { useState, useEffect } from 'react'
+import ImagePopup from '../pages/image-popup/page'
+import Link from 'next/link'
+import Loading from '@/app/common/loading'
+import { MdEdit, MdDelete } from 'react-icons/md'
+
+const Table = ({
+  columns,
+  data,
+  onEdit,
+  onDelete,
+  onAddImage,
+  loading,
+  title,
+  isUserNameClickable,
+}) => {
+  const [sortConfig, setSortConfig] = useState({ key: null, order: 'asc' })
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortedData, setSortedData] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [rowsPerPage, setRowsPerPage] = useState(5)
+
+  useEffect(() => {
+    setSortedData(data)
+  }, [data])
+
+  const sortData = (key) => {
+    const order =
+      sortConfig.key === key && sortConfig.order === 'asc' ? 'desc' : 'asc'
+    const sorted = [...data].sort((a, b) => {
+      const aValue = a[key]?.toString().toLowerCase() || ''
+      const bValue = b[key]?.toString().toLowerCase() || ''
+      return order === 'asc'
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue)
+    })
+    setSortedData(sorted)
+    setSortConfig({ key, order })
+  }
+
+  const filteredData =
+    sortedData?.filter((row) =>
+      columns?.some((col) =>
+        row[col.key]
+          ?.toString()
+          .toLowerCase()
+          .includes(searchTerm?.toLowerCase() || '')
+      )
+    ) || []
+
+  const indexOfLastRow = currentPage * rowsPerPage
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage
+  const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow)
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage)
+
+  if (loading) return <Loading />
+
+  return (
+    <div className="p-4 mt-3 rounded-md shadow-custom-1">
+      <div className="flex flex-col items-center justify-between mb-4 sm:flex-row">
+        <div className="w-full mb-2 sm:w-auto sm:mb-0">
+          {title && (
+            <h2 className="text-xl font-semibold text-center text-gray-800 sm:text-left">
+              {title}
+            </h2>
+          )}
+        </div>
+        <input
+          type="text"
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full p-2 border rounded-md sm:w-64 border-customBlue focus:outline-none focus:border-customBlue"
+        />
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden overflow-x-auto sm:block tabel">
+        {!filteredData.length ? (
+          <div className="py-10 text-lg text-center text-black border rounded-md">
+            No Data found!
+          </div>
+        ) : (
+          <>
+            <table className="min-w-full border border-collapse border-gray-300">
+              <thead>
+                <tr className="bg-action">
+                  {(onEdit || onDelete) && (
+                    <th className="w-48 px-6 py-3 text-white border border-gray-300">
+                      Actions
+                    </th>
+                  )}
+                  {columns?.map((col) => (
+                    <th
+                      key={col.key}
+                      onClick={() => sortData(col.key)}
+                      className="px-6 py-3 border cursor-pointer bg-header-tbl hover:bg-blue-600"
+                    >
+                      <div className="flex items-center justify-center text-white">
+                        {col.label}
+                        {sortConfig.key === col.key && (
+                          <span className="ml-2">
+                            {sortConfig.order === 'asc' ? '▲' : '▼'}
+                          </span>
+                        )}
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {currentRows.map((row) => (
+                  <tr key={row.id}>
+                    {(onEdit || onDelete || onAddImage) && (
+                      <td className="px-6 py-4 border border-gray-300">
+                        <div className="flex items-center justify-center gap-2">
+                          {onEdit && (
+                            <button
+                              onClick={() => onEdit(row)}
+                              className="flex items-center justify-center p-2 text-white rounded-md "
+                              title="Edit"
+                            >
+                              <MdEdit size={25} color="green" />
+                            </button>
+                          )}
+                          {onDelete && (
+                            <button
+                              onClick={() => row.active && onDelete(row)}
+                              className={`p-2 ml-2  flex items-center justify-center`}
+                              disabled={!row.active}
+                              title="Delete"
+                            >
+                              <MdDelete size={25} className={row.active ? 'text-red-600' : 'text-gray-300 cursor-not-allowed'} color="red"/>
+                            </button>
+                          )}
+                          {onAddImage && (
+                            <button
+                              onClick={() => onAddImage(row)}
+                              className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                            >
+                              Add Image
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                    {columns.map((col) => (
+                      <td
+                        key={col.key}
+                        className="px-6 py-4 text-center border border-gray-300"
+                      >
+                        {renderCell(col, row)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <Pagination
+              currentPage={currentPage}
+              rowsPerPage={rowsPerPage}
+              totalRows={filteredData.length}
+              setRowsPerPage={setRowsPerPage}
+              setCurrentPage={setCurrentPage}
+            />
+          </>
+        )}
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="space-y-4 sm:hidden">
+        {currentRows.length === 0 ? (
+          <div className="py-10 text-lg text-center text-black border rounded-md">
+            No Data found!
+          </div>
+        ) : (
+          currentRows.map((row, index) => (
+            <div
+              key={index}
+              className="p-4 bg-white border rounded-md shadow-md"
+            >
+              {columns.map((col) => (
+                <div key={col.key} className="mb-2">
+                  <span className="font-semibold text-gray-600">
+                    {col.label}:
+                  </span>{' '}
+                  <span className="text-gray-800">{renderCell(col, row)}</span>
+                </div>
+              ))}
+              {(onEdit || onDelete || onAddImage) && (
+                <div className="flex flex-wrap items-center justify-center gap-2 mt-4">
+                  {onEdit && (
+                    <button
+                      onClick={() => onEdit(row)}
+                      className="flex items-center justify-center p-2 text-white rounded-md bg-edit-btn hover:bg-yellow-600"
+                      title="Edit"
+                    >
+                      <MdEdit size={20} />
+                    </button>
+                  )}
+                  {onDelete && (
+                    <button
+                      onClick={() => row.active && onDelete(row)}
+                      className={`p-2 ml-2 rounded-md ${row.active ? 'bg-red-500 hover:bg-delete-btn text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed'} flex items-center justify-center`}
+                      disabled={!row.active}
+                      title="Delete"
+                    >
+                      <MdDelete size={20} />
+                    </button>
+                  )}
+                  {onAddImage && (
+                    <button
+                      onClick={() => onAddImage(row)}
+                      className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                    >
+                      Add Image
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          ))
+        )}
+        <Pagination
+          currentPage={currentPage}
+          rowsPerPage={rowsPerPage}
+          totalRows={filteredData.length}
+          setRowsPerPage={setRowsPerPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
+    </div>
+  )
+}
+
+// Render individual cell logic
+const renderCell = (col, row) => {
+  const value = row[col.key]
+  if (col.key === 'image') return <ImagePopup src={value} alt="Image" />
+  if (col.key === 'username') {
+    return (
+      <Link
+        href={`/pages/customer-management/customer-order-activity?username=${value}`}
+        className="text-blue-500 hover:underline"
+      >
+        {value}
+      </Link>
+    )
+  }
+  if (col.key === 'orderNo') {
+    return (
+      <Link
+        href={`/pages/order-management/order-details?orderId=${value}`}
+        className="text-green-500 hover:underline"
+      >
+        {value}
+      </Link>
+    )
+  }
+  if (col.key === 'password') {
+    return (
+      <div className="relative flex items-center justify-center w-full h-full group">
+        <span className="absolute transition-opacity duration-200 opacity-0 group-hover:opacity-100">
+          {value}
+        </span>
+        <span className="transition-opacity duration-200 opacity-100 group-hover:opacity-0">
+          {'*'.repeat(value?.length || 0)}
+        </span>
+      </div>
+    )
+  }
+  if (col.render) return col.render(value, row)
+  return value
+}
+
+// Pagination Component
+const Pagination = ({
+  currentPage,
+  rowsPerPage,
+  totalRows,
+  setRowsPerPage,
+  setCurrentPage,
+}) => {
+  const totalPages = Math.ceil(totalRows / rowsPerPage)
+  const indexOfFirstRow = (currentPage - 1) * rowsPerPage + 1
+  const indexOfLastRow =
+    currentPage * rowsPerPage > totalRows
+      ? totalRows
+      : currentPage * rowsPerPage
+
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
+      <div className="flex items-center space-x-2">
+        <span>Rows per page:</span>
+        <select
+          value={rowsPerPage}
+          onChange={(e) => {
+            setRowsPerPage(Number(e.target.value))
+            setCurrentPage(1)
+          }}
+          className="p-1 border rounded-md focus:outline-none"
+        >
+          {[5, 10, 25].map((size) => (
+            <option key={size} value={size}>
+              {size}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <span>
+          {indexOfFirstRow} - {indexOfLastRow} of {totalRows}
+        </span>
+      </div>
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`px-3 py-1 border rounded-md ${
+            currentPage === 1
+              ? 'text-gray-400 border-gray-300'
+              : 'hover:bg-gray-200'
+          }`}
+        >
+          ◄
+        </button>
+        <button
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`px-3 py-1 border rounded-md ${
+            currentPage === totalPages
+              ? 'text-gray-400 border-gray-300'
+              : 'hover:bg-gray-200'
+          }`}
+        >
+          ►
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default Table
