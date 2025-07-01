@@ -29,6 +29,7 @@
     "@tiptap/react": "^2.11.9",
     "@tiptap/starter-kit": "^2.11.9",
     "axios": "^1.8.4",
+    "file-saver": "^2.0.5",
     "init": "^0.1.2",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.476.0",
@@ -42,6 +43,7 @@
     "react-select": "^5.10.1",
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.3",
+    "xlsx": "^0.18.5",
     "yup": "^1.6.1"
   },
   "devDependencies": {

@@ -4,7 +4,9 @@ import { postRequest, postRequestLoginId } from "@/app/pages/api/auth";
 const API_ENDPOINTS = {
     CHANGE_ADMIN_PASSWORD: "/AdminMaster/chanegAdminPassword",
     USERNAME_BY_LOGINID: "/AdminMaster/userNameByLoginId",
-    BLOCK_USER_BY_ADMIN: "/AdminMaster/blockUserByAdmin"
+    BLOCK_USER_BY_ADMIN: "/AdminMaster/blockUserByAdmin",
+    CHANGE_ADMIN_SPONSOR_ID: "/AdminMaster/chanegAdminSponsorID",
+    DOWNLOAD_EXCEL: "/AdminMaster/downloadExcel"
 };
 
 export const ChangePasswordAdminMaster = createAsyncThunk(
@@ -53,6 +55,30 @@ export const blockUserByAdmin = createAsyncThunk(
     }
 );
 
+export const ChangeAdminSponser = createAsyncThunk(
+    'adminMaster/ChangeAdminSponser',
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await postRequest(API_ENDPOINTS.CHANGE_ADMIN_SPONSOR_ID, data);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || 'Error changing sponsor');
+        }
+    }
+);
+
+export const downloadExcel = createAsyncThunk(
+    'adminMaster/downloadExcel',
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await postRequest(API_ENDPOINTS.DOWNLOAD_EXCEL, data);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || 'Error downloading Excel');
+        }
+    }
+);
+
 const adminMasterSlice = createSlice({
     name: "adminMaster",
     initialState: {
@@ -61,7 +87,9 @@ const adminMasterSlice = createSlice({
         error: null,
         ChangePasswordData: null,
         usernameData: null,
-        blockUserData: null
+        blockUserData: null,
+        sponserData: null,
+        excelData: null 
     },
     reducers: {
         clearError: (state) => {
@@ -107,6 +135,32 @@ const adminMasterSlice = createSlice({
                 state.loading = false;
             })
             .addCase(blockUserByAdmin.rejected, (state, action) => {
+                state.error = action.payload;
+                state.loading = false;
+            })
+            .addCase(ChangeAdminSponser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(ChangeAdminSponser.fulfilled, (state, action) => {
+                state.sponserData = action.payload;
+                state.loading = false;
+                state.error = null;
+            })
+            .addCase(ChangeAdminSponser.rejected, (state, action) => {
+                state.error = action.payload;
+                state.loading = false;
+            })
+            .addCase(downloadExcel.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(downloadExcel.fulfilled, (state, action) => {
+                state.excelData = action.payload;
+                state.loading = false;
+                state.error = null;
+            })
+            .addCase(downloadExcel.rejected, (state, action) => {
                 state.error = action.payload;
                 state.loading = false;
             });
