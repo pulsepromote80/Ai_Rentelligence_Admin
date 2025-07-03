@@ -2,7 +2,7 @@
 import axios from 'axios'
 import Cookies from 'js-cookie'
 const BASE_URL = 'https://apis.rentelligence.biz/api';
-export const IMAGE_BASE_URL = 'https://apis.rentelligence.biz/productImage';
+export const IMAGE_BASE_URL = 'https://apis.rentelligence.biz/TicketImage';
 
 const isLoggedIn = () => {
   return Cookies.get('userDetail') !== undefined
