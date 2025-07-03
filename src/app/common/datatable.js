@@ -14,6 +14,7 @@ const Table = ({
   loading,
   title,
   isUserNameClickable,
+  onRowClick,
 }) => {
   const [sortConfig, setSortConfig] = useState({ key: null, order: 'asc' })
   const [searchTerm, setSearchTerm] = useState('')
@@ -110,8 +111,12 @@ const Table = ({
                 </tr>
               </thead>
               <tbody>
-                {currentRows.map((row) => (
-                  <tr key={row.id}>
+                {currentRows.map((row, idx) => (
+                  <tr
+                    key={row.id || row.ticketId || idx}
+                    onClick={onRowClick ? () => onRowClick(row) : undefined}
+                    className={onRowClick ? 'cursor-pointer hover:bg-blue-50' : ''}
+                  >
                     {(onEdit || onDelete || onAddImage) && (
                       <td className="px-6 py-4 border border-gray-300">
                         <div className="flex items-center justify-center gap-2">
