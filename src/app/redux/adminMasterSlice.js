@@ -6,7 +6,9 @@ const API_ENDPOINTS = {
     USERNAME_BY_LOGINID: "/AdminMaster/userNameByLoginId",
     BLOCK_USER_BY_ADMIN: "/AdminMaster/blockUserByAdmin",
     CHANGE_ADMIN_SPONSOR_ID: "/AdminMaster/chanegAdminSponsorID",
-    DOWNLOAD_EXCEL: "/AdminMaster/downloadExcel"
+    DOWNLOAD_EXCEL: "/AdminMaster/downloadExcel",
+    GET_NEWS: "/AdminMaster/getNews",
+    UPDATE_NEWS: "/AdminMaster/updateNews"
 };
 
 export const ChangePasswordAdminMaster = createAsyncThunk(
@@ -79,6 +81,30 @@ export const downloadExcel = createAsyncThunk(
     }
 );
 
+export const getNews = createAsyncThunk(
+    'adminMaster/getNews',
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await postRequest(API_ENDPOINTS.GET_NEWS, data);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || 'Error fetching news');
+        }
+    }
+);
+
+export const updateNews = createAsyncThunk(
+    'adminMaster/updateNews',
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await postRequest(API_ENDPOINTS.UPDATE_NEWS, data);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || 'Error fetching news');
+        }
+    }
+);
+
 const adminMasterSlice = createSlice({
     name: "adminMaster",
     initialState: {
@@ -86,6 +112,8 @@ const adminMasterSlice = createSlice({
         loading: false,
         error: null,
         ChangePasswordData: null,
+        updateNewsData: null,    
+        newsData: null,
         usernameData: null,
         blockUserData: null,
         sponserData: null,
@@ -163,6 +191,33 @@ const adminMasterSlice = createSlice({
             .addCase(downloadExcel.rejected, (state, action) => {
                 state.error = action.payload;
                 state.loading = false;
+            })
+
+            .addCase(getNews.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getNews.fulfilled, (state, action) => {
+                state.loading = false;
+                state.newsData = action.payload;
+                state.error = null;
+            })
+            .addCase(getNews.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(updateNews.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateNews.fulfilled, (state, action) => {
+                state.loading = false;
+                state.updateNewsData = action.payload;
+                state.error = null;
+            })
+            .addCase(updateNews.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
             });
     }
 });

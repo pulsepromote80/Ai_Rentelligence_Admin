@@ -152,8 +152,9 @@ const Tiptap = ({ value, onChange }) => {
       <MenuBar editor={editor} />
       <EditorContent
         editor={editor}
-        className="prose min-h-[300px] w-full border p-4 rounded bg-white focus:outline-none"
+        className="prose"
       />
+      <pre>{editor?.getHTML()}</pre>
     </div>
   );
 };

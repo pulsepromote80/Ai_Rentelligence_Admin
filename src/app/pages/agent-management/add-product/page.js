@@ -11,6 +11,8 @@ import { toast } from 'react-toastify'
 import SimilarProduct from '../main-product/similar-product/page'
 import { addProductImage } from '@/app/redux/productSlice'
 import ProductMetaTag from '../main-product/product-metaTag/page'
+import Tiptap from '@/app/common/rich-text-editor'
+import { AiOutlinePlusCircle } from "react-icons/ai";
 import { set } from 'react-hook-form'
 
 
@@ -33,6 +35,9 @@ const AddProduct = ({ onClose, productId }) => {
   const [rating, setrating] = useState('')
   const [noOfRating, setnoOfRating] = useState('')
   const [mrp, setMrp] = useState('')
+  const [perHour, setPerHour] = useState('')
+  const [unit, setUnit] = useState('')
+  const [specification, setSpecification] = useState('')
   const [activeTab, setActiveTab] = useState('addProduct');
   const [isProductMetaTagEnabled, setIsProductMetaTagEnabled] = useState(false);
   const [isSimilarProductTabEnabled, setIsSimilarProductTabEnabled] = useState(false);
@@ -42,6 +47,7 @@ const AddProduct = ({ onClose, productId }) => {
   const [isRecommended, setIsRecommended] = useState(false);
   const [similarProductData, setSimilarProductData] = useState(null);
   const [image, setImage] = useState(null);
+  const [showSpecificationEditor, setShowSpecificationEditor] = useState(false);
 
   useEffect(() => {
     dispatch(fetchActiveCategoryList())
@@ -210,6 +216,9 @@ const validateForm = () => {
       rating,
       noOfRating,
       mrp,
+      perHour,
+      unit,
+      specification,
       categoryId: selectedCategory.value,
       categoryName: selectedCategory.label,
       subCategoryId: selectedSubCategory.value,
@@ -275,8 +284,7 @@ const validateForm = () => {
         >
           Add Agent
         </div>
-
-        {/* Add Specification Tab */}
+        
         <div
           className={`cursor-pointer px-4 py-2 text-sm font-medium transition-colors duration-300 whitespace-nowrap ${activeTab === 'addSimilarProduct'
             ? 'border-b-2 border-blue-500 text-blue-500'
@@ -542,6 +550,49 @@ const validateForm = () => {
 
             <div>
               <label className="block text-sm font-medium">
+                PerHour <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                value={perHour}
+                onChange={(e) => {
+                  setPerHour(e.target.value)
+                  if (errors.perHour) {
+                    setErrors((prev) => ({ ...prev, perHour: '' }))
+                  }
+                }}
+                placeholder="Per Hour"
+                className={`w-full px-3 py-2 mt-2 border rounded ${errors.perHour ? 'border-red-500' : ''}`}
+              />
+              {errors.perHour && (
+                <p className="text-xs text-red-500">{errors.perHour}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">
+                Unit <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                value={unit}
+                onChange={(e) => {
+                  setUnit(e.target.value)
+                  if (errors.unit) {
+                    setErrors((prev) => ({ ...prev, unit: '' }))
+                  }
+                }}
+                placeholder="Unit"
+                className={`w-full px-3 py-2 mt-2 border rounded ${errors.unit ? 'border-red-500' : ''}`}
+              />
+              {errors.unit && (
+                <p className="text-xs text-red-500">{errors.unit}</p>
+              )}
+            </div>
+
+
+            <div>
+              <label className="block text-sm font-medium">
                 Description <span className="text-red-500">*</span>
               </label>
               <input
@@ -561,6 +612,8 @@ const validateForm = () => {
               )}
             </div>
 
+             
+
             <div>
               <label className="block text-sm font-medium">
                 Choose Image <span className="text-red-500">*</span>
@@ -576,6 +629,8 @@ const validateForm = () => {
               <p className="mt-1 text-sm text-red-500">{errors.image}</p> )}
 
             </div>
+
+            
             <div className="flex flex-row justify-start gap-10 mt-4 md:col-span-3">
 
               <div className="flex items-center mb-2">
@@ -607,9 +662,35 @@ const validateForm = () => {
                 <label className="text-sm font-medium">Recommended</label>
               </div>
             </div>
+
           </div>
-          <div>
-          </div>
+          <div className='mt-4'>
+              <div className="flex items-center gap-3 mt-4">
+                <label className="flex items-center gap-2 text-sm font-medium">
+                  Add Specification <span className="text-red-500">*</span>
+                </label>
+                <button
+                  type="button"
+                  aria-label="Add Specification"
+                  className="flex items-center justify-center w-8 h-8 text-2xl font-bold text-black transition-all duration-200 border border-blue-300 rounded-full shadow-md bg-gradient-to-tr focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  onClick={() => setShowSpecificationEditor((prev) => !prev)}
+                  title="Add Specification"
+                >
+                  <AiOutlinePlusCircle />
+                </button>
+              </div>
+              {showSpecificationEditor && (
+                <div className="mt-2 ">
+                  <Tiptap
+                    content={specification}
+                    onChange={setSpecification}
+                  />
+                </div>
+              )}
+              {errors.specification && (
+                <p className="text-xs text-red-500">{errors.specification}</p>
+              )}
+            </div>
           <div className="flex justify-end gap-4 mt-4">
             <button
               onClick={onClose}

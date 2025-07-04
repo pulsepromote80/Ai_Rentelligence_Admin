@@ -39,6 +39,18 @@ const ProductDetails = ({ productDetails, activeTab, setSelectedImageUrl }) => {
                     <td className="px-3 py-2 text-left">{productDetails.rating}</td>
                     <th className="px-3 py-2 font-semibold text-left text-gray-700">Discount Price</th>
                     <td className="px-3 py-2 text-left">{productDetails.discountPrice}</td>
+                    <th className="px-3 py-2 font-semibold text-left text-gray-700">PerHour</th>
+                    <td className="px-3 py-2 text-left">{productDetails.perHour}</td>
+                  </tr>
+                  <tr className="bg-white border-b">
+                   <th className="px-3 py-2 font-semibold text-left text-gray-700">Unit</th>
+                    <td className="px-3 py-2 text-left">{productDetails.unit}</td>
+                    <th className="px-3 py-2 font-semibold text-left text-gray-700">Specification</th>
+                    <td className="px-3 py-2 text-left">
+                      {productDetails.specification && (
+                        <div dangerouslySetInnerHTML={{ __html: productDetails.specification }} />
+                      )}
+                    </td>
                   </tr>
                 </tbody>
               </table>
