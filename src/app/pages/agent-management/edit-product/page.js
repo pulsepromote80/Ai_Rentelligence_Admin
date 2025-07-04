@@ -4,6 +4,7 @@ import { getProductList, updateProduct } from '@/app/redux/productSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchActiveSellerList } from '@/app/redux/sellerSlice';
 import { toast } from 'react-toastify';
+import Tiptap from '@/app/common/rich-text-editor';
 
 const EditProduct = ({ product, onClose }) => {
     const { sellerData } = useSelector((state) => state.sellers);
@@ -22,6 +23,9 @@ const EditProduct = ({ product, onClose }) => {
         stock: '',
         price: '',
         mrp: '',
+        perHour: '',
+        unit: '',
+        specification: '',
         discountPrice: '',
         rating: '',
         noOfRating: '',
@@ -45,6 +49,9 @@ const EditProduct = ({ product, onClose }) => {
                 price: product.price || '',
                 mrp: product.mrp || '',
                 discountPrice: product.discountPrice || '',
+                perHour: product.perHour || '',
+                unit: product.unit || '',
+                specification: product.specification || '',
                 rating: product.rating || '',
                 noOfRating: product.noOfRating || '',
                 description: product.description || '',
@@ -112,6 +119,9 @@ const EditProduct = ({ product, onClose }) => {
         price: formData.price,
         mrp: formData.mrp,
         discountPrice: formData.discountPrice,
+        perHour: formData.perHour,
+        unit: formData.unit,
+        specification: formData.specification,
         description: formData.description,
         isNewArrial: formData.isNewArrial,
         isBestSeller: formData.isBestSeller,
@@ -309,8 +319,30 @@ const EditProduct = ({ product, onClose }) => {
                     />
                 </div>
 
+                 <div className="md:col-span-1">
+                    <label className="block text-sm font-medium">PerHour</label>
+                    <input
+                        type="number"
+                        name="perHour"
+                        value={formData.perHour}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
+                    />
+                </div>
+
+                 <div className="md:col-span-1">
+                    <label className="block text-sm font-medium">Unit</label>
+                    <input
+                        type="number"
+                        name="unit"
+                        value={formData.unit}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
+                    />
+                </div>
+
                 {/* Description */}
-                <div className="md:col-span-2">
+                <div className="md:col-span-1">
                     <label className="block text-sm font-medium">Description</label>
                     <input
                         name="description"
@@ -320,6 +352,16 @@ const EditProduct = ({ product, onClose }) => {
                         rows="3"
                     />
                 </div>
+
+                <div className="md:col-span-2">
+                    <label className="block text-sm font-medium">Specification</label>
+                    <Tiptap
+                        value={formData.specification}
+                        onChange={val => setFormData(prev => ({ ...prev, specification: val }))}
+                    />
+                </div>
+                
+                
 
                 {/* Active Checkbox */}
                 <div className="col-span-1 mt-3 md:col-span-3">

@@ -6,8 +6,8 @@ export const API_ENDPOINTS = {
   ADD_PRODUCT_IMAGE: '/Product/addProductImage',
   GET_BY_ID_PRODUCT: '/Product/getByIdProduct',
   GET_BY_ID_IMAGE: '/Product/getByIdImage',
-  UPDATE_METATAGS_BY_PRODUCTID:'/Product/updateMetaTagsByProductId',
-  DELETE_PRODUCT_IMAGE:'/Product/deleteProductImage'
+  UPDATE_METATAGS_BY_PRODUCTID: '/Product/updateMetaTagsByProductId',
+  DELETE_PRODUCT_IMAGE: '/Product/deleteProductImage'
 };
 
 export const Columns = [
@@ -21,8 +21,10 @@ export const Columns = [
   { key: 'sellerName', label: 'Seller Name' },
   { key: 'subName', label: 'Sub Title' },
   { key: 'rating', label: 'Rating' },
-  { key: 'mrp', label: 'MRP'},
+  { key: 'mrp', label: 'MRP' },
   { key: 'price', label: 'Price' },
   { key: 'discountPrice', label: 'Discount Price' },
+  { key: 'perHour', label: 'PerHour' },
+  { key: 'unit', label: 'Unit' },
   { key: 'status', label: 'Status' },
 ];

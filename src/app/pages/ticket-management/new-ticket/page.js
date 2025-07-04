@@ -136,6 +136,7 @@ const NewTicket = () => {
         title="Tickets List"
         onRowClick={handleRowClick}
       />
+
       
       {ticketDetails && ticket && (
         <div className="relative p-4 mt-6 border rounded-lg shadow bg-gray-50">
@@ -191,6 +192,7 @@ const NewTicket = () => {
           </div>
           {ticket.active && showReplyBox && (
             <div className="p-4 mt-6 bg-white border rounded-lg shadow-inner">
+              
               <h3 className="mb-2 text-lg font-semibold text-gray-700">Reply to Ticket</h3>
               <Tiptap value={replyMessage} onChange={setReplyMessage} />
               <input
