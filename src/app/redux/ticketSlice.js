@@ -19,7 +19,7 @@ export const addTicketReply = createAsyncThunk(
   'ticket/addTicketReply',
   async (formData, { rejectWithValue }) => {
     try {
-      const response = await postformRequest(API_ENDPOINTS.ADD_TICKET_REPLY, formData);
+      const response = await postformRequest(API_ENDPOINTS.TICKET_REPLY, formData);
       return response;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Error replying to ticket');
@@ -31,7 +31,7 @@ export const getAllTicketByTicketId = createAsyncThunk(
   'ticket/getAllTicketByTicketId',
   async (ticketId, { rejectWithValue }) => {
     try {
-      const response = await getRequest(`${API_ENDPOINTS.GET_ALL_TICKET_BY_ID}?ticketId=${ticketId}`);
+      const response = await getRequest(`${API_ENDPOINTS.GET_TICKET_REPLY_BY_TICKET_ID}?ticketId=${ticketId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Error fetching ticket');

@@ -14,7 +14,7 @@ import ProductDetails from './product-details/page';
 import SimilarProductDetails from './similarProduct-details/page';
 import EditSimilarProduct from '../edit-similarproduct/page';
 import EditProductMetaTag from '../edit-product-metatag/page';
-import ProductMetaTag from '../main-product/product-metaTag/page';
+import ProductMetaTagDetails from '../agent/product-meta-tag-details/page';
 
 
 const Agent = () => {
@@ -208,6 +208,16 @@ const Agent = () => {
               >
                 Similar Agent Details
               </div>
+
+              <div
+                className={`cursor-pointer whitespace-nowrap px-4 py-2 text-sm font-medium transition-colors duration-300 ${activeTab === 'similarProductMetatag'
+                  ? 'border-b-2 border-blue-500 text-blue-500 text-lg'
+                  : 'text-gray-600 hover:text-blue-500'
+                  }`}
+                onClick={() => setActiveTab('similarProductMetatag')}
+              >
+                 Agent Metatag Details
+              </div>
             </div>
 
           </div>
@@ -217,6 +227,7 @@ const Agent = () => {
             setSelectedImageUrl={setSelectedImageUrl}
           />
           <SimilarProductDetails similarProductList={similarProductList} setActiveTab={setActiveTab} activeTab={activeTab} />
+          {activeTab === 'similarProductMetatag'  && <ProductMetaTagDetails product={productDetails}/>}
           
           {selectedImageUrl && (
             <div

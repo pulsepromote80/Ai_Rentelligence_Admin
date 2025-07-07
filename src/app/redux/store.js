@@ -19,6 +19,7 @@ import communityReducer from './communitySlice';
 import adminManageUserReducer from './adminMangeUserSlice';
 import adminMasterReducer from './adminMasterSlice';
 import ticketReducer from './ticketSlice';
+import fundManagerReducer from './fundManagerSlice';
 
 export const store = configureStore({
     reducer: {
@@ -41,6 +42,7 @@ export const store = configureStore({
         community: communityReducer,
         adminManageUser: adminManageUserReducer,
         adminMaster: adminMasterReducer,
-        ticket: ticketReducer
+        ticket: ticketReducer,
+        fundManager: fundManagerReducer
     },
 });

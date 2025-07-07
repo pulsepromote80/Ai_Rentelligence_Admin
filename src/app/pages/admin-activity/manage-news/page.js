@@ -96,7 +96,7 @@ const ManageNew = () => {
           {/* Close button */}
           <button
             type="button"
-            className="absolute top-4 right-4 text-gray-400 hover:text-red-500 focus:outline-none"
+            className="absolute text-gray-400 top-4 right-4 hover:text-red-500 focus:outline-none"
             onClick={() => setEditingNews(null)}
             aria-label="Close editor"
           >

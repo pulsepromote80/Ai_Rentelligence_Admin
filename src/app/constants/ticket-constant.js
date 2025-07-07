@@ -1,7 +1,7 @@
 export const API_ENDPOINTS = {
     GET_ALL_TICKETS: "/Ticket/getAllTicket",
-    ADD_TICKET_REPLY: "/Ticket/addTicketReply",
-    GET_ALL_TICKET_BY_ID: "/Ticket/getAllTicketByTicketId",
+    TICKET_REPLY: "/Ticket/TicketReply",
+    GET_TICKET_REPLY_BY_TICKET_ID: "/Ticket/getTicketReplyByTicketId",
     DELETE_TICKET: "/Ticket/deleteTicket"
 };
 
