@@ -242,7 +242,13 @@ const Table = ({
 // Render individual cell logic
 const renderCell = (col, row) => {
   const value = row[col.key]
-  if (col.key === 'image') return <ImagePopup src={value} alt="Image" />
+  if (col.key === 'image') {
+    if (value) {
+      return <ImagePopup src={value} alt="Image" />
+    } else {
+      return <span className="text-gray-400">No Image</span>
+    }
+  }
   if (col.key === 'username') {
     return (
       <Link

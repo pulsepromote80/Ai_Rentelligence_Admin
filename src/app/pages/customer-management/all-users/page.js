@@ -20,7 +20,7 @@ const AllUsers = () => {
   });
   const [hasSearched, setHasSearched] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 20;
+  const rowsPerPage = 10;
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -42,6 +42,25 @@ const AllUsers = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return dateString;
+      
+      const day = date.getDate().toString().padStart(2, '0');
+      const month = (date.getMonth() + 1).toString().padStart(2, '0');
+      const year = date.getFullYear();
+      const hours = date.getHours().toString().padStart(2, '0');
+      const minutes = date.getMinutes().toString().padStart(2, '0');
+      const seconds = date.getSeconds().toString().padStart(2, '0');
+      
+      return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
+    } catch (error) {
+      return dateString;
+    }
+  };
+
   const tableData = Array.isArray(searchData?.data)
     ? searchData.data.map((item, idx) => ({
         srNo: idx + 1,
@@ -52,11 +71,10 @@ const AllUsers = () => {
         WalletAddress: item.WalletAddress || '',
         WalletBep20: item.WalletBep20 || '',
         Package: item.Package || '',
-        RegDate: item.RegDate || '',
+        RegDate: formatDate(item.RegDate),
       }))
     : [];
 
-  // Calculate paginated data
   const paginatedData = tableData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
   const totalPages = Math.ceil(tableData.length / rowsPerPage);
 

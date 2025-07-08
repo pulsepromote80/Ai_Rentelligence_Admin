@@ -25,9 +25,14 @@ const NewTicket = () => {
   const [closeSuccess, setCloseSuccess] = useState('');
 
   useEffect(() => {
+    // Prevent double fetch in development (StrictMode)
+    const didFetch = window.__didFetchTickets;
+    if (didFetch) return;
+    window.__didFetchTickets = true;
     dispatch(fetchAllTickets())
       .unwrap()
       .then(() => {
+        console.log("Tickets fetched successfully!");
         toast.success('Tickets fetched successfully!');
       })
       .catch((err) => {
@@ -61,12 +66,6 @@ const NewTicket = () => {
   const handleRowClick = (row) => {
     dispatch(getAllTicketByTicketId(row.ticketId))
       .unwrap()
-      .then(() => {
-        toast.success('Ticket Details Fetched Successfully!');
-      })
-      .catch((err) => {
-        toast.error(err?.message || 'Failed to load ticket details');
-      });
   };
 
   const ticket = ticketDetails?.ticket;

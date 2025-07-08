@@ -285,8 +285,8 @@ const SellerPage = () => {
                 className="w-full p-2 mt-2 border rounded focus:ring-2 focus:ring-blue-400"
               >
                 <option value="">Select Country</option>
-                {countries.map((country) => (
-                  <option key={country.country_Id} value={country.country_Name}>
+                {countries.map((country, idx) => (
+                  <option key={`${country.country_Id}-${idx}`} value={country.country_Name}>
                     {country.country_Name}
                   </option>
                 ))}
@@ -307,8 +307,8 @@ const SellerPage = () => {
                 disabled={!formData.country}
               >
                 <option value="">Select State</option>
-                {states.map((state) => (
-                  <option key={state.pk_StateId} value={state.stateName}>
+                {states.map((state, idx) => (
+                  <option key={`${state.pk_StateId}-${idx}`} value={state.stateName}>
                     {state.stateName}
                   </option>
                 ))}
@@ -329,8 +329,8 @@ const SellerPage = () => {
                 disabled={!formData.state}
               >
                 <option value="">Select City</option>
-                {cities.map((city) => (
-                  <option key={city.pk_CityId} value={city.cityName}>
+                {cities.map((city, idx) => (
+                  <option key={`${city.pk_CityId}-${idx}`} value={city.cityName}>
                     {city.cityName}
                   </option>
                 ))}

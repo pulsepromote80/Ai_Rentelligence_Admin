@@ -103,7 +103,7 @@ const Sidebar = () => {
       <div
         ref={sidebarRef}
         className={`h-screen p-4 overflow-y-auto bg-sidebar w-64 custom-scrollbar pb-[80px]
-  fixed lg:relative top-0 lg:top-0 md:top-0 left-0 z-40
+  fixed lg:relative left-0 z-40
   transform transition-transform duration-300 ease-in-out
   ${mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
   lg:translate-x-0`}
