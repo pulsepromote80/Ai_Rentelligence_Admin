@@ -1,14 +1,16 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { postRequest,setToken ,setAdminUserId,setUsername} from "../pages/api/auth";
 import Cookies from "js-cookie";
+import { all } from "axios";
 
 const API_ENDPOINTS = {
-  //USERLOGIN: "/AdminAuthentication/addAdminUser",
+
   ADMINLOGIN: "/AdminAuthentication/adminLogin",
   USERFORGET: "/AdminAuthentication/adminSendOtp",
   REGISTER: "/AdminAuthentication/addAdminUser",
   VERIFYOTP: "/AdminAuthentication/adminVerifyOtp",
-  RESETPASSWORD: "/AdminAuthentication/adminForgotPassword"
+  RESETPASSWORD: "/AdminAuthentication/adminForgotPassword",
+  BULKREGISTRATION: "/AdminAuthentication/addBulkRegsitration"
 };
 
 export const adminLogin = createAsyncThunk(
@@ -100,6 +102,20 @@ export const resetPassword = createAsyncThunk(
   }
 );
 
+export const bulkRegistration = createAsyncThunk(
+  "auth/bulkRegistration",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(API_ENDPOINTS.BULKREGISTRATION, data);
+      return response.data;
+    } catch (error) {
+      console.error("Bulk Registration API Error:", error.response?.data || error.message);
+      const errorMessage = error.response?.data?.message || "Something went wrong";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -112,6 +128,8 @@ const authSlice = createSlice({
     forgotPasswordUsername: null,
     user: null,
     success: false,
+    bulkRegistrationData: null,
+    allUserRegistrations: null,
   },
   reducers: {
     logout: (state) => {
@@ -125,6 +143,7 @@ const authSlice = createSlice({
       state.appRoleId = null;
       state.forgotPasswordUsername = null;
       state.success = false;
+      state.bulkRegistrationData = null;
     },
     resetForgotPasswordState: (state) => {
       state.forgotPasswordUsername = null;
@@ -209,8 +228,21 @@ const authSlice = createSlice({
         state.loading = false;
         state.success = false;
         state.error = action.payload;
-      });
-      
+      })
+      .addCase(bulkRegistration.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(bulkRegistration.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        state.bulkRegistrationData = action.payload;
+      })
+      .addCase(bulkRegistration.rejected, (state, action) => {
+        state.loading = false;
+        state.success = false;
+        state.error = action.payload;
+      });     
   },
 });
 
