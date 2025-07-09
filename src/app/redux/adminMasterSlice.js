@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { postRequest, postRequestLoginId } from "@/app/pages/api/auth";
+import { postRequest, postRequestLoginId, getRequest } from "@/app/pages/api/auth";
 
 const API_ENDPOINTS = {
     CHANGE_ADMIN_PASSWORD: "/AdminMaster/chanegAdminPassword",
@@ -8,7 +8,8 @@ const API_ENDPOINTS = {
     CHANGE_ADMIN_SPONSOR_ID: "/AdminMaster/chanegAdminSponsorID",
     DOWNLOAD_EXCEL: "/AdminMaster/downloadExcel",
     GET_NEWS: "/AdminMaster/getNews",
-    UPDATE_NEWS: "/AdminMaster/updateNews"
+    UPDATE_NEWS: "/AdminMaster/updateNews",
+    GET_LEASE_AGENT: "/AdminMaster/getLeaseAgent"
 };
 
 export const ChangePasswordAdminMaster = createAsyncThunk(
@@ -105,6 +106,23 @@ export const updateNews = createAsyncThunk(
     }
 );
 
+export const getLeaseAgent = createAsyncThunk(
+    "adminMaster/getLeaseAgent",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await postRequest(
+                API_ENDPOINTS.GET_LEASE_AGENT,
+                data
+            );
+            return response;
+        } catch (error) {
+            console.error("API Error:", error.response?.data || error.message);
+            return rejectWithValue(error.response?.data?.message || "Failed to fetch community data");
+        }
+    }
+);
+
+
 const adminMasterSlice = createSlice({
     name: "adminMaster",
     initialState: {
@@ -112,12 +130,13 @@ const adminMasterSlice = createSlice({
         loading: false,
         error: null,
         ChangePasswordData: null,
-        updateNewsData: null,    
+        updateNewsData: null,
         newsData: null,
         usernameData: null,
         blockUserData: null,
         sponserData: null,
-        excelData: null 
+        excelData: null,
+        leaseAgentData: null
     },
     reducers: {
         clearError: (state) => {
@@ -218,7 +237,19 @@ const adminMasterSlice = createSlice({
             .addCase(updateNews.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+            .addCase(getLeaseAgent.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getLeaseAgent.fulfilled, (state, action) => {
+                state.loading = false;
+                state.leaseAgentData = action.payload;
+            })
+            .addCase(getLeaseAgent.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
     }
 });
 

@@ -150,23 +150,23 @@ const NewTicket = () => {
           <h2 className="mb-2 text-xl font-semibold text-gray-700">Ticket Details</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
              <div className="flex flex-col">
-              <span className="text-xs font-bold text-gray-500 uppercase">Name</span>
-              <span className="text-base text-gray-800 break-all">{ticket.name || '-'}</span>
+              <span className="font-bold text-black uppercase text-l">Name :</span>
+              <span className="text-gray-800 break-all text-md">{ticket.name || '-'}</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-gray-500 uppercase">Ticket Type</span>
-              <span className="text-base text-gray-800 break-all">{ticket.ticketType || '-'}</span>
+              <span className="font-bold text-black uppercase text-l">Ticket Type :</span>
+              <span className="text-gray-800 break-all text-md">{ticket.ticketType || '-'}</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-gray-500 uppercase">Subject</span>
-              <span className="text-base text-gray-800 break-all">{ticket.subject || '-'}</span>
+              <span className="font-bold text-black uppercase text-l">Subject :</span>
+              <span className="text-gray-800 break-all text-md">{ticket.subject || '-'}</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-gray-500 uppercase">Message</span>
-              <span className="text-base text-gray-800 break-all">{ticket.message || '-'}</span>
+              <span className="font-bold text-black uppercase text-l">Message :</span>
+              <span className="text-gray-800 break-all text-md">{ticket.message || '-'}</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-xs font-bold text-gray-500 uppercase">Image</span>
+              <span className="font-bold text-black uppercase text-l">Image :</span>
               {ticket.image ? (
                 <img src={ticket.image} alt="Ticket" className="object-cover w-20 h-20 mt-1 border rounded" />
               ) : (
@@ -183,7 +183,7 @@ const NewTicket = () => {
                 >
                   Reply
                 </button>
-                <button className="px-6 py-2 text-white bg-red-500 rounded hover:bg-red-600 focus:outline-none disabled:opacity-60" onClick={handleCloseTicket} disabled={closeLoading}>
+                <button className="px-6 py-2 text-white bg-gray-600 rounded hover:bg-gray-600 focus:outline-none disabled:opacity-60" onClick={handleCloseTicket} disabled={closeLoading}>
                   {closeLoading ? 'Closing...' : 'Close'}
                 </button>
               </>

@@ -48,7 +48,7 @@ const ProductDetails = ({ productDetails, activeTab, setSelectedImageUrl }) => {
                     <th className="px-3 py-2 font-semibold text-left text-gray-700">Specification</th>
                     <td className="px-3 py-2 text-left">
                       {productDetails.specification && (
-                        <div dangerouslySetInnerHTML={{ __html: productDetails.specification }} />
+                        <div className="md:w-[159%] lg:w-[159%]" dangerouslySetInnerHTML={{ __html: productDetails.specification }} />
                       )}
                     </td>
                   </tr>
