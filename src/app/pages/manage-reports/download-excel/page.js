@@ -108,7 +108,7 @@ const DownloadExcel = () => {
             <thead className="sticky top-0 z-10 text-blue-900 bg-gradient-to-r from-blue-200 to-blue-400">
               <tr>
                 <th className="px-4 py-3 text-center break-words whitespace-normal border">Sr.No.</th>
-                {tableData[0] && Object.keys(tableData[0]).filter(key => key !== 'srNo').map((key) => (
+                {tableData[0] && Object.keys(tableData[0]).filter(key => key !== 'srNo' && key !== 'WalletAddress').map((key) => (
                   <th key={key} className="px-4 py-3 text-center break-words whitespace-normal border">{key}</th>
                 ))}
               </tr>
@@ -122,7 +122,7 @@ const DownloadExcel = () => {
                 paginatedData.map((row, idx) => (
                   <tr key={idx} className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}>
                     <td className="px-4 py-2 font-medium text-center break-words whitespace-normal border">{row.srNo}</td>
-                    {Object.keys(row).filter(key => key !== 'srNo').map((key, i) => (
+                    {Object.keys(row).filter(key => key !== 'srNo' && key !== 'WalletAddress').map((key, i) => (
                       <td key={i} className="px-4 py-2 text-center break-words whitespace-normal border">{row[key]}</td>
                     ))}
                   </tr>
