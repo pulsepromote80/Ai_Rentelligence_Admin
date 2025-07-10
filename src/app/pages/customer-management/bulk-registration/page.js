@@ -103,7 +103,6 @@ const BulkRegistration = () => {
     };
     try {
       const result = await dispatch(bulkRegistration(reqBody)).unwrap();
-      console.log('Bulk Registration Result:', result);
       toast.success('Bulk registration successful!');
       setForm(initialForm);
       setUserId('');
