@@ -25,6 +25,10 @@ const EditProduct = ({ product, onClose }) => {
         mrp: '',
         perHour: '',
         unit: '',
+        task: '',
+        totalReturn: '',
+        weeklyReturn: '',
+        month: '',
         specification: '',
         discountPrice: '',
         rating: '',
@@ -51,6 +55,10 @@ const EditProduct = ({ product, onClose }) => {
                 discountPrice: product.discountPrice || '',
                 perHour: product.perHour || '',
                 unit: product.unit || '',
+                task: product.task || '',
+                totalReturn: product.totalReturn || '',
+                weeklyReturn: product.weeklyReturn || '',
+                month: product.month || '',
                 specification: product.specification || '',
                 rating: product.rating || '',
                 noOfRating: product.noOfRating || '',
@@ -121,6 +129,10 @@ const EditProduct = ({ product, onClose }) => {
         discountPrice: formData.discountPrice,
         perHour: formData.perHour,
         unit: formData.unit,
+        task: formData.task,
+        totalReturn: formData.totalReturn,
+        weeklyReturn: formData.weeklyReturn,
+        month: formData.month,
         specification: formData.specification,
         description: formData.description,
         isNewArrial: formData.isNewArrial,
@@ -217,7 +229,7 @@ const EditProduct = ({ product, onClose }) => {
                         ))}
                     </select>
                 </div>
-                
+
                 {/* Title */}
                 <div className="md:col-span-1">
                     <label className="block text-sm font-medium">Title</label>
@@ -319,7 +331,7 @@ const EditProduct = ({ product, onClose }) => {
                     />
                 </div>
 
-                 <div className="md:col-span-1">
+                <div className="md:col-span-1">
                     <label className="block text-sm font-medium">PerHour</label>
                     <input
                         type="number"
@@ -330,7 +342,7 @@ const EditProduct = ({ product, onClose }) => {
                     />
                 </div>
 
-                 <div className="md:col-span-1">
+                <div className="md:col-span-1">
                     <label className="block text-sm font-medium">Unit</label>
                     <input
                         type="number"
@@ -352,7 +364,51 @@ const EditProduct = ({ product, onClose }) => {
                         rows="3"
                     />
                 </div>
-
+                
+                {/* Task */}
+                <div className="md:col-span-1">
+                    <label className="block text-sm font-medium">Task</label>
+                    <input
+                        type="text"
+                        name="task"
+                        value={formData.task}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
+                    />
+                </div>
+                {/* Total Return */}
+                <div className="md:col-span-1">
+                    <label className="block text-sm font-medium">Total Return</label>
+                    <input
+                        type="number"
+                        name="totalReturn"
+                        value={formData.totalReturn}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
+                    />
+                </div>
+                {/* Weekly Return */}
+                <div className="md:col-span-1"> 
+                    <label className="block text-sm font-medium">Weekly Return</label>
+                    <input
+                        type="number"
+                        name="weeklyReturn"
+                        value={formData.weeklyReturn}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
+                    />
+                </div>
+                {/* Month */}
+                <div className="md:col-span-1">
+                    <label className="block text-sm font-medium">Monthly Return</label>
+                    <input
+                        type="number"
+                        name="month"
+                        value={formData.month}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
+                    />
+                </div>
                 <div className="md:col-span-2">
                     <label className="block text-sm font-medium">Specification</label>
                     <Tiptap
@@ -360,8 +416,8 @@ const EditProduct = ({ product, onClose }) => {
                         onChange={val => setFormData(prev => ({ ...prev, specification: val }))}
                     />
                 </div>
-                
-                
+
+
 
                 {/* Active Checkbox */}
                 <div className="col-span-1 mt-3 md:col-span-3">

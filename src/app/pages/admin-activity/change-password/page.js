@@ -26,8 +26,6 @@ const ChangePassword = () => {
   // Validate form fields
   const validateForm = () => {
     const newErrors = {};
-
-    // username validation
     if (!formData.username.trim()) {
       newErrors.username ='Username is required';
     } else if (!/^[a-zA-Z0-9_]+$/.test(formData.username)) {
@@ -52,7 +50,7 @@ const ChangePassword = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle input changes
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -60,7 +58,6 @@ const ChangePassword = () => {
       [name]: value
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
         ...prev,
@@ -69,7 +66,7 @@ const ChangePassword = () => {
     }
   };
 
-  // Handle form submission
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -79,8 +76,6 @@ const ChangePassword = () => {
 
     try {
       const result = await dispatch(ChangePasswordAdminMaster(formData)).unwrap();
-      
-      // Show success toast if statusCode is 200
       if (result && result.statusCode === 200) {
         toast.success(result.message || 'Password Updated Successfully');
         setFormData({
@@ -115,7 +110,6 @@ const ChangePassword = () => {
                 id="username"
                 name="username"
                 type="text"
-                required
                 value={formData.username}
                 onChange={handleChange}
                 placeholder="Enter Admin Username"
@@ -136,7 +130,6 @@ const ChangePassword = () => {
                   id="oldPassword"
                   name="oldPassword"
                   type={showOldPassword ? 'text' : 'password'}
-                  required
                   value={formData.oldPassword}
                   onChange={handleChange}
                   placeholder="Enter current password"
@@ -170,7 +163,6 @@ const ChangePassword = () => {
                 id="newPassword"
                 name="newPassword"
                 type={showNewPassword ? 'text' : 'password'}
-                required
                 value={formData.newPassword}
                 onChange={handleChange}
                 placeholder="Enter new password"

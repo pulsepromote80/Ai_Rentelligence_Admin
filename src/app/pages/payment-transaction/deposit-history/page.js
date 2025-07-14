@@ -33,7 +33,7 @@ const DepositHistory = () => {
                 <th className="px-4 py-2 text-sm font-medium text-center border rounded-tl-lg">Sr.No.</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">User ID</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">UserName</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Amount</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Amount ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Payment Date</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Status</th>
               </tr>

@@ -38,6 +38,10 @@ const AddProduct = ({ onClose, productId }) => {
   const [perHour, setPerHour] = useState('')
   const [unit, setUnit] = useState('')
   const [specification, setSpecification] = useState('')
+  const [task, setTask] = useState('')
+  const [totalReturn, setTotalReturn] = useState('')
+  const [weeklyReturn, setWeeklyReturn] = useState('')
+  const [month,setMonth] = useState('')
   const [activeTab, setActiveTab] = useState('addProduct');
   const [isProductMetaTagEnabled, setIsProductMetaTagEnabled] = useState(false);
   const [isSimilarProductTabEnabled, setIsSimilarProductTabEnabled] = useState(false);
@@ -143,6 +147,27 @@ const validateForm = () => {
       newErrors.price = 'Price cannot be greater than MRP'
     }
 
+    // Discount Price validation
+    if (!discountPrice.trim()) {
+      newErrors.discountPrice = 'Discount Price is required'
+    } else if (isNaN(discountPrice) || parseFloat(discountPrice) < 0) {
+      newErrors.discountPrice = 'Discount Price must be a positive number'
+    }
+
+    // PerHour validation
+    if (!perHour.trim()) {
+      newErrors.perHour = 'Per Hour is required'
+    } else if (isNaN(perHour) || parseFloat(perHour) < 0) {
+      newErrors.perHour = 'Per Hour must be a positive number'
+    }
+
+    // Unit validation
+    if (!unit.trim()) {
+      newErrors.unit = 'Unit is required'
+    } else if (isNaN(unit) || parseFloat(unit) < 0) {
+      newErrors.unit = 'Unit must be a positive number'
+    }
+
     if (!rating.trim()) {
       newErrors.rating = 'Rating is required'
     } else if (isNaN(rating) || parseFloat(rating) < 0 || parseFloat(rating) > 5) {
@@ -157,6 +182,27 @@ const validateForm = () => {
 
       if (!image) {
       newErrors.image = 'Image is required';
+    }
+
+    // Task validation (string required)
+    if (!task.trim()) newErrors.task = 'Task is required'
+    // Total Return validation
+    if (!totalReturn.trim()) {
+      newErrors.totalReturn = 'Total Return is required'
+    } else if (isNaN(totalReturn) || parseFloat(totalReturn) < 0) {
+      newErrors.totalReturn = 'Total Return must be a positive number'
+    }
+    // Weekly Return validation
+    if (!weeklyReturn.trim()) {
+      newErrors.weeklyReturn = 'Weekly Return is required'
+    } else if (isNaN(weeklyReturn) || parseFloat(weeklyReturn) < 0) {
+      newErrors.weeklyReturn = 'Weekly Return must be a positive number'
+    }
+    // Month validation
+    if (!month.trim()) {
+      newErrors.month = 'Month is required'
+    } else if (isNaN(month) || parseInt(month) < 0) {
+      newErrors.month = 'Month must be a positive number'
     }
 
     setErrors(newErrors)
@@ -219,6 +265,10 @@ const validateForm = () => {
       perHour,
       unit,
       specification,
+      task,
+      totalReturn,
+      weeklyReturn,
+      month,
       categoryId: selectedCategory.value,
       categoryName: selectedCategory.label,
       subCategoryId: selectedSubCategory.value,
@@ -504,6 +554,9 @@ const validateForm = () => {
                 className="w-full px-3 py-2 mt-2 border rounded"
                 readOnly
               />
+              {errors.discountPrice && (
+                <p className="text-xs text-red-500">{errors.discountPrice}</p>
+              )}
             </div>
 
             <div>
@@ -587,6 +640,91 @@ const validateForm = () => {
               />
               {errors.unit && (
                 <p className="text-xs text-red-500">{errors.unit}</p>
+              )}
+            </div>
+
+            
+            <div>
+              <label className="block text-sm font-medium">
+                Task <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={task}
+                onChange={(e) => {
+                  setTask(e.target.value)
+                  if (errors.task) {
+                    setErrors((prev) => ({ ...prev, task: '' }))
+                  }
+                }}
+                placeholder="Task"
+                className={`w-full px-3 py-2 mt-2 border rounded ${errors.task ? 'border-red-500' : ''}`}
+              />
+              {errors.task && (
+                <p className="text-xs text-red-500">{errors.task}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">
+                Total Return <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                value={totalReturn}
+                onChange={(e) => {
+                  setTotalReturn(e.target.value)
+                  if (errors.totalReturn) {
+                    setErrors((prev) => ({ ...prev, totalReturn: '' }))
+                  }
+                }}
+                placeholder="Total Return"
+                className={`w-full px-3 py-2 mt-2 border rounded ${errors.totalReturn ? 'border-red-500' : ''}`}
+              />
+              {errors.totalReturn && (
+                <p className="text-xs text-red-500">{errors.totalReturn}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">
+                Weekly Return <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                value={weeklyReturn}
+                onChange={(e) => {
+                  setWeeklyReturn(e.target.value)
+                  if (errors.weeklyReturn) {
+                    setErrors((prev) => ({ ...prev, weeklyReturn: '' }))
+                  }
+                }}
+                placeholder="Weekly Return"
+                className={`w-full px-3 py-2 mt-2 border rounded ${errors.weeklyReturn ? 'border-red-500' : ''}`}
+              />
+              {errors.weeklyReturn && (
+                <p className="text-xs text-red-500">{errors.weeklyReturn}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">
+                Month <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                value={month}
+                onChange={(e) => {
+                  setMonth(e.target.value)
+                  if (errors.month) {
+                    setErrors((prev) => ({ ...prev, month: '' }))
+                  }
+                }}
+                placeholder="Month"
+                className={`w-full px-3 py-2 mt-2 border rounded ${errors.month ? 'border-red-500' : ''}`}
+              />
+              {errors.month && (
+                <p className="text-xs text-red-500">{errors.month}</p>
               )}
             </div>
 
