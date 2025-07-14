@@ -12,6 +12,7 @@ const ChangeSponser = () => {
   const [touched, setTouched] = useState(false);
   const [userName, setUserName] = useState('');
   const [sponsorName, setSponsorName] = useState('');
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -29,9 +30,13 @@ const ChangeSponser = () => {
 
   const handleUserIdChange = (e) => {
     setAuthLogin(e.target.value);
+    // Clear UserId error as soon as user types
+    setErrors((prev) => ({ ...prev, title: undefined }));
   };
   const handleSponsorIdChange = (e) => {
     setSponsorAuthLogin(e.target.value);
+    // Clear Sponsor error as soon as user types
+    setErrors((prev) => ({ ...prev, sponsor: undefined }));
     if (e.target.value && e.target.value.trim()) {
       dispatch(usernameLoginId(e.target.value)).then((res) => {
         setSponsorName(res.payload?.name || res.payload?.userName || '');
@@ -51,10 +56,11 @@ const ChangeSponser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!authLogin || !authLogin.trim()) {
-      toast.warn('Please enter a User ID');
-      return;
-    }
+    let newErrors = {};
+    if (!authLogin.trim()) newErrors.title = 'UserId is required';
+    if (!sponsorAuthLogin.trim()) newErrors.sponsor = 'Sponsor User ID is required';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
     if (!userName) {
       toast.warn('Please enter a valid User ID');
       return;
@@ -103,8 +109,9 @@ const ChangeSponser = () => {
                 onChange={handleUserIdChange}
                 onBlur={handleBlurOrFetch}
                 placeholder="Enter User Id"
-                required
+              
               />
+              {errors.title && <div className="mt-1 text-sm text-red-500">{errors.title}</div>}
             </div>
             <div className="flex-1">
               <label className="block mb-1 text-sm font-semibold text-gray-700">User Name :</label>
@@ -130,6 +137,7 @@ const ChangeSponser = () => {
                   placeholder="Enter Sponsor User Id"
                   required
                 />
+                {errors.sponsor && <div className="mt-1 text-sm text-red-500">{errors.sponsor}</div>}
               </div>
               <div className="flex-1">
                 <label className="block mb-1 text-sm font-semibold text-gray-700">Sponsor Name :</label>

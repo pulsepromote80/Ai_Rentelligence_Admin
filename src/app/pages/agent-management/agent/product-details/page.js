@@ -42,7 +42,17 @@ const ProductDetails = ({ productDetails, activeTab, setSelectedImageUrl }) => {
                     <th className="px-3 py-2 font-semibold text-left text-gray-700">PerHour</th>
                     <td className="px-3 py-2 text-left">{productDetails.perHour}</td>
                   </tr>
+                   <tr className="bg-white border-b">
+                   <th className="px-3 py-2 font-semibold text-left text-gray-700">Task</th>
+                    <td className="px-3 py-2 text-left">{productDetails.task}</td>
+                    <th className="px-3 py-2 font-semibold text-left text-gray-700">Total Return</th>
+                    <td className="px-3 py-2 text-left">{productDetails.totalReturn}</td>
+                    <th className="px-3 py-2 font-semibold text-left text-gray-700">Weekly Return</th>
+                    <td className="px-3 py-2 text-left">{productDetails.weeklyReturn}</td>
+                  </tr>
                   <tr className="bg-white border-b">
+                    <th className="px-3 py-2 font-semibold text-left text-gray-700">Month</th>
+                    <td className="px-3 py-2 text-left">{productDetails.month}</td>
                    <th className="px-3 py-2 font-semibold text-left text-gray-700">Unit</th>
                     <td className="px-3 py-2 text-left">{productDetails.unit}</td>
                     <th className="px-3 py-2 font-semibold text-left text-gray-700">Specification</th>
@@ -72,6 +82,14 @@ const ProductDetails = ({ productDetails, activeTab, setSelectedImageUrl }) => {
               { label: "Price", value: productDetails.price },
               { label: "Rating", value: productDetails.rating },
               { label: "Discount Price", value: productDetails.discountPrice },
+              {label : "Per Hour", value:productDetails.perHour},
+              {label: "Task", value:productDetails.task},
+              {label: "Total Return", value :productDetails.totalReturn},
+              {label: "Weekly Return", value :productDetails.weeklyReturn},
+              {label: "Monthly", value :productDetails.month},
+              {label: "Specification", value: productDetails.specification && (
+                <div className="md:w-[159%] lg:w-[159%]" dangerouslySetInnerHTML={{ __html: productDetails.specification }} />
+              )}
             ].map((item, idx) => (
               <div
                 key={idx}

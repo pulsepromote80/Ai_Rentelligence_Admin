@@ -7,13 +7,14 @@ import { getUserWalletDetails, addFund } from '@/app/redux/adminManageFundSlice'
 const CreditDebitFund = () => {
   const [form, setForm] = useState({
     loginId: '',
-    user: '',
+    name: '',
     wallet: '',
     type: '',
     amount: '',
     remark: '',
   });
   const [filteredTypes, setFilteredTypes] = useState([]);
+  const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const { data: walletData, loading, error} = useSelector((state) => state.adminManageFund);
  
@@ -21,7 +22,7 @@ const CreditDebitFund = () => {
     if (!form.loginId) return;
     const handler = setTimeout(() => {
       dispatch(getUserWalletDetails(form.loginId));
-    }, 200); 
+    }, 100); 
     return () => clearTimeout(handler);
   }, [form.loginId, dispatch]);
 
@@ -29,7 +30,7 @@ const CreditDebitFund = () => {
     if (walletData?.walletDetails) {
       setForm((prev) => ({
         ...prev,
-        user: walletData.walletDetails.fullName || '',
+        name: walletData.walletDetails.fullName || walletData.walletDetails.name || '',
       }));
     }
   }, [walletData]);
@@ -46,7 +47,7 @@ const CreditDebitFund = () => {
     if (!form.loginId) {
       setForm((prev) => ({
         ...prev,
-        user: '',
+        name: '',
       }));
     }
   }, [form.loginId]);
@@ -61,6 +62,14 @@ const CreditDebitFund = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let newErrors = {};
+    if (!form.loginId.trim()) newErrors.loginId = 'UserId is required';
+    if (!form.wallet) newErrors.wallet = 'Select Wallet is required';
+    if (!form.type) newErrors.type = 'Select Type is required';
+    if (!form.amount) newErrors.amount = 'Enter Amount is required';
+    if (!form.remark) newErrors.remark = 'Description is required';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
     if (!form.wallet || !form.type || !form.amount || !form.remark) return;
     const selectedType = filteredTypes.find((t) => String(t.id) === String(form.type));
     const crDr = selectedType ? selectedType.crDr : null;
@@ -80,7 +89,7 @@ const CreditDebitFund = () => {
       }
       setForm({
         loginId: '',
-        user: '',
+        name: '',
         wallet: '',
         type: '',
         amount: '',
@@ -107,27 +116,26 @@ const CreditDebitFund = () => {
               name="loginId"
               value={form.loginId}
               onChange={handleChange}
-              required
               className="w-full px-4 py-3 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
               placeholder="Enter User Id"
               autoComplete="off"
             />
+            {errors.loginId && <div className="mt-1 text-sm text-red-500">{errors.loginId}</div>}
           </div>
           <div>
             <label className="block mb-2 font-semibold text-gray-700" htmlFor="user">User Name :</label>
             <input
               type="text"
               id="user"
-              name="user"
-              value={form.user}
+              name="name"
+              value={form.name}
               onChange={handleChange}
-              required
               readOnly
               className="w-full px-4 py-3 text-lg bg-gray-100 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="User Name"
             />
           </div>
-          {form.user && (
+          {form.name && (
             <>
               <div>
                 <label className="block mb-2 font-semibold text-gray-700" htmlFor="wallet">Wallet Balances:</label>
@@ -145,7 +153,6 @@ const CreditDebitFund = () => {
                   name="wallet"
                   value={form.wallet}
                   onChange={handleChange}
-                  required
                   className="w-full px-4 py-3 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
                   disabled={!walletData?.walletDetails?.urid}
                 >
@@ -154,6 +161,7 @@ const CreditDebitFund = () => {
                     <option key={w.id} value={w.id}>{w.type}</option>
                   ))}
                 </select>
+                {errors.wallet && <div className="mt-1 text-sm text-red-500">{errors.wallet}</div>}
               </div>
               <div>
                 <label className="block mb-2 font-semibold text-gray-700" htmlFor="type">Select Type :</label>
@@ -162,7 +170,6 @@ const CreditDebitFund = () => {
                   name="type"
                   value={form.type}
                   onChange={handleChange}
-                  required
                   className="w-full px-4 py-3 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
                   disabled={!form.wallet}
                 >
@@ -171,6 +178,7 @@ const CreditDebitFund = () => {
                     <option key={t.id} value={t.id}>{t.type}</option>
                   ))}
                 </select>
+                {errors.type && <div className="mt-1 text-sm text-red-500">{errors.type}</div>}
               </div>
               
               <div>
@@ -181,11 +189,11 @@ const CreditDebitFund = () => {
                   name="amount"
                   value={form.amount}
                   onChange={handleChange}
-                  required
                   min="1"
                   className="w-full px-4 py-3 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
                   placeholder="Enter Amount"
                 />
+                {errors.amount && <div className="mt-1 text-sm text-red-500">{errors.amount}</div>}
               </div>
               <div className="col-span-1 md:col-span-2">
                 <label className="block mb-2 font-semibold text-gray-700" htmlFor="remark">Enter Description</label>
@@ -198,6 +206,7 @@ const CreditDebitFund = () => {
                   className="w-full h-24 px-4 py-5 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
                   placeholder="Enter Remark"
                 />
+                {errors.remark && <div className="mt-1 text-sm text-red-500">{errors.remark}</div>}
               </div>
             </>
           )}

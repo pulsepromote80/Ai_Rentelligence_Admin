@@ -65,9 +65,14 @@ const DownlineAffilates = () => {
   const [searched, setSearched] = useState(false);
   const { personalTeamList, loading, error } = useSelector(state => state.community);
   const dataArray = Array.isArray(personalTeamList) ? personalTeamList : personalTeamList?.data || [];
+   const [errors, setErrors] = useState({});
 
   const handleSearch = (e) => {
     e.preventDefault();
+    let newErrors = {};
+    if (!authLogin.trim()) newErrors.title = 'LoginID is required';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
     if (authLogin) {
       dispatch(getPersonalTeamList({ authLogin }));
       setSearched(true);
@@ -91,6 +96,7 @@ const DownlineAffilates = () => {
               placeholder="Enter Login Id"
               className="h-12 p-3 text-base bg-gray-100 border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-200"
             />
+            {errors.title && <div className="mt-1 text-sm text-red-500">{errors.title}</div>}
           </div>
           <button
             type="submit"

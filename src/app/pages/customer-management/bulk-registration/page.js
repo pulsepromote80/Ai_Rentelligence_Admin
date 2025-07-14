@@ -20,12 +20,13 @@ const BulkRegistration = () => {
   const dispatch = useDispatch();
   const { usernameData, loading: userLoading, error: userError } = useSelector((state) => state.adminMaster);
   const { countries, loading: countryLoading } = useSelector((state) => state.region);
-  const { bulkRegistrationData,loading: regLoading, error: regError } = useSelector((state) => state.auth);
+  const { bulkRegistrationData, loading: regLoading, error: regError } = useSelector((state) => state.auth);
   const [userId, setUserId] = useState('');
   const [touched, setTouched] = useState(false);
   const [form, setForm] = useState(initialForm);
   const [introURID, setIntroURID] = useState('');
   const [noOfIdError, setNoOfIdError] = useState('');
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (!countries || countries.length === 0) {
@@ -82,13 +83,30 @@ const BulkRegistration = () => {
     }
   };
 
+  // Validation function for all fields
+  const validateForm = () => {
+    const newErrors = {};
+    if (!userId.trim()) newErrors.userId = 'UserId is required';
+    if (!form.fName.trim()) newErrors.fName = 'First Name is required';
+    if (!form.lName.trim()) newErrors.lName = 'Last Name is required';
+    if (!form.mobile.trim()) newErrors.mobile = 'Mobile is required';
+    else if (!/^\d{10,15}$/.test(form.mobile.trim())) newErrors.mobile = 'Enter a valid mobile number';
+    if (!form.email.trim()) newErrors.email = 'Email is required';
+    else if (!/^\S+@\S+\.\S+$/.test(form.email.trim())) newErrors.email = 'Enter a valid email address';
+    if (!form.password.trim()) newErrors.password = 'Password is required';
+    if (!form.noOfId || isNaN(Number(form.noOfId))) newErrors.noOfId = 'No Of Id is required';
+    else if (Number(form.noOfId) > 50) newErrors.noOfId = 'Number not greater than 50';
+    else if (Number(form.noOfId) < 0) newErrors.noOfId = 'Number must not be negative';
+    if (!form.countryId) newErrors.countryId = 'Country is required';
+    return newErrors;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!userId || !userId.trim() || !introURID) {
-      toast.error('Please enter a valid User ID and fetch introURID.');
-      return;
-    }
-    
+    const newErrors = validateForm();
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
     for (const key of Object.keys(initialForm)) {
       if (!form[key] || (key === 'noOfId' && (isNaN(Number(form[key])) || Number(form[key]) > 50))) {
         toast.error('Please fill all fields correctly. No Of Id should not be more than 50.');
@@ -103,7 +121,7 @@ const BulkRegistration = () => {
     };
     try {
       const result = await dispatch(bulkRegistration(reqBody)).unwrap();
-      toast.success('Bulk registration successful!');
+      toast.success('Bulk registration successfull!');
       setForm(initialForm);
       setUserId('');
       setIntroURID('');
@@ -128,8 +146,8 @@ const BulkRegistration = () => {
                 onChange={handleUserIdChange}
                 onBlur={handleBlurOrFetch}
                 placeholder="Enter User Id"
-                required
               />
+              {errors.userId && <div className="mt-1 text-sm text-red-500">{errors.userId}</div>}
             </div>
             <div className="flex-1">
               <label className="block mb-1 text-sm font-semibold text-gray-700">User Name :</label>
@@ -147,22 +165,27 @@ const BulkRegistration = () => {
               <div>
                 <label className="block mb-1 text-sm font-semibold text-gray-700">First Name</label>
                 <input type="text" name="fName" value={form.fName} onChange={handleChange} className="w-full px-4 py-3 text-base bg-gray-100 border border-gray-200 rounded-lg" placeholder="First Name" required />
+                {errors.fName && <div className="mt-1 text-sm text-red-500">{errors.fName}</div>}
               </div>
               <div>
                 <label className="block mb-1 text-sm font-semibold text-gray-700">Last Name</label>
                 <input type="text" name="lName" value={form.lName} onChange={handleChange} className="w-full px-4 py-3 text-base bg-gray-100 border border-gray-200 rounded-lg" placeholder="Last Name" required />
+                {errors.lName && <div className="mt-1 text-sm text-red-500">{errors.lName}</div>}
               </div>
               <div>
                 <label className="block mb-1 text-sm font-semibold text-gray-700">Mobile</label>
                 <input type="text" name="mobile" value={form.mobile} onChange={handleChange} className="w-full px-4 py-3 text-base bg-gray-100 border border-gray-200 rounded-lg" placeholder="Mobile" required />
+                {errors.mobile && <div className="mt-1 text-sm text-red-500">{errors.mobile}</div>}
               </div>
               <div>
                 <label className="block mb-1 text-sm font-semibold text-gray-700">Email</label>
                 <input type="email" name="email" value={form.email} onChange={handleChange} className="w-full px-4 py-3 text-base bg-gray-100 border border-gray-200 rounded-lg" placeholder="Email" required />
+                {errors.email && <div className="mt-1 text-sm text-red-500">{errors.email}</div>}
               </div>
               <div>
                 <label className="block mb-1 text-sm font-semibold text-gray-700">Password</label>
                 <input type="password" name="password" value={form.password} onChange={handleChange} className="w-full px-4 py-3 text-base bg-gray-100 border border-gray-200 rounded-lg" placeholder="Password" required />
+                {errors.password && <div className="mt-1 text-sm text-red-500">{errors.password}</div>}
               </div>
               <div>
                 <label className="block mb-1 text-sm font-semibold text-gray-700">No Of Id</label>
@@ -170,6 +193,7 @@ const BulkRegistration = () => {
                 {noOfIdError && (
                   <div className="mt-1 text-sm text-red-600">{noOfIdError}</div>
                 )}
+                {errors.noOfId && <div className="mt-1 text-sm text-red-500">{errors.noOfId}</div>}
               </div>
               <div>
                 <label className="block mb-1 text-sm font-semibold text-gray-700">Country</label>
@@ -179,6 +203,7 @@ const BulkRegistration = () => {
                     <option key={country.country_Id} value={country.country_Id}>{country.country_Name}</option>
                   ))}
                 </select>
+                {errors.countryId && <div className="mt-1 text-sm text-red-500">{errors.countryId}</div>}
               </div>
             </div>
           )}

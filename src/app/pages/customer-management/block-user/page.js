@@ -9,6 +9,7 @@ const BlockUser = () => {
   const { usernameData, blockUserData, loading, error } = useSelector((state) => state.adminMaster);
   const [authLogin, setAuthLogin] = useState('');
   const [touched, setTouched] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -23,6 +24,9 @@ const BlockUser = () => {
 
   const handleUserIdChange = (e) => {
     setAuthLogin(e.target.value);
+    if (errors.title && e.target.value.trim()) {
+      setErrors((prev) => ({ ...prev, title: undefined }));
+    }
   };
 
   const handleBlurOrFetch = () => {
@@ -34,16 +38,10 @@ const BlockUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    if (!authLogin || !authLogin.trim()) {
-      alert('Please enter a User ID');
-      return;
-    }
-
-    if (!usernameData) {
-      alert('Please enter a valid User ID');
-      return;
-    }
+    let newErrors = {};
+    if (!authLogin.trim()) newErrors.title = 'UserId is required';
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
 
     try {
       const result = await dispatch(blockUserByAdmin(authLogin));
@@ -75,8 +73,9 @@ const BlockUser = () => {
                 onChange={handleUserIdChange}
                 onBlur={handleBlurOrFetch}
                 placeholder="Enter User Id"
-                required
+                
               />
+              {errors.title && <div className="mt-1 text-sm text-red-500">{errors.title}</div>}
             </div>
             <div className="flex-1">
               <label className="block mb-1 text-sm font-semibold text-gray-700">User Name :</label>
