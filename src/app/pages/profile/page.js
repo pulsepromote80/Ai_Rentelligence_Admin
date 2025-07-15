@@ -2,26 +2,27 @@
 
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import Cookies from "js-cookie";
 import { fetchAdminUserDetails } from "@/app/redux/adminUserSlice";
 import Loading from "@/app/common/loading";
+import { getAdminUserId, getUsername } from "@/app/pages/api/auth";
 
 const AdminProfilePage = () => {
   const dispatch = useDispatch();
   const { user: adminDetails, loading, error } = useSelector((state) => state.admin);
-  const adminUserId = Cookies.get("adminUserId");
+  const adminUserId = getAdminUserId();
+  const username = getUsername();
 
   useEffect(() => {
-    if (adminUserId) {
-      dispatch(fetchAdminUserDetails({ adminUserId }));
+    if (adminUserId,username) {
+      dispatch(fetchAdminUserDetails({ adminUserId,username }));
     }
-  }, [adminUserId, dispatch]);
+  }, [adminUserId,username,dispatch]);
 
   if (loading) return <Loading />;
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-purple-100">
-      <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-2xl">
+      <div className="w-full max-w-md p-6 bg-white shadow-2xl rounded-2xl">
         <h1 className="mb-6 text-3xl font-semibold text-center text-blue-700">
           Admin Profile
         </h1>
@@ -64,7 +65,7 @@ const AdminProfilePage = () => {
             </div>
           </div>
         ) : (
-          <p className="text-gray-500 text-center">No user data available</p>
+          <p className="text-center text-gray-500">No user data available</p>
         )}
       </div>
     </div>

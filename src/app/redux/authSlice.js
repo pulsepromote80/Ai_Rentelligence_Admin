@@ -56,13 +56,7 @@ export const registerUser = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const response = await postRequest(API_ENDPOINTS.REGISTER, formData);
-      if (!response) {
-        throw new Error("Invalid API response: response is null");
-      }
-      if (response.statusCode === 400) {
-        return rejectWithValue(response.message);
-      }
-      return response.data;
+      return response;
     } catch (error) {
       console.error("API Error:", error.response?.data || error.message);
       const errorMessage = error.response?.data?.message || "Something went wrong";

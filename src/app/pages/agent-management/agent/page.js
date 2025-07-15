@@ -261,7 +261,7 @@ const Agent = () => {
           onDelete={confirmDelete}
           onAddImage={handleAddImage}
           onRowClick={handleRowClick}
-          title={'Product'}
+          title={'Agent'}
         />
       )}
 

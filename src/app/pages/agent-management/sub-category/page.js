@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { subCategoryLoading } from './subCategory-selectors';
 import DeletePopup from '@/app/common/utils/delete-popup';
 import Image from "next/image";
-import { limitToCharacters, validateRequiredField, validateRequiredSelect } from '@/app/common/utils/validationHelpers';
+import { limitToCharacters, validateRequiredField, validateRequiredSelect, validateRequiredImage } from '@/app/common/utils/validationHelpers';
 
 const SubCategory = () => {
   const dispatch = useDispatch();
@@ -40,6 +40,10 @@ const SubCategory = () => {
 
     const nameError = validateRequiredField(subCategoryName, "Sub Category Name");
     if (nameError) { newErrors.subCategoryName = nameError;} 
+
+    const imageError = validateRequiredImage(image, "Image");
+    if (imageError) newErrors.image = imageError;
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

@@ -86,7 +86,7 @@ const WithdrawalRequest = () => {
                     <td className="px-4 py-2 text-sm text-center border">
                       {row._status === "Pending" ? (
                         <button
-                          className="px-3 py-1 font-semibold text-white bg-gray-400 rounded hover:bg-gray-400 "
+                          className="px-3 py-1 font-semibold text-white bg-yellow-400 rounded hover:bg-yellow-400 "
                           onClick={() => handlePendingClick(row.AuthLogin)}
                         >
                           Pending
