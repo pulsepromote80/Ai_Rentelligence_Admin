@@ -26,5 +26,8 @@ export const Columns = [
   { key: 'discountPrice', label: 'Discount Price' },
   { key: 'perHour', label: 'PerHour' },
   { key: 'unit', label: 'Unit' },
+  { key: 'weeklyReturn', label:'Weekly Return ($)'},
+  { key: 'month', label:'Monthly Return ($)'},
+  { key: 'totalReturn', label:'Total Return ($)'},
   { key: 'status', label: 'Status' },
 ];

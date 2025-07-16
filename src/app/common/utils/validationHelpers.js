@@ -55,6 +55,13 @@ export const validateRequiredSelect = (selected, key) => {
   return null;
 };
 
+export const validateRequiredImage = (image, key = "Image") => {
+  if (!image) {
+    return `${key} is required.`;
+  }
+  return null;
+};
+
 export const isValidUrl = (url) => {
   const urlPattern = /^(https?:\/\/)?([\w\-]+\.)+[\w]{2,}(\/\S*)?$/;
   if (!urlPattern.test(url)) return "Enter a valid URL (e.g. https://example.com)";

@@ -25,19 +25,11 @@ const NewTicket = () => {
   const [closeSuccess, setCloseSuccess] = useState('');
 
   useEffect(() => {
-    // Prevent double fetch in development (StrictMode)
     const didFetch = window.__didFetchTickets;
     if (didFetch) return;
     window.__didFetchTickets = true;
     dispatch(fetchAllTickets())
-      .unwrap()
-      .then(() => {
-        console.log("Tickets fetched successfully!");
-        toast.success('Tickets fetched successfully!');
-      })
-      .catch((err) => {
-        toast.error(err?.message || 'Failed to load tickets');
-      });
+      .unwrap();
   }, [dispatch]);
   
   useEffect(() => {
@@ -131,7 +123,7 @@ const NewTicket = () => {
       {/* <h1 className="mb-4 text-3xl font-semibold text-gray-700">All Tickets</h1> */}
       <Table
         columns={tableColumns}
-        data={tickets}
+        data={tickets?.filter(ticket => ticket.active)}
         title="Tickets List"
         onRowClick={handleRowClick}
       />

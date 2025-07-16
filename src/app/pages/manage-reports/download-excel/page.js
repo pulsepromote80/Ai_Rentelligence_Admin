@@ -104,32 +104,35 @@ const DownloadExcel = () => {
      
       {showTable && excelData && Array.isArray(excelData.data) && (
         <div className="w-full max-w-6xl mt-8 border border-blue-100 shadow-lg rounded-xl bg-white/90">
-          <table className="min-w-full border border-gray-200 table-fixed rounded-xl">
-            <thead className="sticky top-0 z-10 text-blue-900 bg-gradient-to-r from-blue-200 to-blue-400">
-              <tr>
-                <th className="px-4 py-3 text-center break-words whitespace-normal border">Sr.No.</th>
-                {tableData[0] && Object.keys(tableData[0]).filter(key => key !== 'srNo' && key !== 'WalletAddress').map((key) => (
-                  <th key={key} className="px-4 py-3 text-center break-words whitespace-normal border">{key}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedData.length === 0 ? (
+          {/* Add horizontal scroll wrapper */}
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-max mr-20 border border-gray-200 table-fixed rounded-xl">
+              <thead className="sticky top-0 z-10 text-blue-900 bg-gradient-to-r from-blue-200 to-blue-400">
                 <tr>
-                  <td colSpan={tableData[0] ? Object.keys(tableData[0]).length : 1} className="py-10 text-lg text-center text-gray-400 break-words whitespace-normal">No Data Found</td>
+                  <th className="px-4 py-3 text-center break-words whitespace-normal border">Sr.No.</th>
+                  {tableData[0] && Object.keys(tableData[0]).filter(key => key !== 'srNo' && key !== 'WalletAddress').map((key) => (
+                    <th key={key} className="px-4 py-3 text-center break-words whitespace-normal border">{key}</th>
+                  ))}
                 </tr>
-              ) : (
-                paginatedData.map((row, idx) => (
-                  <tr key={idx} className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}>
-                    <td className="px-4 py-2 font-medium text-center break-words whitespace-normal border">{row.srNo}</td>
-                    {Object.keys(row).filter(key => key !== 'srNo' && key !== 'WalletAddress').map((key, i) => (
-                      <td key={i} className="px-4 py-2 text-center break-words whitespace-normal border">{row[key]}</td>
-                    ))}
+              </thead>
+              <tbody>
+                {paginatedData.length === 0 ? (
+                  <tr>
+                    <td colSpan={tableData[0] ? Object.keys(tableData[0]).length : 1} className="py-10 text-lg text-center text-gray-400 break-words whitespace-normal">No Data Found</td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : (
+                  paginatedData.map((row, idx) => (
+                    <tr key={idx} className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}>
+                      <td className="px-4 py-2 font-medium text-center break-words whitespace-normal border">{row.srNo}</td>
+                      {Object.keys(row).filter(key => key !== 'srNo' && key !== 'WalletAddress').map((key, i) => (
+                        <td key={i} className="px-4 py-2 text-center break-words whitespace-normal border">{row[key]}</td>
+                      ))}
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
           {tableData.length > rowsPerPage && (
             <div className="flex items-center justify-center gap-2 py-4">
               <button

@@ -14,6 +14,7 @@ import {
   isValidname,
   limitToCharacters,
 } from '@/app/common/utils/validationHelpers'
+import { toast } from 'react-toastify';
 
 const Register = () => {
   const dispatch = useDispatch()
@@ -78,21 +79,25 @@ const Register = () => {
     setMessage('')
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    setMessage('')
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage('');
 
-    if (!validate()) return
+    if (!validate()) return;
 
-    dispatch(registerUser(formData))
-      .unwrap()
-      .then(() => {
-        setRegistrationComplete(true) 
-      })
-      .catch((errorMessage) => {
-        setMessage(errorMessage)
-      })
-  }
+    try {
+      const result = await dispatch(registerUser(formData)).unwrap();
+      if (result && result.statusCode === 200) {
+        toast.success('Account Created Successfully Contact To Administartion');
+        setRegistrationComplete(true);
+      } else {
+        setMessage(result?.message || 'Registration failed');
+      }
+    } catch (errorMessage) {
+      setMessage(errorMessage);
+      toast.error(errorMessage);
+    }
+  };
 
   useEffect(() => {
     if (error) {
@@ -253,6 +258,7 @@ const Register = () => {
             Already have an Account? Login
           </h2>
         )}
+        
       </div>
     </div>
   )

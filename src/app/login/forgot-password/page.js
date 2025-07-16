@@ -9,6 +9,7 @@ import Link from 'next/link';
 import Spinner from '@/app/common/spinner';
 import { isValidUsername } from '@/app/common/utils/validationHelpers';
 import { FaUser, FaLock } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 export default function ForgotPasswordPage() {
   const [username, setUsername] = useState('');
@@ -46,7 +47,13 @@ export default function ForgotPasswordPage() {
     dispatch(sendOTP({ username }))
       .unwrap()
       .then(() => setStep(2))
-      .catch((err) => console.error('OTP Send Failed', err));
+      .catch((err) => {
+        if (err?.message?.toLowerCase().includes('not exist')) {
+          toast.error('Username does not exist');
+        } else {
+          console.error('OTP Send Failed', err);
+        }
+      });
   };
 
   const handleVerifyOTP = () => {
@@ -62,9 +69,9 @@ export default function ForgotPasswordPage() {
       .catch((err) => console.error('OTP Verification Failed', err));
   };
 
-  // Clear errors when navigating to login page
+  
   const handleNavigateToLogin = () => {
-    dispatch(clearError()); // Clear any existing errors
+    dispatch(clearError());
     router.push('/login');
   };
 

@@ -99,7 +99,7 @@ const DepositRequest = () => {
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.PaymentDate}</td>
                     <td className="px-4 py-2 text-sm text-center border">
                       <button
-                        className={`px-3 py-1 rounded text-white font-semibold ${row.Rf_Status === 'Approved' ? 'bg-green-500 hover:bg-green-600 cursor-not-allowed' : 'bg-gray-400 hover:bg-gray-500'}`}
+                        className={`px-3 py-1 rounded text-white font-semibold ${row.Rf_Status === 'Approved' ? 'bg-green-500 hover:bg-green-600 cursor-not-allowed' : 'bg-red-500 hover:bg-red-500'}`}
                         disabled={row.Rf_Status === 'Approved'}
                         onClick={row.Rf_Status !== 'Approved' ? () => handleUnApprovedClick(row.AuthLogin) : undefined}
                       >
