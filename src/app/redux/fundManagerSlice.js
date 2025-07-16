@@ -42,7 +42,7 @@ export const getRentWallet = createAsyncThunk(
     "fundManager/getRentWallet",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await postRequest(
+            const response = await getRequest(
                 API_ENDPOINTS.GET_RENT_WALLET,
                 data
             );

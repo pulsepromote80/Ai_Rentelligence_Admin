@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { postRequest, getToken } from "../pages/api/auth";
+import { postRequest,getRequest, getToken } from "../pages/api/auth";
 
 const API_ENDPOINTS = {
   GET_ADMIN_USER_DETAILS: "/AdminAuthentication/getAdminUserDetails",
@@ -56,7 +56,7 @@ export const fetchAllAdminUsersList = createAsyncThunk(
   'admin/fetchAllAdminUsersList',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await postRequest(API_ENDPOINTS.GET_ALL_ADMIN_LIST);
+      const response = await getRequest(API_ENDPOINTS.GET_ALL_ADMIN_LIST);
       if (!response || !response.data) {
         throw new Error('Invalid admin user data received');
       }

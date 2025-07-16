@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { postRequestLoginId, postRequest } from '@/app/pages/api/auth';
+import { getRequestLoginId, postRequest } from '@/app/pages/api/auth';
 import { API_ENDPOINTS } from '@/app/constants/userWalletDetails-constant';
 
 // Fetch User Wallet Details (GET Request)
@@ -7,7 +7,7 @@ export const getUserWalletDetails = createAsyncThunk(
     'adminManageFund',
     async (loginId, { rejectWithValue }) => {
       try {
-        const response = await postRequestLoginId(`${API_ENDPOINTS.GET_USER_WALLET_DETAILS}?LoginId=${loginId}`);
+        const response = await getRequestLoginId(`${API_ENDPOINTS.GET_USER_WALLET_DETAILS}?LoginId=${loginId}`);
 
         if (!response) {
           throw new Error('Invalid user wallet details data received');
