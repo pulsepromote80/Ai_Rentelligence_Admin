@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getRequest } from "@/app/pages/api/auth";
+import { getRequest,postRequest } from "@/app/pages/api/auth";
+
 const API_ENDPOINTS = {
     GET_DIRECT_MEMBER: "/Community/getdirectMember",
     GET_PERSONAL_TEAM_LIST: "/Community/getPersonalTeamList"
