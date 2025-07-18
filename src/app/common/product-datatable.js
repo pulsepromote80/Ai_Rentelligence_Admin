@@ -49,12 +49,39 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
         );
     };
 
+    const renderTitle = (value) => {
+        if (!value) return '';
+        return (
+            <div className="max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap" title={value}>
+                {value}
+            </div>
+        );
+    };
+
+    const renderSubtitle = (value) => {
+        if (!value) return '';
+        return (
+            <div className="max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap" title={value}>
+                {value}
+            </div>
+        );
+    };
+
+    const renderCategory = (value) => {
+        if (!value) return '';
+        return (
+            <div className="max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap" title={value}>
+                {value}
+            </div>
+        );
+    };
+
     return (
         <div className="p-4 mt-6 rounded-md shadow-custom-1">
             {/* Search */}
             <div className="flex flex-col items-center justify-end mb-4 sm:flex-row">
                 <h1 className="flex-1 text-xl font-semibold text-center text-gray-800 text-list-label sm:text-left sm:mr-4">
-                    Product
+                    Agents
                 </h1>
                 <input
                     type="text"
@@ -145,6 +172,12 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                                             </Link>
                                         ) : col.key === "description" ? (
                                             renderDescription(row[col.key])
+                                        ) : col.key === "productName" ? (
+                                            renderTitle(row[col.key])
+                                        ) : col.key === "subName" ? (
+                                            renderSubtitle(row[col.key])
+                                        ) : col.key === "categoryName" || col.key === "subCategoryName" || col.key === "subCategoryTypeName" ? (
+                                            renderCategory(row[col.key])
                                         ) : col.render ? (
                                             col.render(row[col.key], row)
                                         ) : (
@@ -190,6 +223,12 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                                         </Link>
                                     ) : col.key === "description" ? (
                                         renderDescription(row[col.key])
+                                    ) : col.key === "productName" ? (
+                                        renderTitle(row[col.key])
+                                    ) : col.key === "subName" ? (
+                                        renderSubtitle(row[col.key])
+                                    ) : col.key === "categoryName" || col.key === "subCategoryName" || col.key === "subCategoryTypeName" ? (
+                                        renderCategory(row[col.key])
                                     ) : col.render ? (
                                         col.render(row[col.key], row)
                                     ) : (

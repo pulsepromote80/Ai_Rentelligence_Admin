@@ -238,10 +238,20 @@ const Table = ({
     </div>
   )
 }
+const renderCategoryName = (value) => {
+  if (!value) return '';
+  return (
+    <div className="max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap" title={value}>
+      {value}
+    </div>
+  );
+};
 
-// Render individual cell logic
 const renderCell = (col, row) => {
   const value = row[col.key]
+  if (col.key === 'name') {
+    return renderCategoryName(value);
+  }
   if (col.key === 'image') {
     if (value) {
       return <ImagePopup src={value} alt="Image" />

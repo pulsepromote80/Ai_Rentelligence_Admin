@@ -96,7 +96,11 @@ const ProductDetails = ({ productDetails, activeTab, setSelectedImageUrl }) => {
                 className="p-4 bg-white border border-gray-200 rounded-md shadow"
               >
                 <p className="text-sm font-semibold text-gray-700">{item.label}</p>
-                <p className="text-sm text-gray-800">{item.value}</p>
+                {item.label === "Specification" && item.value ? (
+                  <div className="text-sm text-gray-800">{item.value}</div>
+                ) : (
+                  <p className="text-sm text-gray-800">{item.value}</p>
+                )}
               </div>
             ))}
           </div>

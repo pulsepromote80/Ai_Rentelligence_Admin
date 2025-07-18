@@ -10,7 +10,8 @@ const API_ENDPOINTS = {
   REGISTER: "/AdminAuthentication/addAdminUser",
   VERIFYOTP: "/AdminAuthentication/adminVerifyOtp",
   RESETPASSWORD: "/AdminAuthentication/adminForgotPassword",
-  BULKREGISTRATION: "/AdminAuthentication/addBulkRegsitration"
+  BULKREGISTRATION: "/AdminAuthentication/addBulkRegsitration",
+  UPDATE_USER_PROFILE:"/Authentication/updateUserProfile"
 };
 
 export const adminLogin = createAsyncThunk(
@@ -109,6 +110,19 @@ export const bulkRegistration = createAsyncThunk(
     }
   }
 );
+export const updateUser = createAsyncThunk(
+  "auth/updateUser",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(API_ENDPOINTS.UPDATE_USER_PROFILE, formData);
+      return response;
+    } catch (error) {
+      console.error("API Error:", error.response?.data || error.message);
+      const errorMessage = error.response?.data?.message || "Something went wrong";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
 
 const authSlice = createSlice({
   name: "auth",
@@ -124,6 +138,7 @@ const authSlice = createSlice({
     success: false,
     bulkRegistrationData: null,
     allUserRegistrations: null,
+    updateUserData:null
   },
   reducers: {
     logout: (state) => {
@@ -236,7 +251,21 @@ const authSlice = createSlice({
         state.loading = false;
         state.success = false;
         state.error = action.payload;
-      });     
+      })
+      
+        .addCase(updateUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        state.loading = false;
+        state.updateUserData = action.payload;
+      })
+      .addCase(updateUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        
+      })
   },
 });
 
