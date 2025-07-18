@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { postRequest, postRequestLoginId, getRequest } from "@/app/pages/api/auth";
+import { postRequest, getRequestLoginId, getRequest } from "@/app/pages/api/auth";
 
 const API_ENDPOINTS = {
     CHANGE_ADMIN_PASSWORD: "/AdminMaster/chanegAdminPassword",
@@ -28,7 +28,7 @@ export const usernameLoginId = createAsyncThunk(
     'adminMaster/usernameLoginId',
     async (authLogin, { rejectWithValue }) => {
         try {
-            const response = await postRequestLoginId(`${API_ENDPOINTS.USERNAME_BY_LOGINID}?authLogin=${authLogin}`);
+            const response = await getRequestLoginId(`${API_ENDPOINTS.USERNAME_BY_LOGINID}?authLogin=${authLogin}`);
 
             if (!response) {
                 throw new Error('Invalid user wallet details data received');
