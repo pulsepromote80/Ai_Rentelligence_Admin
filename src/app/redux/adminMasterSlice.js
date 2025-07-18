@@ -45,7 +45,7 @@ export const blockUserByAdmin = createAsyncThunk(
     'adminMaster/blockUserByAdmin',
     async (authLogin, { rejectWithValue }) => {
         try {
-            const response = await postRequestLoginId(`${API_ENDPOINTS.BLOCK_USER_BY_ADMIN}?authLogin=${authLogin}`);
+            const response = await getRequestLoginId(`${API_ENDPOINTS.BLOCK_USER_BY_ADMIN}?authLogin=${authLogin}`);
 
             if (!response) {
                 throw new Error('Invalid user wallet details data received');
@@ -86,7 +86,7 @@ export const getNews = createAsyncThunk(
     'adminMaster/getNews',
     async (data, { rejectWithValue }) => {
         try {
-            const response = await postRequest(API_ENDPOINTS.GET_NEWS, data);
+            const response = await getRequest(API_ENDPOINTS.GET_NEWS, data);
             return response;
         } catch (error) {
             return rejectWithValue(error.response?.data || 'Error fetching news');
