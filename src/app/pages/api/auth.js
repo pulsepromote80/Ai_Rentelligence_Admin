@@ -99,7 +99,7 @@ export const getRequest = async (endpoint) => {
   }
 }
 
-export const postRequestLoginId = async (endpoint, data) => {
+export const getRequestLoginId = async (endpoint, data) => {
   try {
     const token = getToken()
 
@@ -107,7 +107,7 @@ export const postRequestLoginId = async (endpoint, data) => {
       throw new Error('No token found')
     }
   
-    const response = await axios.post(`${BASE_URL}${endpoint}`, {
+    const response = await axios.get(`${BASE_URL}${endpoint}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

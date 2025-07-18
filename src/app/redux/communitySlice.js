@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { postRequest } from "@/app/pages/api/auth";
+import { getRequest } from "@/app/pages/api/auth";
 const API_ENDPOINTS = {
     GET_DIRECT_MEMBER: "/Community/getdirectMember",
     GET_PERSONAL_TEAM_LIST: "/Community/getPersonalTeamList"
@@ -8,7 +8,7 @@ export const getdirectMember = createAsyncThunk(
     "community/getdirectMember",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await postRequest(
+            const response = await getRequest(
                 API_ENDPOINTS.GET_DIRECT_MEMBER,
                 data
             );
@@ -24,7 +24,7 @@ export const getPersonalTeamList = createAsyncThunk(
     "community/getPersonalTeamList",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await postRequest(
+            const response = await getRequest(
                 API_ENDPOINTS.GET_PERSONAL_TEAM_LIST,
                 data
             );

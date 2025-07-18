@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { postRequest , getToken } from "../pages/api/auth";
+import { getRequest , getToken } from "../pages/api/auth";
 import { } from "../pages/api/auth"; // getToken import karein
 
 const API_ENDPOINTS = {
@@ -14,7 +14,7 @@ export const fetchDashboardData = createAsyncThunk(
       const token = getToken(); // Token retrieve karein
       if (!token) throw new Error("No token found, please login again");
 
-      const response = await postRequest(API_ENDPOINTS.DASHBOARD, {}, token);
+      const response = await getRequest(API_ENDPOINTS.DASHBOARD, {}, token);
 
       if (!response) throw new Error("Invalid API response: response is null");
       if (response.statusCode === 400) return rejectWithValue(response.message);
