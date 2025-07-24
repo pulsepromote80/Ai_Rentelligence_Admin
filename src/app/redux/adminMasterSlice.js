@@ -86,7 +86,7 @@ export const getNews = createAsyncThunk(
     'adminMaster/getNews',
     async (data, { rejectWithValue }) => {
         try {
-            const response = await getRequest(API_ENDPOINTS.GET_NEWS, data);
+            const response = await postRequest(API_ENDPOINTS.GET_NEWS, data);
             return response;
         } catch (error) {
             return rejectWithValue(error.response?.data || 'Error fetching news');
@@ -110,7 +110,7 @@ export const getLeaseAgent = createAsyncThunk(
     "adminMaster/getLeaseAgent",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await postRequest(
+            const response = await getRequest(
                 API_ENDPOINTS.GET_LEASE_AGENT,
                 data
             );
