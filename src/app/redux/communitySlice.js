@@ -9,7 +9,7 @@ export const getdirectMember = createAsyncThunk(
     "community/getdirectMember",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await getRequest(
+            const response = await postRequest(
                 API_ENDPOINTS.GET_DIRECT_MEMBER,
                 data
             );
@@ -25,7 +25,7 @@ export const getPersonalTeamList = createAsyncThunk(
     "community/getPersonalTeamList",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await getRequest(
+            const response = await postRequest(
                 API_ENDPOINTS.GET_PERSONAL_TEAM_LIST,
                 data
             );

@@ -9,7 +9,8 @@ const API_ENDPOINTS = {
     DOWNLOAD_EXCEL: "/AdminMaster/downloadExcel",
     GET_NEWS: "/AdminMaster/getNews",
     UPDATE_NEWS: "/AdminMaster/updateNews",
-    GET_LEASE_AGENT: "/AdminMaster/getLeaseAgent"
+    GET_LEASE_AGENT: "/AdminMaster/getLeaseAgent",
+    GET_ALL_CONTACT_US: "/Geography/getAllContacUs"
 };
 
 export const ChangePasswordAdminMaster = createAsyncThunk(
@@ -122,6 +123,17 @@ export const getLeaseAgent = createAsyncThunk(
     }
 );
 
+export const getAllContactUs = createAsyncThunk(
+    'adminMaster/getAllContactUs',
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await postRequest(API_ENDPOINTS.GET_ALL_CONTACT_US, data);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || 'Error fetching contact us data');
+        }
+    }
+);
 
 const adminMasterSlice = createSlice({
     name: "adminMaster",
@@ -136,7 +148,8 @@ const adminMasterSlice = createSlice({
         blockUserData: null,
         sponserData: null,
         excelData: null,
-        leaseAgentData: null
+        leaseAgentData: null,
+        contactUsData: null
     },
     reducers: {
         clearError: (state) => {
@@ -250,6 +263,20 @@ const adminMasterSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+
+              .addCase(getAllContactUs.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getAllContactUs.fulfilled, (state, action) => {
+                state.loading = false;
+                state.contactUsData = action.payload;
+                state.error = null;
+            })
+            .addCase(getAllContactUs.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            }) 
     }
 });
 
