@@ -25,15 +25,20 @@ export const getAllFundRequestReportAdmin = createAsyncThunk(
 
 export const updateFundRequestStatusAdmin = createAsyncThunk(
     "fundManager/updateFundRequestStatusAdmin",
-    async (AuthLoginId, { rejectWithValue }) => {
+    async ({ authLoginId, rfstatus, remark }, { rejectWithValue }) => {
         try {
-            const response = await getRequest(
-                `${API_ENDPOINTS.UPDATE_REQUEST_STATUS_ADMIN}?AuthLoginId=${AuthLoginId}`
+            const response = await postRequest(
+                API_ENDPOINTS.UPDATE_REQUEST_STATUS_ADMIN,
+                {
+                    authLoginId,
+                    rfstatus,
+                    remark
+                }
             );
             return response.data;
         } catch (error) {
             console.error("API Error:", error.response?.data || error.message);
-            return rejectWithValue(error.response?.data?.message || "Failed to fetch community data");
+            return rejectWithValue(error.response?.data?.message || "Failed to update fund request status");
         }
     }
 );
@@ -72,10 +77,15 @@ export const getAllIncomeRequestAdmin = createAsyncThunk(
 
 export const UpIncomeWithdReqStatusAdmin = createAsyncThunk(
     "fundManager/updateIncomeWithdrawRequestStatusAdmin",
-    async (AuthLoginId, { rejectWithValue }) => {
+    async ({ authLoginId, rfstatus, remark }, { rejectWithValue }) => {
         try {
-            const response = await getRequest(
-                `${API_ENDPOINTS.UPDATE_INCOME_WITHDRAW_REQUEST_STATUS_ADMIN}?AuthLoginId=${AuthLoginId}`
+            const response = await postRequest(
+                API_ENDPOINTS.UPDATE_INCOME_WITHDRAW_REQUEST_STATUS_ADMIN,
+                {
+                    authLoginId,
+                    rfstatus,
+                    remark
+                }
             );
             return response.data;
         } catch (error) {

@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllIncomeRequestAdmin } from '@/app/redux/fundManagerSlice';
+import { FaCopy } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const WithdrawalHistory = () => {
   const dispatch = useDispatch();
@@ -14,8 +16,28 @@ const WithdrawalHistory = () => {
   }, [dispatch]);
 
   const approvedRows = withdrawRequestData?.aprWithIncome || [];
-  const paginatedRows = approvedRows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-  const totalPages = Math.ceil(approvedRows.length / rowsPerPage);
+  const rejectedRows = withdrawRequestData?.rejectedWithIncome || []; 
+  const allRows = [...approvedRows, ...rejectedRows];
+  
+  const paginatedRows = allRows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+  const totalPages = Math.ceil(allRows.length / rowsPerPage);
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copied to clipboard!', {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
+  };
+
+  const truncateRefNo = (refNo) => {
+    if (!refNo) return '-';
+    return refNo.length > 15 ? `${refNo.substring(0, 15)}...` : refNo;
+  };
 
   return (
     <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
@@ -36,6 +58,7 @@ const WithdrawalHistory = () => {
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Debit ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Admin Charges ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">TransType</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Hash</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Withdrawal Mode</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Status</th>
               </tr>
@@ -43,7 +66,7 @@ const WithdrawalHistory = () => {
             <tbody>
               {paginatedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
+                  <td colSpan={10} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
                 </tr>
               ) : (
                 paginatedRows.map((row, idx) => (
@@ -55,19 +78,44 @@ const WithdrawalHistory = () => {
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.AuthLogin || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.FullName || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.TotWithdl}</td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.debit}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.debit}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.AdminCharges}</td>
-                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.TransType}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.TransType}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                      <div className="flex items-center justify-center gap-1">
+                        <div className="relative group">
+                          <span className="cursor-default">
+                            {truncateRefNo(row.Transhash)}
+                          </span>
+                          {row.Transhash && row.Transhash.length > 15 && (
+                            <div className="absolute z-10 hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-600 rounded-md group-hover:block whitespace-nowrap -top-8 left-1/2">
+                              {row.Transhash}
+                            </div>
+                          )}
+                        </div>
+                        {row.Transhash && (
+                          <button 
+                            onClick={() => copyToClipboard(row.Transhash)}
+                            className="p-1 text-blue-500 hover:text-blue-700"
+                            title="Copy to clipboard"
+                          >
+                            <FaCopy className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.withdrawalmode}</td>
                     <td className="px-4 py-2 text-sm text-center border">
-                      <span className="px-3 py-1 font-semibold text-white bg-green-500 rounded">Approved</span>
+                      <span className={`${row.status === 'Approved' ? 'text-green-600' : 'text-red-600'}`}>
+                        {row.status}
+                      </span>
                     </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
-          {approvedRows.length > rowsPerPage && (
+          {allRows.length > rowsPerPage && (
             <div className="flex items-center justify-center gap-2 py-4">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}

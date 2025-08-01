@@ -2,46 +2,120 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllIncomeRequestAdmin, UpIncomeWithdReqStatusAdmin } from '@/app/redux/fundManagerSlice';
+import { toast } from 'react-toastify';
+import { FaCopy } from 'react-icons/fa';
 
 const WithdrawalRequest = () => {
   const dispatch = useDispatch();
   const { withdrawRequestData, loading, error } = useSelector((state) => state.fundManager);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
-  const [popupOpen, setPopupOpen] = useState(false);
+  const [approvePopupOpen, setApprovePopupOpen] = useState(false);
+  const [rejectPopupOpen, setRejectPopupOpen] = useState(false);
   const [selectedAuthLoginId, setSelectedAuthLoginId] = useState(null);
+  const [remark, setRemark] = useState('');
 
   useEffect(() => {
     dispatch(getAllIncomeRequestAdmin());
   }, [dispatch]);
   
-  const pendingRows = withdrawRequestData?.unApWithIncome || [];
-  const approvedRows = withdrawRequestData?.aprWithIncome || [];
-  const allRows = [
-    ...pendingRows.map(row => ({ ...row, _status: "Pending" })),
-    ...approvedRows.map(row => ({ ...row, _status: "Approved" })),
-  ];
+  // Only show unapproved withdrawal requests
+  const unApprovedRows = withdrawRequestData?.unApWithIncome || [];
+  const paginatedRows = unApprovedRows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+  const totalPages = Math.ceil(unApprovedRows.length / rowsPerPage);
 
-  const paginatedRows = allRows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-  const totalPages = Math.ceil(allRows.length / rowsPerPage);
-
-  const handlePendingClick = (authLoginId) => {
+  const handleApproveClick = (authLoginId) => {
     setSelectedAuthLoginId(authLoginId);
-    setPopupOpen(true);
+    setApprovePopupOpen(true);
+  };
+
+  const handleRejectClick = (authLoginId) => {
+    setSelectedAuthLoginId(authLoginId);
+    setRejectPopupOpen(true);
   };
 
   const handleApprove = async () => {
     if (selectedAuthLoginId) {
-      await dispatch(UpIncomeWithdReqStatusAdmin(selectedAuthLoginId));
-      setPopupOpen(false);
-      setSelectedAuthLoginId(null);
-      dispatch(getAllIncomeRequestAdmin());
+      try {
+        await dispatch(UpIncomeWithdReqStatusAdmin({
+          authLoginId: selectedAuthLoginId,
+          rfstatus: 1, 
+          remark: "Approved by admin"
+        }));
+        setApprovePopupOpen(false);
+        setSelectedAuthLoginId(null);
+        toast.success('Approved Successfully!', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        dispatch(getAllIncomeRequestAdmin());
+      } catch (error) {
+        toast.error('Failed to approve request', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
+    }
+  };
+
+  const handleReject = async () => {
+    if (selectedAuthLoginId && remark.trim()) {
+      try {
+        await dispatch(UpIncomeWithdReqStatusAdmin({
+          authLoginId: selectedAuthLoginId,
+          rfstatus: 2, 
+          remark: remark
+        }));
+        setRejectPopupOpen(false);
+        setSelectedAuthLoginId(null);
+        setRemark('');
+        toast.success('Rejected Successfully!', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        dispatch(getAllIncomeRequestAdmin());
+      } catch (error) {
+        toast.error('Failed to reject request', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
     }
   };
 
   const handleCancel = () => {
-    setPopupOpen(false);
+    setApprovePopupOpen(false);
+    setRejectPopupOpen(false);
     setSelectedAuthLoginId(null);
+    setRemark('');
+  };
+
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copied to Clipboard!', {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    });
   };
 
   return (
@@ -63,14 +137,15 @@ const WithdrawalRequest = () => {
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Debit ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Admin Charges ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">TransType</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Hash</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Withdrawal Mode</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Status</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Action</th>
               </tr>
             </thead>
             <tbody>
               {paginatedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
+                  <td colSpan={10} className="py-10 text-lg text-center text-gray-400">No Unapproved Withdrawal Requests Found</td>
                 </tr>
               ) : (
                 paginatedRows.map((row, idx) => (
@@ -82,27 +157,46 @@ const WithdrawalRequest = () => {
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.debit}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.AdminCharges}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.TransType}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.withdrawalmode}</td>
-                    <td className="px-4 py-2 text-sm text-center border">
-                      {row._status === "Pending" ? (
-                        <button
-                          className="px-3 py-1 font-semibold text-white bg-yellow-400 rounded hover:bg-yellow-400 "
-                          onClick={() => handlePendingClick(row.AuthLogin)}
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                      <div className="flex items-center justify-center gap-1 group">
+                        <span 
+                          className="cursor-pointer"
+                          title={row.Transhash || '-'}
                         >
-                          Pending
-                        </button>
-                      ) : (
-                        <span className="px-3 py-1 font-semibold text-white bg-green-500 rounded cursor-not-allowed select-none" aria-disabled="true">
-                          Approved
+                          {row.Transhash ? `${row.Transhash.substring(0, 15)}...` : '-'}
                         </span>
-                      )}
+                        {row.Transhash && (
+                          <button 
+                            onClick={() => copyToClipboard(row.Transhash)}
+                            className="p-1 text-blue-500 hover:text-blue-700"
+                            title="Copy to Clipboard"
+                          >
+                            <FaCopy className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.withdrawalmode}</td>
+                    <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center">
+                      <button
+                        className="px-3 py-1 font-semibold text-white bg-red-500 rounded hover:bg-red-600"
+                        onClick={() => handleApproveClick(row.AuthLogin)}
+                      >
+                        UnApproved
+                      </button>
+                      <button
+                        className="px-3 py-1 font-semibold text-white bg-yellow-500 rounded hover:bg-yellow-600"
+                        onClick={() => handleRejectClick(row.AuthLogin)}
+                      >
+                        Reject
+                      </button>
                     </td>
                   </tr>
                 ))
               )}
             </tbody>
           </table>
-          {allRows.length > rowsPerPage && (
+          {unApprovedRows.length > rowsPerPage && (
             <div className="flex items-center justify-center gap-2 py-4">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -131,7 +225,9 @@ const WithdrawalRequest = () => {
           )}
         </div>
       )}
-      {popupOpen && (
+
+      {/* Approve Popup Modal */}
+      {approvePopupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
             <div className="mb-4 text-lg font-semibold text-gray-800">
@@ -149,6 +245,43 @@ const WithdrawalRequest = () => {
                 className="px-4 py-2 font-semibold text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
               >
                 No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Popup Modal */}
+      {rejectPopupOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
+            <div className="mb-4 text-lg font-semibold text-gray-800">
+              Do you want to reject AuthLoginID <span className="text-blue-600">{selectedAuthLoginId}</span>?
+            </div>
+            <div className="mb-4">
+              <label className="block mb-2 text-sm font-medium text-gray-700">Remark (Required)</label>
+              <textarea
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                rows={3}
+                value={remark}
+                onChange={(e) => setRemark(e.target.value)}
+                placeholder="Enter rejection reason..."
+                required
+              />
+            </div>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleReject}
+                className={`px-4 py-2 font-semibold text-white rounded ${!remark.trim() ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'}`}
+                disabled={!remark.trim()}
+              >
+                Submit
+              </button>
+              <button
+                onClick={handleCancel}
+                className="px-4 py-2 font-semibold text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Cancel
               </button>
             </div>
           </div>
