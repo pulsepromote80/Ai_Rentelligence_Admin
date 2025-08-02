@@ -18,9 +18,7 @@ const ContactUs = () => {
       });
   }, [dispatch]);
 
-  // Corrected Redux selector to access the data property
-  const apiResponse = useSelector((state) => state.adminMaster);
-  const contactUsData = apiResponse?.data || [];
+  const contactUsData = useSelector((state) => state.adminMaster.contactUsData?.data || []);
 
   // Calculate pagination
   const totalPages = Math.ceil(contactUsData.length / itemsPerPage);
@@ -33,121 +31,71 @@ const ContactUs = () => {
     setCurrentPage(page);
   };
 
-
-
   return (
-    <div className="container px-4 py-8 mx-auto">
-      <h1 className="mb-6 text-2xl font-bold text-gray-800">Contact Us Details</h1>
+    <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
+      <h1 className="w-full mb-6 text-2xl font-bold text-center text-gray-700">Contact Us Details</h1>
       
-      <div className="overflow-hidden bg-white rounded-lg shadow">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+      <div className="mt-2 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
+        <table className="min-w-full border border-gray-200 rounded-xl">
+          <thead className="sticky top-0 z-10 text-white bg-blue-500">
+            <tr>
+              <th className="px-4 py-2 text-sm font-medium text-center border rounded-tl-lg">S.No.</th>
+              <th className="px-4 py-2 text-sm font-semibold text-center border">Name</th>
+              <th className="px-4 py-2 text-sm font-semibold text-center border">Email</th>
+              <th className="px-4 py-2 text-sm font-semibold text-center border">Mobile</th>
+              <th className="px-4 py-2 text-sm font-semibold text-center border">Subject</th>
+              <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Message</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentItems.length === 0 ? (
               <tr>
-                <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                  S.No.
-                </th>
-                <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                  Name
-                </th>
-                <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                  Email
-                </th>
-                <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                  Mobile
-                </th>
-                <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                  Subject
-                </th>
-                <th scope="col" className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
-                  Message
-                </th>
+                <td colSpan={6} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
               </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {currentItems.length > 0 ? (
-                currentItems.map((item, index) => (
-                  <tr key={index}>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {(currentPage - 1) * itemsPerPage + index + 1}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {item.Name}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {item.Email}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {item.Mobile}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {item.Subject}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
-                      {item.Message}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="px-6 py-4 text-sm text-center text-gray-500">
-                    No contact data available
-                  </td>
+            ) : (
+              currentItems.map((item, idx) => (
+                <tr
+                  key={idx}
+                  className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}
+                >
+                  <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border">{(currentPage - 1) * itemsPerPage + idx + 1}</td>
+                  <td className="px-4 py-2 text-sm text-center text-gray-700 border">{item.Name || '-'}</td>
+                  <td className="px-4 py-2 text-sm text-center text-gray-700 border">{item.Email || '-'}</td>
+                  <td className="px-4 py-2 text-sm text-center text-gray-700 border">{item.Mobile || '-'}</td>
+                  <td className="px-4 py-2 text-sm text-center text-gray-700 border">{item.Subject || '-'}</td>
+                  <td className="px-4 py-2 text-sm text-center text-gray-700 border">{item.Message || '-'}</td>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
 
         {/* Pagination - Only show if there's data */}
-        {contactUsData.length > 0 && (
-          <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6">
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Showing <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span> to{' '}
-                  <span className="font-medium">
-                    {Math.min(currentPage * itemsPerPage, contactUsData.length)}
-                  </span>{' '}
-                  of <span className="font-medium">{contactUsData.length}</span> results
-                </p>
-              </div>
-              <div>
-                <nav className="relative z-0 inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                  <button
-                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-l-md hover:bg-gray-50"
-                  >
-                    <span className="sr-only">Previous</span>
-                    &lt;
-                  </button>
-                  
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        currentPage === page
-                          ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                  
-                  <button
-                    onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
-                    disabled={currentPage === totalPages}
-                    className="relative inline-flex items-center px-2 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-r-md hover:bg-gray-50"
-                  >
-                    <span className="sr-only">Next</span>
-                    &gt;
-                  </button>
-                </nav>
-              </div>
-            </div>
+        {contactUsData.length > itemsPerPage && (
+          <div className="flex items-center justify-center gap-2 py-4">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-700'}`}
+            >
+              Prev
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(i + 1)}
+                className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-700 text-white' : 'bg-blue-200 text-blue-800 hover:bg-blue-400'}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-700'}`}
+            >
+              Next
+            </button>
           </div>
         )}
       </div>

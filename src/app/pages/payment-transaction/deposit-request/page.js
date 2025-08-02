@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllFundRequestReportAdmin, updateFundRequestStatusAdmin } from '@/app/redux/fundManagerSlice';
 import { toast } from 'react-toastify';
-import { FaCopy } from 'react-icons/fa';
+import { FaCopy, FaSearch } from 'react-icons/fa';
 
 const DepositRequest = () => {
   const dispatch = useDispatch();
@@ -14,6 +14,7 @@ const DepositRequest = () => {
   const [selectedAuthLoginId, setSelectedAuthLoginId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [remark, setRemark] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const rowsPerPage = 10;
 
   useEffect(() => {
@@ -22,9 +23,28 @@ const DepositRequest = () => {
 
   // Only show unapproved requests
   const unApprovedRows = fundRequestData?.unApproveFundRequest || [];
-  const paginatedRows = unApprovedRows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-  const totalPages = Math.ceil(unApprovedRows.length / rowsPerPage);
-  
+
+  // Filter rows based on search term
+  const filteredRows = unApprovedRows.filter(row =>
+    (row.AuthLogin?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.Name?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.Amount?.toString().includes(searchTerm)) ||
+    (row.PaymentMode?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.RefrenceNo?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.PaymentDate?.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
+  const paginatedRows = rowsToDisplay.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+  const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const handleApproveClick = (authLoginId) => {
     setSelectedAuthLoginId(authLoginId);
     setApprovePopupOpen(true);
@@ -48,38 +68,38 @@ const DepositRequest = () => {
     }
   };
 
- const handleReject = async () => {
-  if (selectedAuthLoginId && remark.trim()) {
-    try {
-      await dispatch(updateFundRequestStatusAdmin({
-        authLoginId: selectedAuthLoginId,
-        rfstatus: 2, // 2 for Rejected
-        remark: remark
-      }));
-      setRejectPopupOpen(false);
-      setSelectedAuthLoginId(null);
-      setRemark('');
-      toast.success('Rejected Successfully!', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-      dispatch(getAllFundRequestReportAdmin());
-    } catch (error) {
-      toast.error('Failed to reject request', {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+  const handleReject = async () => {
+    if (selectedAuthLoginId && remark.trim()) {
+      try {
+        await dispatch(updateFundRequestStatusAdmin({
+          authLoginId: selectedAuthLoginId,
+          rfstatus: 2, // 2 for Rejected
+          remark: remark
+        }));
+        setRejectPopupOpen(false);
+        setSelectedAuthLoginId(null);
+        setRemark('');
+        toast.success('Rejected Successfully!', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        dispatch(getAllFundRequestReportAdmin());
+      } catch (error) {
+        toast.error('Failed to rejected request', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
     }
-  }
-};
+  };
 
   const handleCancel = () => {
     setApprovePopupOpen(false);
@@ -102,7 +122,29 @@ const DepositRequest = () => {
 
   return (
     <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
-      <h1 className="mb-4 text-2xl font-bold text-center text-gray-700">Deposit Request</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="w-full text-2xl font-bold text-center text-gray-700 ">Deposit Request</h1>
+
+        {/* Search Box - Right corner with reduced width */}
+        <div className="relative w-60">
+          <input
+            type="text"
+            className="w-full py-2 pl-3 pr-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      </div>
+
       {loading ? (
         <div className="py-10 text-center">Loading...</div>
       ) : error ? (
@@ -125,7 +167,9 @@ const DepositRequest = () => {
             <tbody>
               {paginatedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-10 text-lg text-center text-gray-400">No Unapproved Requests Found</td>
+                  <td colSpan={8} className="py-10 text-lg text-center text-gray-400">
+                    {searchTerm ? 'No matching requests found' : 'No Unapproved Requests Found'}
+                  </td>
                 </tr>
               ) : (
                 paginatedRows.map((row, idx) => (
@@ -140,14 +184,14 @@ const DepositRequest = () => {
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.PaymentMode}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
                       <div className="flex items-center justify-center gap-1 group ">
-                        <span 
+                        <span
                           className="cursor-pointer"
                           title={row.RefrenceNo || '-'}
                         >
                           {row.RefrenceNo ? `${row.RefrenceNo.substring(0, 15)}...` : '-'}
                         </span>
                         {row.RefrenceNo && (
-                          <button 
+                          <button
                             onClick={() => copyToClipboard(row.RefrenceNo)}
                             className="p-1 text-blue-500 hover:text-blue-700"
                             title="Copy to Clipboard"
@@ -160,13 +204,13 @@ const DepositRequest = () => {
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.PaymentDate}</td>
                     <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center ">
                       <button
-                        className="px-3 py-1 font-semibold text-white bg-red-500 rounded hover:bg-red-600"
+                        className="px-3 py-1 font-semibold text-white bg-green-500 rounded hover:bg-green-600"
                         onClick={() => handleApproveClick(row.AuthLogin)}
                       >
-                        UnApproved
+                        Approve
                       </button>
                       <button
-                        className="px-3 py-1 font-semibold text-white bg-yellow-500 rounded hover:bg-yellow-600"
+                        className="px-3 py-1 font-semibold text-white bg-red-500 rounded hover:bg-red-600"
                         onClick={() => handleRejectClick(row.AuthLogin)}
                       >
                         Reject
@@ -177,7 +221,7 @@ const DepositRequest = () => {
               )}
             </tbody>
           </table>
-          {unApprovedRows.length > rowsPerPage && (
+          {filteredRows.length > rowsPerPage && (
             <div className="flex items-center justify-center gap-2 py-4">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}

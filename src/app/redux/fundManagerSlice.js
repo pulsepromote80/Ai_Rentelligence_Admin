@@ -5,7 +5,8 @@ const API_ENDPOINTS = {
     UPDATE_REQUEST_STATUS_ADMIN: "/FundManager/updateFundRequestStatus_Admin",
     GET_RENT_WALLET: "/AdminManageUser/getRentWallet",
     GET_ALL_INCOME_REQUEST_ADMIN: "/FundManager/getAllIncomeRequest_Admin",
-    UPDATE_INCOME_WITHDRAW_REQUEST_STATUS_ADMIN: "/FundManager/UpIncomeWithdReqStatus_Admin"
+    UPDATE_INCOME_WITHDRAW_REQUEST_STATUS_ADMIN: "/FundManager/UpIncomeWithdReqStatus_Admin",
+    UPDATE_RENT_WITHDRAW_REQUEST_STATUS_ADMIN: "/FundManager/upRentWithdReqStatus_Admin"
 };
 export const getAllFundRequestReportAdmin = createAsyncThunk(
     "fundManager/getAllFundRequestReportAdmin",
@@ -95,6 +96,25 @@ export const UpIncomeWithdReqStatusAdmin = createAsyncThunk(
     }
 );
 
+export const updateRentWithdrawRequestStatusAdmin = createAsyncThunk(
+    "fundManager/updateRentWithdrawRequestStatusAdmin",
+    async ({ authLoginId, rfstatus, remark }, { rejectWithValue }) => {
+        try {
+            const response = await postRequest(
+                API_ENDPOINTS.UPDATE_RENT_WITHDRAW_REQUEST_STATUS_ADMIN,
+                {
+                    authLoginId,
+                    rfstatus,
+                    remark
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("API Error:", error.response?.data || error.message);
+            return rejectWithValue(error.response?.data?.message || "Failed to fetch community data");
+        }
+    }
+);
 
 const fundManagerSlice = createSlice({
     name: "fundManager",
@@ -106,6 +126,7 @@ const fundManagerSlice = createSlice({
         rentWalletData: null,
         withdrawRequestData: null,
         updateIncomingRequestData: null,
+        updateRentWithdrawRequestData: null
     },
     reducers: {
     },
@@ -172,6 +193,21 @@ const fundManagerSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+
+
+            .addCase(updateRentWithdrawRequestStatusAdmin.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateRentWithdrawRequestStatusAdmin.fulfilled, (state, action) => {
+                state.loading = false;
+                state.updateRentWithdrawRequestData = action.payload;
+            })
+            .addCase(updateRentWithdrawRequestStatusAdmin.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
 
     }
 });
