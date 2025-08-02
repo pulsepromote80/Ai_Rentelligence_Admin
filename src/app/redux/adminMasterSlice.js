@@ -157,7 +157,11 @@ const adminMasterSlice = createSlice({
         },
         clearChangePasswordData: (state) => {
             state.ChangePasswordData = null;
+        },
+         clearUsernameData: (state) => {
+            state.usernameData = null; 
         }
+        
     },
     extraReducers: (builder) => {
         builder
@@ -280,5 +284,5 @@ const adminMasterSlice = createSlice({
     }
 });
 
-export const { clearError, clearChangePasswordData } = adminMasterSlice.actions;
+export const { clearError, clearChangePasswordData,clearUsernameData  } = adminMasterSlice.actions;
 export default adminMasterSlice.reducer;

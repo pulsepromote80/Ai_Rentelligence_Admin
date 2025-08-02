@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { usernameLoginId } from '@/app/redux/adminMasterSlice';
+import { usernameLoginId,clearUsernameData  } from '@/app/redux/adminMasterSlice';
 import { updateUser } from '@/app/redux/authSlice';
 import { toast } from 'react-toastify';
 
@@ -46,6 +46,7 @@ const EditUser = () => {
     }
   }, [usernameData]);
 
+
   useEffect(() => {
     if (updateUserData && updateUserData.statusCode === 200) {
       toast.success(updateUserData.message || 'User updated successfully!');
@@ -61,8 +62,9 @@ const EditUser = () => {
       setAuthLogin('');
       setWalletBep20('');
       setImage(null);
+      dispatch(clearUsernameData());
     }
-  }, [updateUserData]);
+  }, [updateUserData,dispatch]);
   
   const handleUserIdChange = (e) => {
     setAuthLogin(e.target.value);

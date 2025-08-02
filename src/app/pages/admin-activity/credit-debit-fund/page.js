@@ -143,6 +143,10 @@ const CreditDebitFund = () => {
                   <div className="flex flex-col w-full gap-1 px-4 py-2 mb-2 text-sm text-blue-800 border border-blue-200 rounded-lg shadow-sm bg-blue-50 md:flex-row md:items-center md:gap-8">
                     <span>Income Wallet: <span className="font-semibold">₹{walletData.walletDetails.incomeWallet}</span></span>
                     <span>Deposit Wallet: <span className="font-semibold">₹{walletData.walletDetails.depositWallet}</span></span>
+                    <span>Rent Wallet: <span className="font-semibold">₹{walletData.walletDetails.rentWallet}</span></span>
+                    {/* <div>
+                      <span>Rent Wallet: <span className="font-semibold">₹{walletData.walletDetails.rentWallet}</span></span>
+                      </div> */}
                   </div>
                 )}
               </div>
@@ -153,7 +157,7 @@ const CreditDebitFund = () => {
                   name="wallet"
                   value={form.wallet}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
+                  className="w-full px-4 py-3 text-lg rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
                   disabled={!walletData?.walletDetails?.urid}
                 >
                   <option value="">-Select Wallet-</option>

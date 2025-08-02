@@ -155,13 +155,14 @@ const DepositRequest = () => {
             <thead className="sticky top-0 z-10 text-white bg-blue-500">
               <tr>
                 <th className="px-4 py-2 text-sm font-medium text-center border rounded-tl-lg">Sr.No.</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Action</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">User ID</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">UserName</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Amount ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Payment Method</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Hash</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Payment Date</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Action</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -178,6 +179,15 @@ const DepositRequest = () => {
                     className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}
                   >
                     <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border">{(currentPage - 1) * rowsPerPage + idx + 1}</td>
+                     <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center border ">
+                      <button
+                        className="px-3 py-1 font-semibold text-white bg-green-500 rounded hover:bg-green-600"
+                        onClick={() => handleApproveClick(row.AuthLogin)}
+                      >
+                        Approve
+                      </button>
+                     
+                    </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.AuthLogin || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Name || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Amount}</td>
@@ -202,20 +212,14 @@ const DepositRequest = () => {
                       </div>
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.PaymentDate}</td>
-                    <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center ">
-                      <button
-                        className="px-3 py-1 font-semibold text-white bg-green-500 rounded hover:bg-green-600"
-                        onClick={() => handleApproveClick(row.AuthLogin)}
-                      >
-                        Approve
-                      </button>
-                      <button
+                   <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center border ">
+                    <button
                         className="px-3 py-1 font-semibold text-white bg-red-500 rounded hover:bg-red-600"
                         onClick={() => handleRejectClick(row.AuthLogin)}
                       >
                         Reject
                       </button>
-                    </td>
+                  </td>
                   </tr>
                 ))
               )}

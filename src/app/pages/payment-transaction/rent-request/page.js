@@ -180,6 +180,7 @@ const filteredRows = mappedRows.filter(row => {
             <thead className="sticky top-0 z-10 text-white bg-blue-500">
               <tr>
                 <th className="px-4 py-2 text-sm font-medium text-center border rounded-tl-lg">Sr.No.</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Action</th>
                  <th className="px-4 py-2 text-sm font-semibold text-center border">UserId</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Username</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Payment Mode</th>
@@ -210,6 +211,13 @@ const filteredRows = mappedRows.filter(row => {
                     className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}
                   >
                     <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border">{(currentPage - 1) * rowsPerPage + idx + 1}</td>
+                     <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center ">
+                      <button
+                        className="px-3 py-1 font-semibold text-white bg-green-500 rounded hover:bg-green-600"
+                        onClick={() => handleApproveClick(row.AuthLogin)}
+                      >
+                        Approve
+                      </button> </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.AuthLogin || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.FullName || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.payMode || '-'}</td>
@@ -242,13 +250,7 @@ const filteredRows = mappedRows.filter(row => {
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Release || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.CreatedDate ? new Date(row.CreatedDate).toLocaleString() : '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.ApprovalDate ? new Date(row.ApprovalDate).toLocaleString() : '-'}</td>
-                    <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center ">
-                      <button
-                        className="px-3 py-1 font-semibold text-white bg-green-500 rounded hover:bg-green-600"
-                        onClick={() => handleApproveClick(row.AuthLogin)}
-                      >
-                        Approve
-                      </button>
+                    <td className="flex items-center px-4 py-2 mt-5 space-x-2 text-sm text-center ">
                       <button
                         className="px-3 py-1 font-semibold text-white bg-red-500 rounded hover:bg-red-600"
                         onClick={() => handleRejectClick(row.AuthLogin)}
