@@ -1,45 +1,75 @@
 "use client";
+
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getAllIncomeRequestAdmin, UpIncomeWithdReqStatusAdmin } from '@/app/redux/fundManagerSlice';
+import { getRentWallet, updateRentWithdrawRequestStatusAdmin } from '@/app/redux/fundManagerSlice';
 import { toast } from 'react-toastify';
-import { FaCopy } from 'react-icons/fa';
+import { FaCopy, FaSearch } from 'react-icons/fa';
 
-const WithdrawalRequest = () => {
+const RentRequest = () => {
   const dispatch = useDispatch();
-  const { withdrawRequestData, loading, error } = useSelector((state) => state.fundManager);
-  const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 10;
+  const { rentWalletData, loading, error } = useSelector((state) => state.fundManager);
   const [approvePopupOpen, setApprovePopupOpen] = useState(false);
   const [rejectPopupOpen, setRejectPopupOpen] = useState(false);
   const [selectedAuthLoginId, setSelectedAuthLoginId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [remark, setRemark] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const rowsPerPage = 10;
 
   useEffect(() => {
-    dispatch(getAllIncomeRequestAdmin());
+    dispatch(getRentWallet());
   }, [dispatch]);
-  
-  // Only show unapproved withdrawal requests
-  const unApprovedRows = withdrawRequestData?.unApWithIncome || [];
-  
 
-    const filteredRows = unApprovedRows.filter(row => 
-    (row.AuthLogin?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (row.FullName?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-     (row.TotWithdl?.toString().includes(searchTerm)) ||
+  // Only show unapproved withdrawal requests
+const unApprovedRows = rentWalletData?.rentWallet?.filter(
+  row => row.trStatus === 0 && row.transType === "Withdrawal"
+) || [];
+
+// Map API fields to table fields
+const mappedRows = unApprovedRows.map(row => ({
+  AuthLogin: row.AuthLogin,
+  FullName: row.FullName,
+  payMode: row.payMode,
+  transType: row.transType,
+  trCode: row.trCode,
+  ExtraRemark: row.ExtraRemark,
+  credit: row.credit,
+  debit: row.debit,
+  Request: row.Request,
+  Charges: row.Charges,
+  Release: row.Release,
+  CreatedDate: row.CreatedDate,
+  ApprovalDate: row.ApprovalDate,
+  originalRow: row
+}));
+
+// Filter rows based on search term
+// Filter rows based on search term
+const filteredRows = mappedRows.filter(row => {
+  const term = searchTerm.toLowerCase();
+  return (
+    (row.AuthLogin?.toLowerCase().includes(term)) ||
+    (row.FullName?.toLowerCase().includes(term)) ||
+    (row.PaymentMode?.toLowerCase().includes(term)) ||
+    (row.ExtraRemark?.toLowerCase().includes(term)) ||
+    (row.credit?.toString().includes(searchTerm)) ||
     (row.debit?.toString().includes(searchTerm)) ||
-    (row.TransType?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (row.Transhash?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (row.PaymentDate?.toLowerCase().includes(searchTerm.toLowerCase()))
+    (row.Request?.toString().includes(searchTerm))
   );
-const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
+});
+
+  const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
   const paginatedRows = rowsToDisplay.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage
   );
   const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage);
-  
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm]);
+
   const handleApproveClick = (authLoginId) => {
     setSelectedAuthLoginId(authLoginId);
     setApprovePopupOpen(true);
@@ -52,42 +82,23 @@ const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
 
   const handleApprove = async () => {
     if (selectedAuthLoginId) {
-      try {
-        await dispatch(UpIncomeWithdReqStatusAdmin({
-          authLoginId: selectedAuthLoginId,
-          rfstatus: 1, 
-          remark: "Approved by admin"
-        }));
-        setApprovePopupOpen(false);
-        setSelectedAuthLoginId(null);
-        toast.success('Approved Successfully!', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-        dispatch(getAllIncomeRequestAdmin());
-      } catch (error) {
-        toast.error('Failed to approve request', {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-      }
+      await dispatch(updateRentWithdrawRequestStatusAdmin({
+        authLoginId: selectedAuthLoginId,
+        rfstatus: 1, // 1 for Approved
+        remark: "Approved by admin"
+      }));
+      setApprovePopupOpen(false);
+      setSelectedAuthLoginId(null);
+      dispatch(getRentWallet());
     }
   };
 
   const handleReject = async () => {
     if (selectedAuthLoginId && remark.trim()) {
       try {
-        await dispatch(UpIncomeWithdReqStatusAdmin({
+        await dispatch(updateRentWithdrawRequestStatusAdmin({
           authLoginId: selectedAuthLoginId,
-          rfstatus: 2, 
+          rfstatus: 2, // 2 for Rejected
           remark: remark
         }));
         setRejectPopupOpen(false);
@@ -101,9 +112,9 @@ const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
           pauseOnHover: true,
           draggable: true,
         });
-        dispatch(getAllIncomeRequestAdmin());
+        dispatch(getRentWallet());
       } catch (error) {
-        toast.error('Failed to reject request', {
+        toast.error('Failed to rejected request', {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -136,10 +147,11 @@ const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
 
   return (
     <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
-     <div className='flex items-center justify-between mb-6'>
-      <h1 className="w-full mb-4 text-2xl font-bold text-center text-gray-700">Withdrawal Requests</h1>
-      
-      <div className="relative w-60">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="w-full text-2xl font-bold text-center text-gray-700 ">Rent Request</h1>
+
+        {/* Search Box - Right corner with reduced width */}
+        <div className="relative w-60">
           <input
             type="text"
             className="w-full py-2 pl-3 pr-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
@@ -156,7 +168,8 @@ const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
             </button>
           )}
         </div>
-        </div>
+      </div>
+
       {loading ? (
         <div className="py-10 text-center">Loading...</div>
       ) : error ? (
@@ -167,43 +180,53 @@ const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
             <thead className="sticky top-0 z-10 text-white bg-blue-500">
               <tr>
                 <th className="px-4 py-2 text-sm font-medium text-center border rounded-tl-lg">Sr.No.</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">User ID</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Name</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Amount ($)</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Debit ($)</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Admin Charges ($)</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">TransType</th>
+                 <th className="px-4 py-2 text-sm font-semibold text-center border">UserId</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Username</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Payment Mode</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Type</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Code</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Hash</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Withdrawal Mode</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Action</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Credit</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Debit</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Request</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Charges</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Release</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Created Date</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Approval Date</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Action</th>
               </tr>
             </thead>
             <tbody>
               {paginatedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="py-10 text-lg text-center text-gray-400">No Approve Withdrawal Requests Found</td>
+                  <td colSpan={8} className="py-10 text-lg text-center text-gray-400">
+                    {searchTerm ? 'No matching requests found' : 'No Unapproved Requests Found'}
+                  </td>
                 </tr>
               ) : (
                 paginatedRows.map((row, idx) => (
-                  <tr key={idx} className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}>
+                  <tr
+                    key={idx}
+                    className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}
+                  >
                     <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border">{(currentPage - 1) * rowsPerPage + idx + 1}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.AuthLogin || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.FullName || '-'}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.TotWithdl}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.debit}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.AdminCharges}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.TransType}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.payMode || '-'}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.transType || '-'}</td>
+                    
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.trCode || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                      <div className="flex items-center justify-center gap-1 group">
-                        <span 
+                      <div className="flex items-center justify-center gap-1 group ">
+                        <span
                           className="cursor-pointer"
-                          title={row.Transhash || '-'}
+                          title={row.ExtraRemark || '-'}
                         >
-                          {row.Transhash ? `${row.Transhash.substring(0, 15)}...` : '-'}
+                          {row.ExtraRemark ? `${row.ExtraRemark.substring(0, 15)}...` : '-'}
                         </span>
-                        {row.Transhash && (
-                          <button 
-                            onClick={() => copyToClipboard(row.Transhash)}
+                        {row.ExtraRemark && (
+                          <button
+                            onClick={() => copyToClipboard(row.ExtraRemark)}
                             className="p-1 text-blue-500 hover:text-blue-700"
                             title="Copy to Clipboard"
                           >
@@ -212,8 +235,14 @@ const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.withdrawalmode}</td>
-                    <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center">
+                    <td className="px-4 py-2 text-sm text-center text-green-700 border">{row.credit}</td>
+                    <td className="px-4 py-2 text-sm text-center text-red-700 border">{row.debit}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Request}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Charges || '-'}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Release || '-'}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.CreatedDate ? new Date(row.CreatedDate).toLocaleString() : '-'}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.ApprovalDate ? new Date(row.ApprovalDate).toLocaleString() : '-'}</td>
+                    <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center ">
                       <button
                         className="px-3 py-1 font-semibold text-white bg-green-500 rounded hover:bg-green-600"
                         onClick={() => handleApproveClick(row.AuthLogin)}
@@ -232,7 +261,7 @@ const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
               )}
             </tbody>
           </table>
-          {unApprovedRows.length > rowsPerPage && (
+          {filteredRows.length > rowsPerPage && (
             <div className="flex items-center justify-center gap-2 py-4">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -266,9 +295,7 @@ const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
       {approvePopupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
-            <div className="mb-4 text-lg font-semibold text-gray-800">
-              Do you want to approve AuthLoginID <span className="text-blue-600">{selectedAuthLoginId}</span>?
-            </div>
+            <div className="mb-4 text-lg font-semibold text-gray-800">Do you want to approve AuthLoginID <span className="text-blue-600">{selectedAuthLoginId}</span>?</div>
             <div className="flex justify-end gap-4">
               <button
                 onClick={handleApprove}
@@ -291,9 +318,7 @@ const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
       {rejectPopupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
-            <div className="mb-4 text-lg font-semibold text-gray-800">
-              Do you want to reject AuthLoginID <span className="text-blue-600">{selectedAuthLoginId}</span>?
-            </div>
+            <div className="mb-4 text-lg font-semibold text-gray-800">Do you want to reject AuthLoginID <span className="text-blue-600">{selectedAuthLoginId}</span>?</div>
             <div className="mb-4">
               <label className="block mb-2 text-sm font-medium text-gray-700">Remark (Required)</label>
               <textarea
@@ -327,4 +352,4 @@ const rowsToDisplay = searchTerm ? filteredRows : unApprovedRows;
   );
 };
 
-export default WithdrawalRequest;
+export default RentRequest;

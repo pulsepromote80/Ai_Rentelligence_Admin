@@ -16,11 +16,28 @@ const DepositHistory = () => {
   }, [dispatch]);
 
   const approvedRows = fundRequestData?.approvedFundRequest || [];
-  const rejectedRows = fundRequestData?.rejectedFundRequest || []; 
+  const rejectedRows = fundRequestData?.rejectedFundRequest || [];
   const allRows = [...approvedRows, ...rejectedRows];
-  
-  const paginatedRows = allRows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
-  const totalPages = Math.ceil(allRows.length / rowsPerPage);
+  const [searchTerm, setSearchTerm] = useState('');
+
+
+  const filteredRows = allRows.filter(row =>
+    (row.AuthLogin?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.Name?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.Amount?.toString().includes(searchTerm)) ||
+    (row.PaymentMode?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.RefrenceNo?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (row.PaymentDate?.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+  const rowsToDisplay = searchTerm ? filteredRows : allRows;
+
+
+  const paginatedRows = rowsToDisplay.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+  const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage);
+
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
@@ -41,7 +58,26 @@ const DepositHistory = () => {
 
   return (
     <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
-      <h1 className="mb-4 text-2xl font-bold text-center text-gray-700">Deposit History</h1>
+      <div className='flex items-center justify-between mb-6'>
+        <h1 className="w-full ml-6 text-2xl font-bold text-center text-gray-700">Deposit History</h1>
+        <div className="relative w-60">
+          <input
+            type="text"
+            className="w-full py-2 pl-3 pr-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      </div>
       {loading ? (
         <div className="py-10 text-center">Loading...</div>
       ) : error ? (
@@ -90,7 +126,7 @@ const DepositHistory = () => {
                           )}
                         </div>
                         {row.RefrenceNo && (
-                          <button 
+                          <button
                             onClick={() => copyToClipboard(row.RefrenceNo)}
                             className="p-1 text-blue-500 hover:text-blue-700"
                             title="Copy to clipboard"
@@ -102,9 +138,8 @@ const DepositHistory = () => {
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.PaymentDate}</td>
                     <td className="px-4 py-2 text-sm text-center border">
-                      <span className={`px-2 py-1 rounded ${
-                        row.Rf_Status === 'Approved' ? 'text-green-600' : 'text-red-600'
-                      }`}>
+                      <span className={`px-2 py-1 rounded ${row.Rf_Status === 'Approved' ? 'text-green-600' : 'text-red-600'
+                        }`}>
                         {row.Rf_Status}
                       </span>
                     </td>
