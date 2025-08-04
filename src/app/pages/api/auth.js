@@ -119,6 +119,25 @@ export const getRequestLoginId = async (endpoint, data) => {
   }
 }
 
+export const postRequestLoginId = async (endpoint, data) => {
+  try {
+    const token = getToken();
+
+    if (!token) {
+      throw new Error('No authentication token found');
+    }
+  
+    const response = await axios.post(`${BASE_URL}${endpoint}`, data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('API Call Failed:', error);
+    throw error;
+  }
+};
 export const postRequest = async (endpoint, data) => {
   try {
     const token = getToken()

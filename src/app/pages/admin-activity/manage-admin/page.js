@@ -8,8 +8,8 @@ const ManageAdmin = () => {
     const dispatch = useDispatch();
     const { allAdminListData, loading, error, activateStatus } = useSelector((state) => state.admin);
     const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10); 
     const [actionLoadingId, setActionLoadingId] = useState(null);
-    const rowsPerPage = 10;
 
     useEffect(() => {
         dispatch(fetchAllAdminUsersList());
@@ -35,8 +35,13 @@ const ManageAdmin = () => {
         setActionLoadingId(null);
     };
 
-    const paginatedRows = (allAdminListData || []).slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
+    const paginatedRows = (allAdminListData || []).slice(
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
+    );
     const totalPages = Math.ceil((allAdminListData?.length || 0) / rowsPerPage);
+    const startItem = (currentPage - 1) * rowsPerPage + 1;
+    const endItem = Math.min(currentPage * rowsPerPage, allAdminListData?.length || 0);
 
     return (
         <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
@@ -64,7 +69,7 @@ const ManageAdmin = () => {
                         <tbody>
                             {paginatedRows.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
+                                    <td colSpan={9} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
                                 </tr>
                             ) : (
                                 paginatedRows.map((row, idx) => {
@@ -74,7 +79,7 @@ const ManageAdmin = () => {
                                             key={row.adminUserId}
                                             className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}
                                         >
-                                            <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border">{(currentPage - 1) * rowsPerPage + idx + 1}</td>
+                                            <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border">{startItem + idx}</td>
                                             <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.username || '-'}</td>
                                             <td className="relative px-4 py-2 text-sm text-center text-gray-700 border group">
                                                 <span className="password-mask group-hover:hidden">
@@ -90,22 +95,21 @@ const ManageAdmin = () => {
                                             <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.phoneNumber || '-'}</td>
                                             <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.createdDate ? row.createdDate.split('T')[0] : '-'}</td>
                                             <td className="px-4 py-2 text-sm text-center border">
-                                                <div className="flex items-center justify-center gap-2">
-                                                    <span className={`px-3 py-1 rounded text-white font-semibold ${isActive ? 'bg-green-500' : 'bg-red-500'}`}>
-                                                        {row.activeStatus}
+                                                {isActive ? (
+                                                    <span className="px-3 py-1 font-medium text-green-500 ">
+                                                        Activated
                                                     </span>
+                                                ) : (
                                                     <button
-                                                        className={`px-3 py-1 rounded font-semibold text-white ${isActive ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} ${actionLoadingId === row.adminUserId ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                        className={`px-3 py-1 rounded font-semibold text-white bg-green-500 hover:bg-green-600 ${actionLoadingId === row.adminUserId ? 'opacity-50 cursor-not-allowed' : ''}`}
                                                         disabled={actionLoadingId === row.adminUserId}
                                                         onClick={() => handleActivateDeactivate(row.adminUserId, isActive)}
                                                     >
                                                         {actionLoadingId === row.adminUserId
                                                             ? 'Please wait...'
-                                                            : isActive
-                                                                ? 'DeActivate'
-                                                                : 'Activate'}
+                                                            : 'Active'}
                                                     </button>
-                                                </div>
+                                                )}
                                             </td>
                                         </tr>
                                     );
@@ -113,31 +117,46 @@ const ManageAdmin = () => {
                             )}
                         </tbody>
                     </table>
-                    {(allAdminListData?.length || 0) > rowsPerPage && (
-                        <div className="flex items-center justify-center gap-2 py-4">
-                            <button
-                                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                                disabled={currentPage === 1}
-                                className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-700'}`}
-                            >
-                                Prev
-                            </button>
-                            {Array.from({ length: totalPages }, (_, i) => (
-                                <button
-                                    key={i}
-                                    onClick={() => setCurrentPage(i + 1)}
-                                    className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-700 text-white' : 'bg-blue-200 text-blue-800 hover:bg-blue-400'}`}
+                    {(allAdminListData?.length || 0) > 0 && (
+                        <div className="flex items-center justify-between px-4 py-3">
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-600">Rows per page:</span>
+                                <select
+                                    value={rowsPerPage}
+                                    onChange={(e) => {
+                                        setRowsPerPage(Number(e.target.value));
+                                        setCurrentPage(1);
+                                    }}
+                                    className="p-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 >
-                                    {i + 1}
+                                    <option value="10">10</option>
+                                    <option value="25">25</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </div>
+                            <div className="text-sm text-gray-600">
+                                {startItem}-{endItem} of {allAdminListData?.length || 0}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                    className={`p-1 rounded ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
                                 </button>
-                            ))}
-                            <button
-                                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                                disabled={currentPage === totalPages}
-                                className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-700'}`}
-                            >
-                                Next
-                            </button>
+                                <button
+                                    onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                                    disabled={currentPage === totalPages}
+                                    className={`p-1 rounded ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
@@ -147,4 +166,3 @@ const ManageAdmin = () => {
 };
 
 export default ManageAdmin;
-

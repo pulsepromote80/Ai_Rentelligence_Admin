@@ -60,46 +60,110 @@ const CreditDebitFund = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    let newErrors = {};
-    if (!form.loginId.trim()) newErrors.loginId = 'UserId is required';
-    if (!form.wallet) newErrors.wallet = 'Select Wallet is required';
-    if (!form.type) newErrors.type = 'Select Type is required';
-    if (!form.amount) newErrors.amount = 'Enter Amount is required';
-    if (!form.remark) newErrors.remark = 'Description is required';
-    setErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) return;
-    if (!form.wallet || !form.type || !form.amount || !form.remark) return;
-    const selectedType = filteredTypes.find((t) => String(t.id) === String(form.type));
-    const crDr = selectedType ? selectedType.crDr : null;
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   let newErrors = {};
+  //   if (!form.loginId.trim()) newErrors.loginId = 'UserId is required';
+  //   if (!form.wallet) newErrors.wallet = 'Select Wallet is required';
+  //   if (!form.type) newErrors.type = 'Select Type is required';
+  //   if (!form.amount) newErrors.amount = 'Enter Amount is required';
+  //   if (!form.remark) newErrors.remark = 'Description is required';
+  //   setErrors(newErrors);
+  //   if (Object.keys(newErrors).length > 0) return;
+  //   if (!form.wallet || !form.type || !form.amount || !form.remark) return;
+  //   const selectedType = filteredTypes.find((t) => String(t.id) === String(form.type));
+  //   const crDr = selectedType ? selectedType.crDr : null;
 
-    const payload = {
-      wallettype: form.wallet,
-      crDr: crDr,
-      urid: walletData?.walletDetails?.urid,
-      amt: form.amount,
-      remark: form.remark,
-    };
+  //   const payload = {
+  //     wallettype: form.wallet,
+  //     crDr: crDr,
+  //     urid: walletData?.walletDetails?.urid,
+  //     amt: form.amount,
+  //     remark: form.remark,
+  //   };
 
-    try {
-      const response = await dispatch(addFund(payload)).unwrap();
-      if (response.statusCode === 200) {
-        toast.success(response.message || 'Fund added successfully!');
-      }
-      setForm({
-        loginId: '',
-        name: '',
-        wallet: '',
-        type: '',
-        amount: '',
-        remark: '',
-      });
-    } catch (err) {
-      toast.error(err?.message || 'Failed to add fund.');
+  //   try {
+  //     const response = await dispatch(addFund(payload)).unwrap();
+  //     if (response.statusCode === 200) {
+  //       toast.success(response.message || 'Fund added successfully!');
+  //     }
+  //     setForm({
+  //       loginId: '',
+  //       name: '',
+  //       wallet: '',
+  //       type: '',
+  //       amount: '',
+  //       remark: '',
+  //     });
+  //   } catch (err) {
+  //     toast.error(err?.message || 'Failed to add fund.');
+  //   }
+  // };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  let newErrors = {};
+  if (!form.loginId.trim()) newErrors.loginId = 'UserId is required';
+  if (!form.wallet) newErrors.wallet = 'Select Wallet is required';
+  if (!form.type) newErrors.type = 'Select Type is required';
+  if (!form.amount) newErrors.amount = 'Enter Amount is required';
+  if (!form.remark) newErrors.remark = 'Description is required';
+  setErrors(newErrors);
+  if (Object.keys(newErrors).length > 0) return;
+  if (!form.wallet || !form.type || !form.amount || !form.remark) return;
+
+  const selectedType = filteredTypes.find((t) => String(t.id) === String(form.type));
+  const crDr = selectedType ? selectedType.crDr : null;
+  const amount = parseFloat(form.amount);
+
+  // Check if it's a debit operation
+  if (crDr === '2' || selectedType.type === 'Debit') { // Changed to check both crDr and type
+    let currentBalance = 0;
+    switch (form.wallet) {
+      case '1': // Income Wallet
+        currentBalance = parseFloat(walletData?.walletDetails?.incomeWallet || 0);
+        break;
+      case '2': // Deposit Wallet
+        currentBalance = parseFloat(walletData?.walletDetails?.depositWallet || 0);
+        break;
+      case '3': // Rent Wallet
+        currentBalance = parseFloat(walletData?.walletDetails?.rentWallet || 0);
+        break;
+      default:
+        currentBalance = 0;
     }
+
+    // Check if the debit would make the balance go below 0
+    if (currentBalance - amount < 0) {
+      toast.error(`Debit would not be less than 0`);
+      return;
+    }
+  }
+
+  const payload = {
+    wallettype: form.wallet,
+    crDr: crDr,
+    urid: walletData?.walletDetails?.urid,
+    amt: form.amount,
+    remark: form.remark,
   };
 
+  try {
+    const response = await dispatch(addFund(payload)).unwrap();
+    if (response.statusCode === 200) {
+      toast.success(response.message || 'Fund added successfully!');
+    }
+    setForm({
+      loginId: '',
+      name: '',
+      wallet: '',
+      type: '',
+      amount: '',
+      remark: '',
+    });
+  } catch (err) {
+    toast.error(err?.message || 'Failed to add fund.');
+  }
+};
   return (
     <div className="flex items-center justify-center min-h-[80vh] ">
       <form
