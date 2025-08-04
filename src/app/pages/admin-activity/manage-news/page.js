@@ -17,6 +17,8 @@ const ManageNew = () => {
   const [editingNews, setEditingNews] = useState(null); 
   const [editorValue, setEditorValue] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     dispatch(getNews({ newsId: '' }));
@@ -41,6 +43,14 @@ const ManageNew = () => {
     await dispatch(updateNews({ newsId: String(editingNews.newsId), news: editorValue }));
   };
 
+  const paginatedData = newsData?.data?.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  ) || [];
+  const totalPages = Math.ceil((newsData?.data?.length || 0) / rowsPerPage);
+  const startItem = (currentPage - 1) * rowsPerPage + 1;
+  const endItem = Math.min(currentPage * rowsPerPage, newsData?.data?.length || 0);
+
   return (
     <>
       <div className="max-w-5xl mx-auto mt-5 overflow-x-auto shadow-lg rounded-xl bg-white/90">
@@ -64,8 +74,8 @@ const ManageNew = () => {
             </tr>
           </thead>
           <tbody>
-            {newsData?.data?.length > 0 ? (
-              newsData.data.map((item, idx) => (
+            {paginatedData.length > 0 ? (
+              paginatedData.map((item, idx) => (
                 <tr key={item.newsId} className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}>
                   <td className="px-4 py-2 text-center border">
                     <button
@@ -75,7 +85,7 @@ const ManageNew = () => {
                       <EditIcon />
                     </button>
                   </td>
-                  <td className="px-4 py-2 text-center border">{idx + 1}</td>
+                  <td className="px-4 py-2 text-center border">{startItem + idx}</td>
                   <td className="px-4 py-2 text-center border" dangerouslySetInnerHTML={{ __html: item.news }} />
                   <td className="px-4 py-2 text-center border">{new Date(item.newsDate).toLocaleString()}</td>
                 </tr>
@@ -89,6 +99,49 @@ const ManageNew = () => {
             )}
           </tbody>
         </table>
+
+        {(newsData?.data?.length || 0) > 0 && (
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Rows per page:</span>
+              <select
+                value={rowsPerPage}
+                onChange={(e) => {
+                  setRowsPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="p-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+            <div className="text-sm text-gray-600">
+              {startItem}-{endItem} of {newsData?.data?.length || 0}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`p-1 rounded ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className={`p-1 rounded ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {editingNews && (

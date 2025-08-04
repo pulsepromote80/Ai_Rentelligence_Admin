@@ -9,8 +9,8 @@ const WithdrawalHistory = () => {
   const dispatch = useDispatch();
   const { withdrawRequestData, loading, error } = useSelector((state) => state.fundManager);
   const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10); 
   const [searchTerm, setSearchTerm] = useState('');
-  const rowsPerPage = 10;
 
   useEffect(() => {
     dispatch(getAllIncomeRequestAdmin());
@@ -20,22 +20,23 @@ const WithdrawalHistory = () => {
   const rejectedRows = withdrawRequestData?.rejectedWithIncome || [];
   const allRows = [...approvedRows, ...rejectedRows];
 
-const filteredRows = allRows.filter(row =>
-  (row.AuthLogin?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  row.FullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  (row.TotWithdl?.toString().includes(searchTerm)) ||
- (row.debit?.toString().includes(searchTerm)) ||
-  row.Transhash?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  row.PaymentDate?.toLowerCase().includes(searchTerm.toLowerCase()))
-);
+  const filteredRows = allRows.filter(row =>
+    (row.AuthLogin?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    row.FullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (row.TotWithdl?.toString().includes(searchTerm)) ||
+    (row.debit?.toString().includes(searchTerm)) ||
+    row.Transhash?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    row.PaymentDate?.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
-const rowsToDisplay = searchTerm ? filteredRows : allRows;
-
-const paginatedRows = rowsToDisplay.slice(
-  (currentPage - 1) * rowsPerPage, 
-  currentPage * rowsPerPage
-);
-const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage);
+  const rowsToDisplay = searchTerm ? filteredRows : allRows;
+  const paginatedRows = rowsToDisplay.slice(
+    (currentPage - 1) * rowsPerPage, 
+    currentPage * rowsPerPage
+  );
+  const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage);
+  const startItem = (currentPage - 1) * rowsPerPage + 1;
+  const endItem = Math.min(currentPage * rowsPerPage, rowsToDisplay.length);
 
   const copyToClipboard = (text) => {
     navigator.clipboard.writeText(text);
@@ -56,7 +57,6 @@ const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage);
 
   return (
     <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
-
       <div className='flex items-center justify-between mb-6'>
         <h1 className="w-full text-2xl font-bold text-center text-gray-700">Withdrawal History</h1>
 
@@ -97,13 +97,14 @@ const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage);
                 <th className="px-4 py-2 text-sm font-semibold text-center border">TransType</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Hash</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Withdrawal Mode</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Remark</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Status</th>
               </tr>
             </thead>
             <tbody>
               {paginatedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
+                  <td colSpan={11} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
                 </tr>
               ) : (
                 paginatedRows.map((row, idx) => (
@@ -111,7 +112,7 @@ const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage);
                     key={idx}
                     className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}
                   >
-                    <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border">{(currentPage - 1) * rowsPerPage + idx + 1}</td>
+                    <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border">{startItem + idx}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.AuthLogin || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.FullName || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.TotWithdl}</td>
@@ -142,6 +143,7 @@ const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage);
                       </div>
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.withdrawalmode}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Remark}</td>
                     <td className="px-4 py-2 text-sm text-center border">
                       <span className={`${row.status === 'Approved' ? 'text-green-600' : 'text-red-600'}`}>
                         {row.status}
@@ -152,31 +154,47 @@ const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage);
               )}
             </tbody>
           </table>
-          {allRows.length > rowsPerPage && (
-            <div className="flex items-center justify-center gap-2 py-4">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-700'}`}
-              >
-                Prev
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setCurrentPage(i + 1)}
-                  className={`px-3 py-1 rounded ${currentPage === i + 1 ? 'bg-blue-700 text-white' : 'bg-blue-200 text-blue-800 hover:bg-blue-400'}`}
+          
+          {rowsToDisplay.length > 0 && (
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">Rows per page:</span>
+                <select
+                  value={rowsPerPage}
+                  onChange={(e) => {
+                    setRowsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="p-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
-                  {i + 1}
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+              <div className="text-sm text-gray-600">
+                {startItem}-{endItem} of {rowsToDisplay.length}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className={`p-1 rounded ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
                 </button>
-              ))}
-              <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white hover:bg-blue-700'}`}
-              >
-                Next
-              </button>
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className={`p-1 rounded ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
             </div>
           )}
         </div>

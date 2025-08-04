@@ -126,9 +126,10 @@ const Register = () => {
             <input
               type="text"
               name="username"
+               placeholder="Enter your username"
               value={formData.username}
               onChange={handleChange}
-              className={`w-full px-3 py-2 mt-1 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+              className={`w-full px-3 py-2  border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none ${
                 errors.username ? 'border-red-500' : 'border-gray-300'
               }`}
             />
@@ -144,9 +145,10 @@ const Register = () => {
             <input
               type="text"
               name="name"
+              placeholder="Enter your name"
               value={formData.name}
               onChange={handleChange}
-              className={`w-full px-3 py-2 mt-1 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+              className={`w-full px-3 py-2  border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none ${
                 errors.name ? 'border-red-500' : 'border-gray-300'
               }`}
             />
@@ -164,9 +166,10 @@ const Register = () => {
               type="email"
               name="email"
               maxLength="50"
+               placeholder="Enter your email"
               value={formData.email}
               onChange={handleChange}
-              className={`w-full px-3 py-2 mt-1 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+              className={`w-full px-3 py-2  border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none ${
                 errors.email ? 'border-red-500' : 'border-gray-300'
               }`}
             />
@@ -187,7 +190,7 @@ const Register = () => {
               placeholder="Enter your mobile number"
               value={formData.phoneNumber}
               onChange={handleChange}
-              className={`w-full px-3 py-2 mt-1 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+              className={`w-full px-3 py-2  border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none ${
                 errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
               }`}
             />
@@ -206,9 +209,10 @@ const Register = () => {
                 type={showPassword ? 'text' : 'password'}
                 name="password"
                 maxLength="25"
+                 placeholder="Enter your password"
                 value={formData.password}
                 onChange={handleChange}
-                className={`w-full px-3 py-2 mt-1 border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+                className={`w-full px-3 py-2  border rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none ${
                   errors.password ? 'border-red-500' : 'border-gray-300'
                 }`}
                 style={{ paddingRight: '35px' }}
