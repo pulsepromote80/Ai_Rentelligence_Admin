@@ -4,12 +4,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getPersonalTeamList } from '@/app/redux/communitySlice';
 
 const TreeNode = ({ node, allNodes = [], level = 0 }) => {
-  const [expanded, setExpanded] = useState(false);
-  const children = allNodes.filter(child => child.sponsorId === node.loginid);
+  const [expanded, setExpanded] = useState(level < 2);
+  
+  const children = allNodes
+    .filter(child => child.sponsorId === node.loginid)
+    .filter((child, index, self) => 
+      index === self.findIndex(c => c.loginid === child.loginid)
+    );
 
   return (
     <div className="relative pl-6">
-      
       {level > 0 && (
         <span className="absolute left-0 top-0 h-full w-0.5 bg-purple-200"></span>
       )}
@@ -45,9 +49,9 @@ const TreeNode = ({ node, allNodes = [], level = 0 }) => {
       {/* Children */}
       {expanded && children.length > 0 && (
         <div className="pl-4 ml-8 border-l-2 border-purple-200">
-          {children.map((child, idx) => (
+       {children.map((child) => (
             <TreeNode
-              key={child.id + '-' + child.loginid + '-' + child.sponsorId + '-' + idx}
+              key={`${child.loginid}-${child.sponsorId}`}
               node={child}
               allNodes={allNodes}
               level={level + 1}
@@ -64,19 +68,39 @@ const DownlineAffilates = () => {
   const [authLogin, setAuthLogin] = useState('');
   const [searched, setSearched] = useState(false);
   const { personalTeamList, loading, error } = useSelector(state => state.community);
-  const dataArray = Array.isArray(personalTeamList) ? personalTeamList : personalTeamList?.data || [];
-   const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({});
+
+ 
+  const buildHierarchy = (data) => {
+    if (!Array.isArray(data)) return [];
+    
+  
+    const uniqueData = data.filter((node, index, self) =>
+      index === self.findIndex(n => n.loginid === node.loginid)
+    );
+
+    const rootNodes = uniqueData.filter(node => {
+      return !uniqueData.some(n => n.loginid === node.sponsorId);
+    });
+
+    return rootNodes.length > 0 ? rootNodes : uniqueData;
+  };
+
+  const processedData = buildHierarchy(
+    Array.isArray(personalTeamList) 
+      ? personalTeamList 
+      : personalTeamList?.data || []
+  );
 
   const handleSearch = (e) => {
     e.preventDefault();
-    let newErrors = {};
+    const newErrors = {};
     if (!authLogin.trim()) newErrors.title = 'LoginID is required';
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
-    if (authLogin) {
-      dispatch(getPersonalTeamList({ authLogin }));
-      setSearched(true);
-    }
+    
+    dispatch(getPersonalTeamList({ authLogin }));
+    setSearched(true);
   };
 
   return (
@@ -109,16 +133,16 @@ const DownlineAffilates = () => {
           <div className="w-full">
             {loading && <div className="text-center text-blue-600">Loading...</div>}
             {error && <div className="text-center text-red-600">{error}</div>}
-            {!loading && dataArray.length === 0 && (
+            {!loading && processedData.length === 0 && (
               <div className="text-center text-gray-500">No data found.</div>
             )}
-            {dataArray && dataArray.length > 0 && (
+            {processedData && processedData.length > 0 && (
               <div className="mt-4">
-                {dataArray.map((root, idx) => (
+                {processedData.map((root) => (
                   <TreeNode
-                    key={root.id + '-' + root.loginid + '-' + root.sponsorId + '-' + idx}
+                    key={`root-${root.loginid}`}
                     node={root}
-                    allNodes={dataArray}
+                    allNodes={Array.isArray(personalTeamList) ? personalTeamList : personalTeamList?.data || []}
                   />
                 ))}
               </div>

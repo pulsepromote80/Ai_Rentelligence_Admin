@@ -11,11 +11,10 @@ const AllUsers = () => {
   const [form, setForm] = useState({
     authLogin: '',
     fname: '',
-    active: '',
     mobile: '',
     email: '',
-    kid: '',
     walletid: '',
+    status: ''
   });
   const [hasSearched, setHasSearched] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,19 +24,13 @@ const AllUsers = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSearch = async (e) => {
+const handleSearch = async (e) => {
     e.preventDefault();
     setHasSearched(true);
     try {
-      const action = await dispatch(addAdminManageUser(form));
-      const response = action.payload;
-      if (response && response.statusCode === 200) {
-        toast.success(response.message || 'Success');
-      } else {
-        toast.error((response && response.message) || 'Something went wrong');
-      }
+      await dispatch(addAdminManageUser(form));
     } catch (err) {
-      toast.error('Something went wrong');
+      
     }
   };
 
@@ -60,19 +53,28 @@ const AllUsers = () => {
     }
   };
 
-  const tableData = Array.isArray(searchData?.data)
-    ? searchData.data.map((item, idx) => ({
-        srNo: idx + 1,
-        AuthLogin: item.AuthLogin || '',
-        Name: item.Name || '',
-        Mobile: item.Mobile || '',
-        Email: item.Email || '',
-        WalletAddress: item.WalletAddress || '',
-        WalletBep20: item.WalletBep20 || '',
-        Package: item.Package || '',
-        RegDate: formatDate(item.RegDate),
-      }))
+  
+  const filteredData = Array.isArray(searchData?.data)
+    ? searchData.data.filter(item => {
+        if (form.status === '') return true; 
+        if (form.status === '1') return item.Active === true; 
+        if (form.status === '0') return item.Active === false; 
+        return true;
+      })
     : [];
+
+  const tableData = filteredData.map((item, idx) => ({
+    srNo: idx + 1,
+    AuthLogin: item.AuthLogin || '',
+    Name: item.Name || '',
+    Mobile: item.Mobile || '',
+    Email: item.Email || '',
+    WalletAddress: item.WalletAddress || '',
+    WalletBep20: item.WalletBep20 || '',
+    Package: item.Package || '',
+    RegDate: formatDate(item.RegDate),
+    status: item.Status || (item.Active ? 'Active' : 'Inactive'),
+  }));
 
   const paginatedData = tableData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
   const totalPages = Math.ceil(tableData.length / rowsPerPage);
@@ -85,42 +87,77 @@ const AllUsers = () => {
       <form className="grid grid-cols-1 gap-6 p-6 border border-blue-100 shadow-md md:grid-cols-4 bg-white/80 rounded-xl" onSubmit={handleSearch}>
         <div>
           <label className="block mb-2 font-semibold text-blue-800">User Name</label>
-          <input name="authLogin" value={form.authLogin} onChange={handleChange} className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Enter UserName" />
+          <input 
+            name="authLogin" 
+            value={form.authLogin} 
+            onChange={handleChange} 
+            className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" 
+            placeholder="Enter UserName" 
+          />
         </div>
         <div>
           <label className="block mb-2 font-semibold text-blue-800">Name</label>
-          <input name="fname" value={form.fname} onChange={handleChange} className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Enter Name" />
+          <input 
+            name="fname" 
+            value={form.fname} 
+            onChange={handleChange} 
+            className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" 
+            placeholder="Enter Name" 
+          />
         </div>
-    
         <div>
           <label className="block mb-2 font-semibold text-blue-800">Email Address</label>
-          <input name="email" value={form.email} onChange={handleChange} className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Enter EmailId" />
+          <input 
+            name="email" 
+            value={form.email} 
+            onChange={handleChange} 
+            className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" 
+            placeholder="Enter EmailId" 
+          />
         </div>
         <div>
           <label className="block mb-2 font-semibold text-blue-800">Contact Number</label>
-          <input name="mobile" value={form.mobile} onChange={handleChange} className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Enter Mobile Number" />
+          <input 
+            name="mobile" 
+            value={form.mobile} 
+            onChange={handleChange} 
+            className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" 
+            placeholder="Enter Mobile Number" 
+          />
         </div>
         <div>
-          <label className="block mb-2 font-semibold text-blue-800">Select Package</label>
+          <label className="block mb-2 font-semibold text-blue-800">Status</label>
           <select
-            name="package"
-            value={form.package || ''}
+            name="status"
+            value={form.status}
             onChange={handleChange}
             className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
           >
-            <option value="">Select Package</option>
-            <option value="5">Registered</option>
+            <option value="">Select Type</option>
             <option value="1">Active</option>
+            <option value="0">Inactive</option>
           </select>
         </div>
         <div>
-          <label className="block mb-2 font-semibold text-blue-800">Enter Wallet Address</label>
-          <input name="walletid" value={form.walletid} onChange={handleChange} className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Enter Wallet Address" />
+          <label className="block mb-2 font-semibold text-blue-800">Wallet Address</label>
+          <input 
+            name="walletid" 
+            value={form.walletid} 
+            onChange={handleChange} 
+            className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" 
+            placeholder="Enter Wallet Address" 
+          />
         </div>
         <div className="flex items-end justify-center mt-2 md:col-span-4">
-          <button type="submit" className="px-8 py-2 font-semibold text-white transition-all duration-200 rounded-lg shadow bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800">Search</button>
+          <button 
+            type="submit" 
+            className="px-8 py-2 font-semibold text-white transition-all duration-200 rounded-lg shadow bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
+          >
+            Search
+          </button>
         </div>
       </form>
+      
       <div className="mt-10">
         {hasSearched && (
           loading ? (
@@ -139,30 +176,44 @@ const AllUsers = () => {
                     <th className="px-4 py-3 text-center border">Wallet BEP</th>
                     <th className="px-4 py-3 text-center border">Package</th>
                     <th className="px-4 py-3 text-center border">RegDate</th>
+                    <th className="px-4 py-3 text-center border">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedData.length === 0 ? (
                     <tr>
-                      <td colSpan={9} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
+                      <td colSpan={10} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
                     </tr>
                   ) : (
                     paginatedData.map((row, idx) => (
-                      <tr key={idx} className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}>
-                        <td className="px-4 py-2 font-medium border">{row.srNo}</td>
-                        <td className="px-4 py-2 border">{row.AuthLogin}</td>
-                        <td className="px-4 py-2 border">{row.Name}</td>
-                        <td className="px-4 py-2 border">{row.Mobile}</td>
-                        <td className="px-4 py-2 border">{row.Email}</td>
-                        <td className="px-4 py-2 border">{row.WalletAddress}</td>
-                        <td className="px-4 py-2 border">{row.WalletBep20}</td>
-                        <td className="px-4 py-2 border">{row.Package}</td>
-                        <td className="px-4 py-2 border">{row.RegDate}</td>
+                      <tr 
+                        key={idx} 
+                        className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}
+                      >
+                        <td className="px-4 py-2 font-medium text-center border">{row.srNo}</td>
+                        <td className="px-4 py-2 text-center border">{row.AuthLogin}</td>
+                        <td className="px-4 py-2 text-center border">{row.Name}</td>
+                        <td className="px-4 py-2 text-center border">{row.Mobile}</td>
+                        <td className="px-4 py-2 text-center border">{row.Email}</td>
+                        <td className="px-4 py-2 text-center border">{row.WalletAddress}</td>
+                        <td className="px-4 py-2 text-center border">{row.WalletBep20}</td>
+                        <td className="px-4 py-2 text-center border">{row.Package}</td>
+                        <td className="px-4 py-2 text-center border">{row.RegDate}</td>
+                        <td className="px-4 py-2 text-center border">
+                          <span className={`px-2 py-1 text-md font-semibold  ${
+                            row.status === 'Active' 
+                              ? 'text-green-800' 
+                              : 'text-red-800'
+                          }`}>
+                            {row.status}
+                          </span>
+                        </td>
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
+              
               {tableData.length > 0 && (
                 <div className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-2">
@@ -173,7 +224,7 @@ const AllUsers = () => {
                         setRowsPerPage(Number(e.target.value));
                         setCurrentPage(1);
                       }}
-                      className="p-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                      className="p-1 mr-4 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                     >
                       <option value="10">10</option>
                       <option value="25">25</option>
