@@ -102,7 +102,7 @@ const LeaseAgentPage = () => {
                   setRowsPerPage(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="p-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
               >
                 <option value="10">10</option>
                 <option value="25">25</option>
@@ -112,7 +112,7 @@ const LeaseAgentPage = () => {
             <div className="text-sm text-gray-600">
               {startItem}-{endItem} of {tableData.length}
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 ml-2">
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}

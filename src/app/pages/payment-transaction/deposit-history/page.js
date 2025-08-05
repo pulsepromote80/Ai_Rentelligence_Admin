@@ -159,7 +159,7 @@ const DepositHistory = () => {
                     setRowsPerPage(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="p-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
                   <option value="10">10</option>
                   <option value="25">25</option>
