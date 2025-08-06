@@ -12,7 +12,7 @@ export const API_ENDPOINTS = {
 
 export const Columns = [
   { key: 'image', label: 'Add Image' },
-  { key: 'id', label: 'S.No.' },
+  { key: 'S.no', label: 'S.No.' },
   { key: 'productName', label: 'Title' },
   { key: 'description', label: 'Description' },
   { key: 'categoryName', label: 'Category Name' },
