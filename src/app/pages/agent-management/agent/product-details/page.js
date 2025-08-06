@@ -51,10 +51,17 @@ const ProductDetails = ({ productDetails, activeTab, setSelectedImageUrl }) => {
                     <td className="px-3 py-2 text-left">{productDetails.weeklyReturn}</td>
                   </tr>
                   <tr className="bg-white border-b">
-                    <th className="px-3 py-2 font-semibold text-left text-gray-700">Month</th>
+                    <th className="px-3 py-2 font-semibold text-left text-gray-700">Monthly Return</th>
                     <td className="px-3 py-2 text-left">{productDetails.month}</td>
                     <th className="px-3 py-2 font-semibold text-left text-gray-700">Unit</th>
                     <td className="px-3 py-2 text-left">{productDetails.unit}</td>
+                    <th className="px-3 py-2 font-semibold text-left text-gray-700">Total Month</th>
+                    <td className="px-3 py-2 text-left">{productDetails.toatalmonth}</td>
+                    
+                  </tr>
+                  <tr className="bg-white border-b">
+                    <th className="px-3 py-2 font-semibold text-left text-gray-700">NFT Url</th>
+                    <td className="px-3 py-2 text-left">{productDetails.nfTurL}</td>
                     <th className="px-3 py-2 font-semibold text-left text-gray-700">Specification</th>
                     <td className="px-3 py-2 text-left">
                       {productDetails.specification && (
