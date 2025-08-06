@@ -41,6 +41,8 @@ const AddProduct = ({ onClose, productId }) => {
   const [task, setTask] = useState('')
   const [totalReturn, setTotalReturn] = useState('')
   const [weeklyReturn, setWeeklyReturn] = useState('')
+  const [toatalmonth, settoatalmonth] = useState('')
+  const [nfTurL, setnfTurL] = useState('')
   const [month,setMonth] = useState('')
   const [activeTab, setActiveTab] = useState('addProduct');
   const [isProductMetaTagEnabled, setIsProductMetaTagEnabled] = useState(false);
@@ -125,6 +127,7 @@ const validateForm = () => {
     if (!description.trim()) newErrors.description = 'Description is required'
     if (!subTitle.trim()) newErrors.subTitle = 'Subtitle is required'
     if (!image) newErrors.image = 'Image is required'
+    if (!nfTurL) newErrors.nfTurL = 'NFT Url is required'
 
     // Numeric validations
     if (!stock.trim()) {
@@ -205,6 +208,12 @@ const validateForm = () => {
       newErrors.month = 'Month must be a positive number'
     }
 
+    if (!toatalmonth.trim()) {
+      newErrors.toatalmonth = 'Month is required'
+    } else if (isNaN(toatalmonth) || parseInt(toatalmonth) < 0) {
+      newErrors.toatalmonth = 'Total Month must be a positive number'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -266,6 +275,8 @@ const validateForm = () => {
       unit,
       specification,
       task,
+      toatalmonth,
+      nfTurL,
       totalReturn,
       weeklyReturn,
       month,
@@ -709,7 +720,7 @@ const validateForm = () => {
 
             <div>
               <label className="block text-sm font-medium">
-                Month <span className="text-red-500">*</span>
+                Monthly Return <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
@@ -725,6 +736,48 @@ const validateForm = () => {
               />
               {errors.month && (
                 <p className="text-xs text-red-500">{errors.month}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium">
+                Total Month <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                value={toatalmonth}
+                onChange={(e) => {
+                  settoatalmonth(e.target.value)
+                  if (errors.toatalmonth) {
+                    setErrors((prev) => ({ ...prev, toatalmonth: '' }))
+                  }
+                }}
+                placeholder="Total Month"
+                className={`w-full px-3 py-2 mt-2 border rounded ${errors.toatalmonth ? 'border-red-500' : ''}`}
+              />
+              {errors.toatalmonth && (
+                <p className="text-xs text-red-500">{errors.toatalmonth}</p>
+              )}
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium">
+                NFT Url <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={nfTurL}
+                onChange={(e) => {
+                  setnfTurL(e.target.value)
+                  if (errors.nfTurL) {
+                    setErrors((prev) => ({ ...prev, nfTurL: '' }))
+                  }
+                }}
+                placeholder="NFT Url"
+                className={`w-full px-3 py-2 mt-2 border rounded ${errors.nfTurL ? 'border-red-500' : ''}`}
+              />
+              {errors.month && (
+                <p className="text-xs text-red-500">{errors.nfTurL}</p>
               )}
             </div>
 

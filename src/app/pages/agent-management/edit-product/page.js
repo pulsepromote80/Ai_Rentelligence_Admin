@@ -29,6 +29,8 @@ const EditProduct = ({ product, onClose }) => {
         totalReturn: '',
         weeklyReturn: '',
         month: '',
+        nfTurL: '',
+        toatalmonth: '',
         specification: '',
         discountPrice: '',
         rating: '',
@@ -41,6 +43,7 @@ const EditProduct = ({ product, onClose }) => {
     });
 
     useEffect(() => {
+         console.log('Product data:', product);
         if (product) {
             setFormData({
                 category: product.categoryId || '',
@@ -59,6 +62,8 @@ const EditProduct = ({ product, onClose }) => {
                 totalReturn: product.totalReturn || '',
                 weeklyReturn: product.weeklyReturn || '',
                 month: product.month || '',
+                nfTurL: product.nfTurL || '',
+                toatalmonth: product.toatalmonth || '',
                 specification: product.specification || '',
                 rating: product.rating || '',
                 noOfRating: product.noOfRating || '',
@@ -133,6 +138,8 @@ const EditProduct = ({ product, onClose }) => {
         totalReturn: formData.totalReturn,
         weeklyReturn: formData.weeklyReturn,
         month: formData.month,
+        toatalmonth: formData.toatalmonth,
+        nfTurL: formData.nfTurL,
         specification: formData.specification,
         description: formData.description,
         isNewArrial: formData.isNewArrial,
@@ -409,6 +416,28 @@ const EditProduct = ({ product, onClose }) => {
                         className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
                     />
                 </div>
+                
+                 <div className="md:col-span-1">
+                    <label className="block text-sm font-medium">Total Month</label>
+                    <input
+                        type="number"
+                        name="toatalmonth"
+                        value={formData.toatalmonth}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
+                    />
+                </div>
+                <div className="md:col-span-1">
+                    <label className="block text-sm font-medium">NFT Url</label>
+                    <input
+                        type="text"
+                        name="nfTurL"
+                        value={formData.nfTurL}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
+                    />
+                </div>
+                
                 <div className="md:col-span-2">
                     <label className="block text-sm font-medium">Specification</label>
                     <Tiptap
