@@ -95,7 +95,7 @@ const SellerPage = () => {
 
     if (!formData.description.trim()) {
       newErrors.description = 'Description is required'
-    } else if (formData.description.length > 200) {
+    } else if (formData.description.length > 1000) {
       newErrors.description = 'Description cannot exceed 200 characters'
     }
 
@@ -277,7 +277,8 @@ const SellerPage = () => {
           <div className="grid grid-cols-2 gap-4">
             {/* Country Dropdown */}
             <div>
-              <label className="block font-medium">Country</label>
+              <label className="block font-medium">
+              Country<span className="text-red-500">*</span></label>
               <select
                 name="country"
                 value={formData?.country?.toString() || ''}
@@ -298,7 +299,9 @@ const SellerPage = () => {
 
             {/* State Dropdown */}
             <div>
-              <label className="block font-medium">State</label>
+              <label className="block font-medium">
+              State<span className="text-red-500">*</span>
+              </label>
               <select
                 name="state"
                 value={formData?.state}
@@ -320,7 +323,9 @@ const SellerPage = () => {
 
             {/* City Dropdown */}
             <div>
-              <label className="block font-medium">City</label>
+              <label className="block font-medium">
+              City<span className="text-red-500">*</span>
+              </label>
               <select
                 name="city"
                 value={formData.city}
@@ -342,7 +347,9 @@ const SellerPage = () => {
 
             {/* Username Field */}
             <div>
-              <label className="block font-medium">Username</label>
+              <label className="block font-medium">
+              Username<span className="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 name="userName"
@@ -357,7 +364,8 @@ const SellerPage = () => {
 
             {/* Password Field */}
             <div className="relative">
-              <label className="block font-medium">User Password</label>
+              <label className="block font-medium">
+              User Password<span className="text-red-500">*</span></label>
               <input
                 type={showPassword ? "text" : "password"}
                 name="userPassword"
@@ -382,7 +390,8 @@ const SellerPage = () => {
               }
               return (
                 <div key={key}>
-                  <label className="block font-medium capitalize ">{key}</label>
+                  <label className="block font-medium capitalize ">
+                   {key}<span className="text-red-500">*</span> </label>
                   {key === 'active' ? (
                     <div className="flex items-center mt-4 space-x-2">
                       <input

@@ -17,33 +17,6 @@ export const Columns = [
     { key: 'pincode', label: 'Pincode' },
     { key: 'country', label: 'Country' },
     { key: 'description', label: 'Description' },
-    { key: 'status', label: 'Status' },
-    {
-        key: 'sellerActive',
-        label: 'Seller Active',
-        render: (value, row, onActivateSeller, onDelete = false) => {
-            if (onDelete) return null;
-            if (row.status === 'Activated') {
-                return <button className="px-3 py-1 text-white bg-green-400 rounded cursor-not-allowed" disabled>Activated</button>;
-            }
-            if (row.status === 'UserInActive') {
-                return (
-                    <button
-                        className="px-3 py-1 text-white bg-gray-400 rounded cursor-not-allowed"
-                        disabled
-                    >
-                        Activate
-                    </button>
-                );
-            }
-            return (
-                <button
-                    className="px-3 py-1 text-white bg-red-500 rounded hover:bg-red-500"
-                    onClick={() => onActivateSeller(row.sellerId)}
-                >
-                    Activate
-                </button>
-            );
-        },
-    },
+    { key: 'status', label: 'Status' }
+    
 ];

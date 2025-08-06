@@ -1,9 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { MdEdit, MdDelete} from 'react-icons/md'
+import { MdEdit, MdDelete } from 'react-icons/md';
 import { RiImageAddLine } from "react-icons/ri";
-
 
 const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick }) => {
     const [sortConfig, setSortConfig] = useState({ key: null, order: "asc" });
@@ -119,7 +118,7 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                         </tr>
                     </thead>
                     <tbody>
-                        {currentRows.map((row) => (
+                        {currentRows.map((row, index) => (
                             <tr key={row.id} className="hover:bg-gray-100">
                                 {(onEdit || onDelete) && (
                                     <td className="px-6 py-4 text-center border border-gray-300">
@@ -152,7 +151,9 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                                         onClick={() => onRowClick(row)}
                                         className="px-6 py-4 text-center border border-gray-300 cursor-pointer"
                                     >
-                                        {col.key === "image" || col.key === "imageUrl" ? (
+                                        {col.key === "S.no" ? (
+                                            indexOfFirstRow + index + 1
+                                        ) : col.key === "image" || col.key === "imageUrl" ? (
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
@@ -161,7 +162,7 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                                                 className="flex items-center justify-center p-2 text-white "
                                                 title="Add Image"
                                             >
-                                            <RiImageAddLine size={25} color="green" />
+                                                <RiImageAddLine size={25} color="green" />
                                             </button>
                                         ) : col.key === "username" ? (
                                             <Link
@@ -193,7 +194,7 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
 
             {/* mobile card table */}
             <div className="space-y-4 md:hidden">
-                {currentRows.map((row) => (
+                {currentRows.map((row, index) => (
                     <div
                         key={row.id}
                         onClick={() => onRowClick(row)}
@@ -203,7 +204,9 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                             <div key={col.key} className="flex justify-between py-1">
                                 <span className="font-medium text-gray-600">{col.label}:</span>
                                 <span className="text-right text-gray-800">
-                                    {col.key === "image" || col.key === "imageUrl" ? (
+                                    {col.key === "S.no" ? (
+                                        indexOfFirstRow + index + 1
+                                    ) : col.key === "image" || col.key === "imageUrl" ? (
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
