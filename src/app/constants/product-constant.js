@@ -27,7 +27,7 @@ export const Columns = [
   { key: 'perHour', label: 'PerHour' },
   { key: 'unit', label: 'Unit' },
   { key: 'weeklyReturn', label:'Weekly Return ($)'},
-  { key: 'month', label:'Monthly Return ($)'},
-  { key: 'totalReturn', label:'Total Return ($)'},
+  { key: 'month', label:'Monthly Return (%)'},
+  { key: 'totalReturn', label:'Total Return (%)'},
   { key: 'status', label: 'Status' },
 ];

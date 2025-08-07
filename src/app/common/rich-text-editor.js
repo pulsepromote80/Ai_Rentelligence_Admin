@@ -48,7 +48,9 @@ const MenuBar = ({ editor }) => {
           onClick={() =>
             editor.chain().focus().toggleHeading({ level }).run()
           }
-          className={`${baseBtn} ${editor.isActive('heading', { level }) ? activeBtn : ''}`}
+          className={`${baseBtn} ${
+            editor.isActive('heading', { level }) ? activeBtn : ''
+          }`}
           title={`Heading ${level}`}
         >
           {level === 1 ? (
@@ -64,7 +66,9 @@ const MenuBar = ({ editor }) => {
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleBulletList().run()}
-        className={`${baseBtn} ${editor.isActive('bulletList') ? activeBtn : ''}`}
+        className={`${baseBtn} ${
+          editor.isActive('bulletList') ? activeBtn : ''
+        }`}
         title="Bullet List"
       >
         <List size={18} />
@@ -72,12 +76,13 @@ const MenuBar = ({ editor }) => {
       <button
         type="button"
         onClick={() => editor.chain().focus().toggleOrderedList().run()}
-        className={`${baseBtn} ${editor.isActive('orderedList') ? activeBtn : ''}`}
+        className={`${baseBtn} ${
+          editor.isActive('orderedList') ? activeBtn : ''
+        }`}
         title="Numbered List"
       >
         <ListOrdered size={18} />
       </button>
-
     </div>
   );
 };
@@ -89,11 +94,26 @@ const Tiptap = ({ value, onChange }) => {
         heading: {
           levels: [1, 2, 3, 4, 5, 6],
         },
+        bulletList: {
+          HTMLAttributes: {
+            class: 'list-disc pl-5',
+          },
+        },
+        orderedList: {
+          HTMLAttributes: {
+            class: 'list-decimal pl-5',
+          },
+        },
       }),
     ],
     content: value || '',
     onUpdate({ editor }) {
       onChange(editor.getHTML());
+    },
+    editorProps: {
+      attributes: {
+        class: 'min-h-[300px] w-full border p-4 rounded bg-white focus:outline-none',
+      },
     },
   });
 
@@ -106,12 +126,9 @@ const Tiptap = ({ value, onChange }) => {
   return (
     <div className="p-4 border rounded bg-gray-50">
       <MenuBar editor={editor} />
-      <EditorContent
-        editor={editor}
-        className="prose min-h-[300px] w-full border p-4 rounded bg-white focus:outline-none"
-      />
+      <EditorContent editor={editor} />
     </div>
   );
 };
 
-export default Tiptap; 
+export default Tiptap;
