@@ -15,7 +15,6 @@ import Tiptap from '@/app/common/rich-text-editor'
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { set } from 'react-hook-form'
 
-
 const AddProduct = ({ onClose, productId }) => {
   const dispatch = useDispatch()
   const { categoryData } = useSelector((state) => state?.category ?? [])
@@ -43,7 +42,7 @@ const AddProduct = ({ onClose, productId }) => {
   const [weeklyReturn, setWeeklyReturn] = useState('')
   const [toatalmonth, settoatalmonth] = useState('')
   const [nfTurL, setnfTurL] = useState('')
-  const [month,setMonth] = useState('')
+  const [month, setMonth] = useState('')
   const [activeTab, setActiveTab] = useState('addProduct');
   const [isProductMetaTagEnabled, setIsProductMetaTagEnabled] = useState(false);
   const [isSimilarProductTabEnabled, setIsSimilarProductTabEnabled] = useState(false);
@@ -59,6 +58,93 @@ const AddProduct = ({ onClose, productId }) => {
     dispatch(fetchActiveCategoryList())
     dispatch(fetchActiveSellerList())
   }, [dispatch])
+
+  
+//   useEffect(() => {
+//     if (price) {
+//       const priceValue = parseFloat(price);
+      
+//       if (priceValue >= 100 && priceValue <= 2000) {
+//         setMonth('8'); 
+//         setTotalReturn('200'); 
+//       } else if (priceValue >= 2100 && priceValue <= 10000) {
+//         setMonth('9'); 
+//         setTotalReturn('210'); 
+//       } else if (priceValue >= 11000) {
+//         setMonth('10'); 
+//         setTotalReturn('220'); 
+//       }
+//     }
+//   }, [price]);
+
+  
+// useEffect(() => {
+//   if (price && month) {
+//     const priceValue = parseFloat(price);
+//     const monthlyReturnPercentage = parseFloat(month);
+//     const weeklyReturnValue = (priceValue * monthlyReturnPercentage) / 100 / 4;
+//     setWeeklyReturn(weeklyReturnValue.toFixed(2));
+//   }
+// }, [price, month]);
+
+  
+//   useEffect(() => {
+//     if (totalReturn && month) {
+//       const totalReturnValue = parseFloat(totalReturn);
+//       const monthlyReturnValue = parseFloat(month);
+//       if (monthlyReturnValue > 0) {
+//         const calculatedMonths = (totalReturnValue / monthlyReturnValue).toFixed(0);
+//         settoatalmonth(calculatedMonths);
+//       }
+//     }
+//   }, [totalReturn, month]);
+
+useEffect(() => {
+  if (!price || price.trim() === "") {
+    // Reset all fields if price is empty/null
+    setMonth("");
+    setTotalReturn("");
+    setWeeklyReturn("");
+    settoatalmonth("");
+  } else {
+    const priceValue = parseFloat(price);
+    
+    if (priceValue >= 100 && priceValue <= 2000) {
+      setMonth("8"); 
+      setTotalReturn("200"); 
+    } else if (priceValue >= 2100 && priceValue <= 10000) {
+      setMonth("9"); 
+      setTotalReturn("210"); 
+    } else if (priceValue >= 11000) {
+      setMonth("10"); 
+      setTotalReturn("220"); 
+    }
+  }
+}, [price]);
+
+useEffect(() => {
+  if (month && price) {
+    const monthlyReturnPercentage = parseFloat(month);
+    const weeklyReturnValue = (parseFloat(price) * monthlyReturnPercentage) / 100 / 4;
+    setWeeklyReturn(weeklyReturnValue.toFixed(2));
+  } else {
+    setWeeklyReturn(""); 
+  }
+}, [month, price]);
+
+useEffect(() => {
+  
+  if (totalReturn && month) {
+    const totalReturnValue = parseFloat(totalReturn);
+    const monthlyReturnValue = parseFloat(month);
+    if (monthlyReturnValue > 0) {
+      const calculatedMonths = (totalReturnValue / monthlyReturnValue).toFixed(2);
+      settoatalmonth(calculatedMonths);
+    }
+  } else {
+    settoatalmonth(""); 
+  }
+}, [totalReturn, month]);
 
   const handleCategoryChange = (option) => {
     setSelectedCategory(option)
@@ -84,6 +170,7 @@ const AddProduct = ({ onClose, productId }) => {
       })
     }
   }
+
   const handleSubCategoryChange = (option) => {
     setSelectedSubCategory(option)
     setSelectedSubCategoryType(null)
@@ -114,22 +201,19 @@ const AddProduct = ({ onClose, productId }) => {
 
   const [errors, setErrors] = useState({})
 
-const validateForm = () => {
+  const validateForm = () => {
     const newErrors = {}
     
-    // Required field validations
     if (!selectedCategory) newErrors.selectedCategory = 'Category is required'
     if (!selectedSubCategory) newErrors.selectedSubCategory = 'Subcategory is required'
     if (!selectedSubCategoryType) newErrors.selectedSubCategoryType = 'SubcategoryType is required'
     if (!selectedSeller) newErrors.selectedSeller = 'Seller is required'
-    // Basic field validations
     if (!title.trim()) newErrors.title = 'Title is required'
     if (!description.trim()) newErrors.description = 'Description is required'
     if (!subTitle.trim()) newErrors.subTitle = 'Subtitle is required'
     if (!image) newErrors.image = 'Image is required'
     if (!nfTurL) newErrors.nfTurL = 'NFT Url is required'
 
-    // Numeric validations
     if (!stock.trim()) {
       newErrors.stock = 'Stock is required'
     } else if (isNaN(stock) || parseInt(stock) < 0) {
@@ -139,32 +223,29 @@ const validateForm = () => {
     if (!mrp.trim()) {
       newErrors.mrp = 'MRP is required'
     } else if (isNaN(mrp) || parseFloat(mrp) <= 0) {
-      newErrors.mrp = 'MRP must be a positive number'
+      newErrors.mrp = 'MRP must be a positive number '
     }
 
     if (!price.trim()) {
-      newErrors.price = 'Price is required'
-    } else if (isNaN(price) || parseFloat(price) <= 0) {
-      newErrors.price = 'Price must be a positive number'
-    } else if (parseFloat(price) > parseFloat(mrp)) {
-      newErrors.price = 'Price cannot be greater than MRP'
-    }
+  newErrors.price = 'Price is required';
+} else if (isNaN(price) || parseFloat(price) <= 100) {  
+  newErrors.price = 'Price must be a positive number and Greater and Equal to 100';
+} else if (parseFloat(price) > parseFloat(mrp)) {
+  newErrors.price = 'Price cannot be greater than MRP';
+}
 
-    // Discount Price validation
     if (!discountPrice.trim()) {
       newErrors.discountPrice = 'Discount Price is required'
     } else if (isNaN(discountPrice) || parseFloat(discountPrice) < 0) {
       newErrors.discountPrice = 'Discount Price must be a positive number'
     }
 
-    // PerHour validation
     if (!perHour.trim()) {
       newErrors.perHour = 'Per Hour is required'
     } else if (isNaN(perHour) || parseFloat(perHour) < 0) {
       newErrors.perHour = 'Per Hour must be a positive number'
     }
 
-    // Unit validation
     if (!unit.trim()) {
       newErrors.unit = 'Unit is required'
     } else if (isNaN(unit) || parseFloat(unit) < 0) {
@@ -183,33 +264,29 @@ const validateForm = () => {
       newErrors.noOfRating = 'Number of ratings must be a positive number'
     }
 
-      if (!image) {
+    if (!image) {
       newErrors.image = 'Image is required';
     }
 
-    // Task validation (string required)
     if (!task.trim()) newErrors.task = 'Task is required'
-    // Total Return validation
     if (!totalReturn.trim()) {
       newErrors.totalReturn = 'Total Return is required'
     } else if (isNaN(totalReturn) || parseFloat(totalReturn) < 0) {
       newErrors.totalReturn = 'Total Return must be a positive number'
     }
-    // Weekly Return validation
     if (!weeklyReturn.trim()) {
       newErrors.weeklyReturn = 'Weekly Return is required'
     } else if (isNaN(weeklyReturn) || parseFloat(weeklyReturn) < 0) {
       newErrors.weeklyReturn = 'Weekly Return must be a positive number'
     }
-    // Month validation
     if (!month.trim()) {
-      newErrors.month = 'Month is required'
+      newErrors.month = 'Monthly Return is required'
     } else if (isNaN(month) || parseInt(month) < 0) {
-      newErrors.month = 'Month must be a positive number'
+      newErrors.month = 'Monthly Return must be a positive number'
     }
 
     if (!toatalmonth.trim()) {
-      newErrors.toatalmonth = 'Month is required'
+      newErrors.toatalmonth = 'Total Month is required'
     } else if (isNaN(toatalmonth) || parseInt(toatalmonth) < 0) {
       newErrors.toatalmonth = 'Total Month must be a positive number'
     }
@@ -222,12 +299,10 @@ const validateForm = () => {
     const newMrp = e.target.value;
     setMrp(newMrp);
     
-    // Clear MRP error
     if (errors.mrp) {
       setErrors((prev) => ({ ...prev, mrp: '' }));
     }
     
-    // Calculate discount if price exists
     if (price && !isNaN(price) && !isNaN(newMrp)) {
       const calculatedDiscount = Math.max(0, parseFloat(newMrp) - parseFloat(price));
       setdiscountPrice(calculatedDiscount.toString());
@@ -238,17 +313,14 @@ const validateForm = () => {
     const newPrice = e.target.value;
     setprice(newPrice);
     
-    // Clear price error
     if (errors.price) {
       setErrors((prev) => ({ ...prev, price: '' }));
     }
     
-    // Calculate discount if MRP exists
     if (mrp && !isNaN(mrp) && !isNaN(newPrice)) {
       const calculatedDiscount = Math.max(0, parseFloat(mrp) - parseFloat(newPrice));
       setdiscountPrice(calculatedDiscount.toString());
       
-      // Validate price against MRP
       if (parseFloat(newPrice) > parseFloat(mrp)) {
         setErrors((prev) => ({
           ...prev,
@@ -320,7 +392,6 @@ const validateForm = () => {
     } catch (error) {
       toast.error(error?.message || 'Failed to add product');
     }
-
   }
 
   const categoryOptions = categoryData?.map((category) => ({
@@ -562,7 +633,7 @@ const validateForm = () => {
                   return false;
                 }}
                 placeholder="Discount Price"
-                className="w-full px-3 py-2 mt-2 border rounded"
+                className="w-full px-3 py-2 mt-2 border rounded cursor-not-allowed"
                 readOnly
               />
               {errors.discountPrice && (
@@ -654,7 +725,6 @@ const validateForm = () => {
               )}
             </div>
 
-            
             <div>
               <label className="block text-sm font-medium">
                 Task <span className="text-red-500">*</span>
@@ -678,19 +748,15 @@ const validateForm = () => {
 
             <div>
               <label className="block text-sm font-medium">
-                Total Return <span className="text-red-500">*</span>
+                Total Return (%) <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
                 value={totalReturn}
-                onChange={(e) => {
-                  setTotalReturn(e.target.value)
-                  if (errors.totalReturn) {
-                    setErrors((prev) => ({ ...prev, totalReturn: '' }))
-                  }
-                }}
+                readOnly
+                isDisabled={!totalReturn}
                 placeholder="Total Return"
-                className={`w-full px-3 py-2 mt-2 border rounded ${errors.totalReturn ? 'border-red-500' : ''}`}
+                className="w-full px-3 py-2 mt-2 border rounded cursor-not-allowed"
               />
               {errors.totalReturn && (
                 <p className="text-xs text-red-500">{errors.totalReturn}</p>
@@ -699,19 +765,15 @@ const validateForm = () => {
 
             <div>
               <label className="block text-sm font-medium">
-                Weekly Return <span className="text-red-500">*</span>
+                Weekly Return ($) <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
                 value={weeklyReturn}
-                onChange={(e) => {
-                  setWeeklyReturn(e.target.value)
-                  if (errors.weeklyReturn) {
-                    setErrors((prev) => ({ ...prev, weeklyReturn: '' }))
-                  }
-                }}
+                readOnly
+                isDisabled={!weeklyReturn}
                 placeholder="Weekly Return"
-                className={`w-full px-3 py-2 mt-2 border rounded ${errors.weeklyReturn ? 'border-red-500' : ''}`}
+                className="w-full px-3 py-2 mt-2 border rounded cursor-not-allowed"
               />
               {errors.weeklyReturn && (
                 <p className="text-xs text-red-500">{errors.weeklyReturn}</p>
@@ -720,19 +782,15 @@ const validateForm = () => {
 
             <div>
               <label className="block text-sm font-medium">
-                Monthly Return <span className="text-red-500">*</span>
+                Monthly Return (%) <span className="text-red-500">*</span>
               </label>
               <input
                 type="number"
                 value={month}
-                onChange={(e) => {
-                  setMonth(e.target.value)
-                  if (errors.month) {
-                    setErrors((prev) => ({ ...prev, month: '' }))
-                  }
-                }}
-                placeholder="Month"
-                className={`w-full px-3 py-2 mt-2 border rounded ${errors.month ? 'border-red-500' : ''}`}
+                readOnly
+                isDisabled={!month}
+                placeholder="Monthly Return"
+                className="w-full px-3 py-2 mt-2 border rounded cursor-not-allowed"
               />
               {errors.month && (
                 <p className="text-xs text-red-500">{errors.month}</p>
@@ -746,14 +804,10 @@ const validateForm = () => {
               <input
                 type="number"
                 value={toatalmonth}
-                onChange={(e) => {
-                  settoatalmonth(e.target.value)
-                  if (errors.toatalmonth) {
-                    setErrors((prev) => ({ ...prev, toatalmonth: '' }))
-                  }
-                }}
+                readOnly
+                isDisabled={!toatalmonth}
                 placeholder="Total Month"
-                className={`w-full px-3 py-2 mt-2 border rounded ${errors.toatalmonth ? 'border-red-500' : ''}`}
+                className="w-full px-3 py-2 mt-2 border rounded cursor-not-allowed"
               />
               {errors.toatalmonth && (
                 <p className="text-xs text-red-500">{errors.toatalmonth}</p>
@@ -776,11 +830,10 @@ const validateForm = () => {
                 placeholder="NFT Url"
                 className={`w-full px-3 py-2 mt-2 border rounded ${errors.nfTurL ? 'border-red-500' : ''}`}
               />
-              {errors.month && (
+              {errors.nfTurL && (
                 <p className="text-xs text-red-500">{errors.nfTurL}</p>
               )}
             </div>
-
 
             <div>
               <label className="block text-sm font-medium">
@@ -803,8 +856,6 @@ const validateForm = () => {
               )}
             </div>
 
-             
-
             <div>
               <label className="block text-sm font-medium">
                 Choose Image <span className="text-red-500">*</span>
@@ -816,14 +867,11 @@ const validateForm = () => {
                 className="w-full mt-2"
               />
               {errors.image && (
-
-              <p className="mt-1 text-sm text-red-500">{errors.image}</p> )}
-
+                <p className="mt-1 text-sm text-red-500">{errors.image}</p>
+              )}
             </div>
 
-            
             <div className="flex flex-row justify-start gap-10 mt-4 md:col-span-3">
-
               <div className="flex items-center mb-2">
                 <input
                   type="checkbox"
@@ -831,7 +879,6 @@ const validateForm = () => {
                   onChange={(e) => setIsNewArrival(e.target.checked)}
                   className="w-5 h-5 mr-2 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                 />
-
                 <label className="text-sm font-medium">New Arrival</label>
               </div>
               <div className="flex items-center mb-2">
@@ -853,7 +900,6 @@ const validateForm = () => {
                 <label className="text-sm font-medium">Recommended</label>
               </div>
             </div>
-
           </div>
           <div className='mt-4'>
               <div className="flex items-center gap-3 mt-4">
@@ -897,7 +943,6 @@ const validateForm = () => {
             </button>
           </div>
         </div>
-
       ) : activeTab === 'addSimilarProduct' && newProductId ? (
         <SimilarProduct 
           productId={newProductId} 
@@ -911,7 +956,7 @@ const validateForm = () => {
           setActiveTab={setActiveTab} 
           onClose={onClose} 
         />
-      ) :  null}
+      ) : null}
     </div>
   )
 }

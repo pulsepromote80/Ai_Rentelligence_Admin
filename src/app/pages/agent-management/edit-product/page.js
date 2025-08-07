@@ -43,7 +43,6 @@ const EditProduct = ({ product, onClose }) => {
     });
 
     useEffect(() => {
-         console.log('Product data:', product);
         if (product) {
             setFormData({
                 category: product.categoryId || '',
