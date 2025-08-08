@@ -4,20 +4,21 @@ import Link from "next/link";
 import { MdEdit, MdDelete } from 'react-icons/md';
 import { RiImageAddLine } from "react-icons/ri";
 
-const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick }) => {
+const ProductTable = ({ columns, data = [], onEdit, onDelete, onAddImage, onRowClick }) => {
     const [sortConfig, setSortConfig] = useState({ key: null, order: "asc" });
     const [searchTerm, setSearchTerm] = useState("");
     const [sortedData, setSortedData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-
+ 
     useEffect(() => {
-        setSortedData(data);
+        const sorted = [...data].sort((a, b) => a.id - b.id);
+        setSortedData(sorted);
     }, [data]);
 
     const sortData = (key) => {
         const order = sortConfig.key === key && sortConfig.order === "asc" ? "desc" : "asc";
-        const sorted = [...data].sort((a, b) => {
+        const sorted = [...sortedData].sort((a, b) => {
             const aValue = a[key]?.toString().toLowerCase() || "";
             const bValue = b[key]?.toString().toLowerCase() || "";
             return order === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
@@ -38,6 +39,11 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
     const indexOfFirstRow = indexOfLastRow - rowsPerPage;
     const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
     const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+    // Get the absolute serial number based on original position
+    const getSerialNumber = (row) => {
+        return data.findIndex(item => item.id === row.id) + 1;
+    };
 
     const renderDescription = (value) => {
         if (!value) return '';
@@ -80,7 +86,7 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
             {/* Search */}
             <div className="flex flex-col items-center justify-end mb-4 sm:flex-row">
                 <h1 className="flex-1 text-xl font-semibold text-center text-gray-800 text-list-label sm:text-left sm:mr-4">
-                    Agents
+                    Products
                 </h1>
                 <input
                     type="text"
@@ -91,7 +97,7 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                 />
             </div>
 
-            {/* desktop Table */}
+            {/* Desktop Table */}
             <div className="hidden overflow-x-auto md:block">
                 <table className="min-w-full border border-collapse border-gray-300">
                     <thead>
@@ -118,7 +124,7 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                         </tr>
                     </thead>
                     <tbody>
-                        {currentRows.map((row, index) => (
+                        {currentRows.map((row) => (
                             <tr key={row.id} className="hover:bg-gray-100">
                                 {(onEdit || onDelete) && (
                                     <td className="px-6 py-4 text-center border border-gray-300">
@@ -136,7 +142,7 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                                                 <button
                                                     onClick={() => row.active && onDelete(row)}
                                                     disabled={!row.active}
-                                                    className={`p-2 rounded-md  flex items-center justify-center`}
+                                                    className={`p-2 rounded-md flex items-center justify-center`}
                                                     title="Delete"
                                                 >
                                                     <MdDelete size={25} className={row.active ? 'text-red-600' : 'text-gray-300 cursor-not-allowed'} color="red"/>
@@ -152,14 +158,14 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                                         className="px-6 py-4 text-center border border-gray-300 cursor-pointer"
                                     >
                                         {col.key === "S.no" ? (
-                                            indexOfFirstRow + index + 1
+                                            getSerialNumber(row)
                                         ) : col.key === "image" || col.key === "imageUrl" ? (
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     onAddImage(row);
                                                 }}
-                                                className="flex items-center justify-center p-2 text-white "
+                                                className="flex items-center justify-center p-2 text-white"
                                                 title="Add Image"
                                             >
                                                 <RiImageAddLine size={25} color="green" />
@@ -192,9 +198,9 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                 </table>
             </div>
 
-            {/* mobile card table */}
+            {/* Mobile Card Table */}
             <div className="space-y-4 md:hidden">
-                {currentRows.map((row, index) => (
+                {currentRows.map((row) => (
                     <div
                         key={row.id}
                         onClick={() => onRowClick(row)}
@@ -205,14 +211,14 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                                 <span className="font-medium text-gray-600">{col.label}:</span>
                                 <span className="text-right text-gray-800">
                                     {col.key === "S.no" ? (
-                                        indexOfFirstRow + index + 1
+                                        getSerialNumber(row)
                                     ) : col.key === "image" || col.key === "imageUrl" ? (
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 onAddImage(row);
                                             }}
-                                            className="flex items-center justify-center p-2 text-white "
+                                            className="flex items-center justify-center p-2 text-white"
                                             title="Add Image"
                                         >
                                             <RiImageAddLine size={25} color="green" />
@@ -241,7 +247,6 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                             </div>
                         ))}
 
-                        {/* Action Buttons */}
                         {(onEdit || onDelete || onAddImage) && (
                             <div className="flex justify-center gap-2 mt-4">
                                 {onEdit && (
@@ -275,12 +280,10 @@ const ProductTable = ({ columns, data, onEdit, onDelete, onAddImage, onRowClick 
                 ))}
             </div>
 
-            {/* No data */}
             {filteredData.length === 0 && (
                 <p className="mt-4 text-center">No data found!</p>
             )}
 
-            {/* Pagination */}
             <div className="flex items-center justify-center mt-4 space-x-8">
                 <div className="flex items-center space-x-2">
                     <span>Rows per page:</span>

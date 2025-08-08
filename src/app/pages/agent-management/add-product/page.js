@@ -59,49 +59,10 @@ const AddProduct = ({ onClose, productId }) => {
     dispatch(fetchActiveSellerList())
   }, [dispatch])
 
-  
-//   useEffect(() => {
-//     if (price) {
-//       const priceValue = parseFloat(price);
-      
-//       if (priceValue >= 100 && priceValue <= 2000) {
-//         setMonth('8'); 
-//         setTotalReturn('200'); 
-//       } else if (priceValue >= 2100 && priceValue <= 10000) {
-//         setMonth('9'); 
-//         setTotalReturn('210'); 
-//       } else if (priceValue >= 11000) {
-//         setMonth('10'); 
-//         setTotalReturn('220'); 
-//       }
-//     }
-//   }, [price]);
 
-  
-// useEffect(() => {
-//   if (price && month) {
-//     const priceValue = parseFloat(price);
-//     const monthlyReturnPercentage = parseFloat(month);
-//     const weeklyReturnValue = (priceValue * monthlyReturnPercentage) / 100 / 4;
-//     setWeeklyReturn(weeklyReturnValue.toFixed(2));
-//   }
-// }, [price, month]);
-
-  
-//   useEffect(() => {
-//     if (totalReturn && month) {
-//       const totalReturnValue = parseFloat(totalReturn);
-//       const monthlyReturnValue = parseFloat(month);
-//       if (monthlyReturnValue > 0) {
-//         const calculatedMonths = (totalReturnValue / monthlyReturnValue).toFixed(0);
-//         settoatalmonth(calculatedMonths);
-//       }
-//     }
-//   }, [totalReturn, month]);
 
 useEffect(() => {
   if (!price || price.trim() === "") {
-    // Reset all fields if price is empty/null
     setMonth("");
     setTotalReturn("");
     setWeeklyReturn("");

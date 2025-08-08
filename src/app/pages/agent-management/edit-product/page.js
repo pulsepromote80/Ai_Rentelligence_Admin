@@ -42,6 +42,79 @@ const EditProduct = ({ product, onClose }) => {
         isActive: false,
     });
 
+    // Price-based calculations
+    useEffect(() => {
+        if (!formData.price || formData.price === "") {
+            // Reset all fields if price is empty/null
+            setFormData(prev => ({
+                ...prev,
+                month: "",
+                totalReturn: "",
+                weeklyReturn: "",
+                toatalmonth: ""
+            }));
+        } else {
+            const priceValue = parseFloat(formData.price);
+            
+            if (priceValue >= 100 && priceValue <= 2000) {
+                setFormData(prev => ({
+                    ...prev,
+                    month: "8",
+                    totalReturn: "200"
+                }));
+            } else if (priceValue >= 2100 && priceValue <= 10000) {
+                setFormData(prev => ({
+                    ...prev,
+                    month: "9",
+                    totalReturn: "210"
+                }));
+            } else if (priceValue >= 11000) {
+                setFormData(prev => ({
+                    ...prev,
+                    month: "10",
+                    totalReturn: "220"
+                }));
+            }
+        }
+    }, [formData.price]);
+
+    // Weekly return calculation
+    useEffect(() => {
+        if (formData.month && formData.price) {
+            const monthlyReturnPercentage = parseFloat(formData.month);
+            const weeklyReturnValue = (parseFloat(formData.price) * monthlyReturnPercentage) / 100 / 4;
+            setFormData(prev => ({
+                ...prev,
+                weeklyReturn: weeklyReturnValue.toFixed(2)
+            }));
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                weeklyReturn: ""
+            }));
+        }
+    }, [formData.month, formData.price]);
+
+    // Total months calculation
+    useEffect(() => {
+        if (formData.totalReturn && formData.month) {
+            const totalReturnValue = parseFloat(formData.totalReturn);
+            const monthlyReturnValue = parseFloat(formData.month);
+            if (monthlyReturnValue > 0) {
+                const calculatedMonths = (totalReturnValue / monthlyReturnValue).toFixed(2);
+                setFormData(prev => ({
+                    ...prev,
+                    toatalmonth: calculatedMonths
+                }));
+            }
+        } else {
+            setFormData(prev => ({
+                ...prev,
+                toatalmonth: ""
+            }));
+        }
+    }, [formData.totalReturn, formData.month]);
+
     useEffect(() => {
         if (product) {
             setFormData({
@@ -107,7 +180,6 @@ const EditProduct = ({ product, onClose }) => {
             return newData;
         });
     };
-
 
     const handleCheckboxChange = (e) => {
         const { name, checked } = e.target;
@@ -272,7 +344,6 @@ const EditProduct = ({ product, onClose }) => {
                     />
                 </div>
 
-
                 {/* MRP */}
                 <div className="md:col-span-1">
                     <label className="block text-sm font-medium">MRP</label>
@@ -293,8 +364,7 @@ const EditProduct = ({ product, onClose }) => {
                         name="price"
                         value={formData.price}
                         onChange={handleChange}
-                        className={`w-full px-3 py-2 mt-2 text-sm border rounded md:text-base ${errors.price ? 'border-red-500' : ''
-                            }`}
+                        className={`w-full px-3 py-2 mt-2 text-sm border rounded md:text-base ${errors.price ? 'border-red-500' : ''}`}
                     />
                     {errors.price && (
                         <p className="mt-1 text-xs text-red-500">{errors.price}</p>
@@ -384,34 +454,37 @@ const EditProduct = ({ product, onClose }) => {
                 </div>
                 {/* Total Return */}
                 <div className="md:col-span-1">
-                    <label className="block text-sm font-medium">Total Return</label>
+                    <label className="block text-sm font-medium">Total Return(%)</label>
                     <input
                         type="number"
                         name="totalReturn"
                         value={formData.totalReturn}
                         onChange={handleChange}
+                        readOnly
                         className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
                     />
                 </div>
                 {/* Weekly Return */}
                 <div className="md:col-span-1"> 
-                    <label className="block text-sm font-medium">Weekly Return</label>
+                    <label className="block text-sm font-medium">Weekly Return($)</label>
                     <input
                         type="number"
                         name="weeklyReturn"
                         value={formData.weeklyReturn}
                         onChange={handleChange}
+                        readOnly
                         className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
                     />
                 </div>
                 {/* Month */}
                 <div className="md:col-span-1">
-                    <label className="block text-sm font-medium">Monthly Return</label>
+                    <label className="block text-sm font-medium">Monthly Return(%)</label>
                     <input
                         type="number"
                         name="month"
                         value={formData.month}
                         onChange={handleChange}
+                        readOnly
                         className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
                     />
                 </div>
@@ -423,6 +496,7 @@ const EditProduct = ({ product, onClose }) => {
                         name="toatalmonth"
                         value={formData.toatalmonth}
                         onChange={handleChange}
+                        readOnly
                         className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
                     />
                 </div>
@@ -444,8 +518,6 @@ const EditProduct = ({ product, onClose }) => {
                         onChange={val => setFormData(prev => ({ ...prev, specification: val }))}
                     />
                 </div>
-
-
 
                 {/* Active Checkbox */}
                 <div className="col-span-1 mt-3 md:col-span-3">
