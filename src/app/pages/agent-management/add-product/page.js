@@ -189,7 +189,7 @@ useEffect(() => {
 
     if (!price.trim()) {
   newErrors.price = 'Price is required';
-} else if (isNaN(price) || parseFloat(price) <= 100) {  
+} else if (isNaN(price) || parseFloat(price) < 100) {  
   newErrors.price = 'Price must be a positive number and Greater and Equal to 100';
 } else if (parseFloat(price) > parseFloat(mrp)) {
   newErrors.price = 'Price cannot be greater than MRP';
