@@ -30,6 +30,7 @@ const EditProduct = ({ product, onClose }) => {
         weeklyReturn: '',
         month: '',
         nfTurL: '',
+        tokenId:'',
         toatalmonth: '',
         specification: '',
         discountPrice: '',
@@ -135,6 +136,7 @@ const EditProduct = ({ product, onClose }) => {
                 weeklyReturn: product.weeklyReturn || '',
                 month: product.month || '',
                 nfTurL: product.nfTurL || '',
+                tokenId: product.tokenId || '',
                 toatalmonth: product.toatalmonth || '',
                 specification: product.specification || '',
                 rating: product.rating || '',
@@ -211,6 +213,7 @@ const EditProduct = ({ product, onClose }) => {
         month: formData.month,
         toatalmonth: formData.toatalmonth,
         nfTurL: formData.nfTurL,
+        tokenId: formData.tokenId,
         specification: formData.specification,
         description: formData.description,
         isNewArrial: formData.isNewArrial,
@@ -506,6 +509,17 @@ const EditProduct = ({ product, onClose }) => {
                         type="text"
                         name="nfTurL"
                         value={formData.nfTurL}
+                        onChange={handleChange}
+                        className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
+                    />
+                </div>
+                
+                <div className="md:col-span-1">
+                    <label className="block text-sm font-medium">Token Id</label>
+                    <input
+                        type="number"
+                        name="tokenId"
+                        value={formData.tokenId}
                         onChange={handleChange}
                         className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
                     />
