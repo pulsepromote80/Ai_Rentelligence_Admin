@@ -43,6 +43,7 @@ const AddProduct = ({ onClose, productId }) => {
   const [toatalmonth, settoatalmonth] = useState('')
   const [nfTurL, setnfTurL] = useState('')
   const [month, setMonth] = useState('')
+  const [tokenId, settokenId] = useState('')
   const [activeTab, setActiveTab] = useState('addProduct');
   const [isProductMetaTagEnabled, setIsProductMetaTagEnabled] = useState(false);
   const [isSimilarProductTabEnabled, setIsSimilarProductTabEnabled] = useState(false);
@@ -190,7 +191,7 @@ useEffect(() => {
     if (!price.trim()) {
   newErrors.price = 'Price is required';
 } else if (isNaN(price) || parseFloat(price) < 100) {  
-  newErrors.price = 'Price must be a positive number and Greater and Equal to 100';
+  newErrors.price = 'The price must be greater than or equal to $100';
 } else if (parseFloat(price) > parseFloat(mrp)) {
   newErrors.price = 'Price cannot be greater than MRP';
 }
@@ -211,6 +212,12 @@ useEffect(() => {
       newErrors.unit = 'Unit is required'
     } else if (isNaN(unit) || parseFloat(unit) < 0) {
       newErrors.unit = 'Unit must be a positive number'
+    }
+
+     if (!tokenId.trim()) {
+      newErrors.tokenId = 'Token Id is required'
+    } else if (isNaN(tokenId) || parseFloat(tokenId) <= 0) {
+      newErrors.tokenId = 'Token Id must be a positive number '
     }
 
     if (!rating.trim()) {
@@ -313,6 +320,7 @@ useEffect(() => {
       totalReturn,
       weeklyReturn,
       month,
+      tokenId,
       categoryId: selectedCategory.value,
       categoryName: selectedCategory.label,
       subCategoryId: selectedSubCategory.value,
@@ -795,7 +803,28 @@ useEffect(() => {
                 <p className="text-xs text-red-500">{errors.nfTurL}</p>
               )}
             </div>
-
+            
+            <div>
+              <label className="block text-sm font-medium">
+                Token Id <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="number"
+                value={tokenId}
+                onChange={(e) => {
+                  settokenId(e.target.value)
+                  if (errors.tokenId) {
+                    setErrors((prev) => ({ ...prev, tokenId: '' }))
+                  }
+                }}
+                placeholder="Token Id"
+                className={`w-full px-3 py-2 mt-2 border rounded ${errors.tokenId ? 'border-red-500' : ''}`}
+              />
+              {errors.tokenId && (
+                <p className="text-xs text-red-500">{errors.tokenId}</p>
+              )}
+            </div>
+            
             <div>
               <label className="block text-sm font-medium">
                 Description <span className="text-red-500">*</span>

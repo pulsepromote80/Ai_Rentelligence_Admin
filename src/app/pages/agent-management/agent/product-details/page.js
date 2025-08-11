@@ -62,6 +62,8 @@ const ProductDetails = ({ productDetails, activeTab, setSelectedImageUrl }) => {
                   <tr className="bg-white border-b">
                     <th className="px-3 py-2 font-semibold text-left text-gray-700">NFT Url</th>
                     <td className="px-3 py-2 text-left">{productDetails.nfTurL}</td>
+                     <th className="px-3 py-2 font-semibold text-left text-gray-700">Token Id</th>
+                    <td className="px-3 py-2 text-left">{productDetails.TokenId}</td>
                     <th className="px-3 py-2 font-semibold text-left text-gray-700">Specification</th>
                     <td className="px-3 py-2 text-left">
                       {productDetails.specification && (
