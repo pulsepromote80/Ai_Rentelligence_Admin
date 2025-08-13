@@ -57,8 +57,8 @@ const LeaseAgentPage = () => {
               <th className="px-4 py-3 text-center border">Name</th>
               <th className="px-4 py-3 text-center border">Product</th>
               <th className="px-4 py-3 text-center border">Price</th>
-              <th className="px-4 py-3 text-center border">Payment Mode</th>
-              <th className="px-4 py-3 text-center border">Remark</th>
+              <th className="px-4 py-3 text-center border">Total Return</th>
+              <th className="px-4 py-3 text-center border">Weekly Return</th>
               <th className="px-4 py-3 text-center border">Date</th>
               <th className="px-4 py-3 text-center border">Duration (Months)</th>
             </tr>
@@ -83,8 +83,8 @@ const LeaseAgentPage = () => {
                   <td className="px-4 py-2 text-center border">{row.Name}</td>
                   <td className="px-4 py-2 text-center border">{row.productName}</td>
                   <td className="px-4 py-2 text-center border">{row.price}</td>
-                  <td className="px-4 py-2 text-center border">{row.Paymentmode}</td>
-                  <td className="px-4 py-2 text-center border">{row.Remark}</td>
+                  <td className="px-4 py-2 text-center border">{row.totalReturn}</td>
+                  <td className="px-4 py-2 text-center border">{row.weeklyReturn}</td>
                   <td className="px-4 py-2 text-center border">{formatDate(row.RDate)}</td>
                   <td className="px-4 py-2 text-center border">{row.DurationOnMonth}</td>
                 </tr>
