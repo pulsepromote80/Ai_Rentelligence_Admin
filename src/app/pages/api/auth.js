@@ -1,8 +1,8 @@
 'use client'
 import axios from 'axios'
 import Cookies from 'js-cookie'
-const BASE_URL = 'https://apis.rentelligence.biz/api';
-export const IMAGE_BASE_URL = 'https://apis.rentelligence.biz/TicketImage';
+const BASE_URL = 'https://rentelligence.live/api';
+export const IMAGE_BASE_URL = 'https://apis.rentelligence.live/TicketImage';
 
 const isLoggedIn = () => {
   return Cookies.get('userDetail') !== undefined

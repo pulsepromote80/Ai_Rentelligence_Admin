@@ -1,14 +1,11 @@
 "use client";
-//import { summary } from "@/app/constants/constant";
-//import { directMembers } from "@/app/constants/constant";
-//import DownlineMembers from "./downline-members/page";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getdirectMember } from "@/app/redux/communitySlice";
 
 export default function Affiliate() {
   const dispatch = useDispatch();
-  const { directMemberData } = useSelector((state) => state.community);
+  const { directMemberData, loading, error } = useSelector((state) => state.community);
   const [loginId, setLoginId] = useState("");
 
   // Auto-fetch on input
@@ -36,12 +33,20 @@ export default function Affiliate() {
             autoComplete="off"
           />
         </div>
-        {/* Show members only if loginId is present and data is available */}
-        {loginId && directMemberData && (
+
+        {loading && <div className="text-center">Loading...</div>}
+        
+        {error && (
+          <div className="p-4 mb-6 text-center text-red-600 bg-red-100 rounded-lg">
+            {error.message || "Data Not Found"}
+          </div>
+        )}
+
+        {loginId && directMemberData && directMemberData.length > 0 && (
           <section className="w-full mt-8">
             <h3 className="mb-6 text-2xl font-semibold text-center text-blue-600">Direct Members</h3>
             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              {directMemberData?.map((member, idx) => (
+              {directMemberData.map((member, idx) => (
                 <div key={idx} className="flex flex-col gap-2 p-6 transition-shadow bg-white border border-gray-100 shadow-lg rounded-xl hover:shadow-2xl">
                   <div className="text-lg font-semibold text-gray-800">{member.name}</div>
                   <div className="text-sm text-gray-500">{member.email}</div>
@@ -51,6 +56,12 @@ export default function Affiliate() {
               ))}
             </div>
           </section>
+        )}
+
+        {loginId && directMemberData && directMemberData.length === 0 && !error && !loading && (
+          <div className="p-4 text-center text-gray-600 bg-gray-100 rounded-lg">
+            No members found for this User ID
+          </div>
         )}
       </div>
     </div>
