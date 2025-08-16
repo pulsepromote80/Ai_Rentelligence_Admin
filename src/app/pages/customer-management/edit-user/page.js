@@ -1,13 +1,13 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { usernameLoginId,clearUsernameData  } from '@/app/redux/adminMasterSlice';
+import { usernameLoginId, clearUsernameData } from '@/app/redux/adminMasterSlice';
 import { updateUser } from '@/app/redux/authSlice';
 import { toast } from 'react-toastify';
 
 const EditUser = () => {
   const dispatch = useDispatch();
-  const { usernameData } = useSelector((state) => state.adminMaster);
+  const { usernameData, error: usernameError } = useSelector((state) => state.adminMaster);
   const { updateUserData, loading, error } = useSelector((state) => state.auth);
   const [authLogin, setAuthLogin] = useState('');
   const [fields, setFields] = useState({
@@ -33,7 +33,22 @@ const EditUser = () => {
   }, [authLogin, dispatch]);
 
   useEffect(() => {
-    if (usernameData && usernameData) {
+    if (usernameError) {
+      toast.error(usernameError.message || 'Invalid User ID');
+      setFields({
+        name: '',
+        fName: '',
+        lName: '',
+        email: '',
+        address: '',
+        mobile: '',
+        urid: ''
+      });
+    }
+  }, [usernameError]);
+
+  useEffect(() => {
+    if (usernameData) {
       setFields({
         name: usernameData.name || '',
         fName: usernameData.fName || '',
@@ -45,7 +60,6 @@ const EditUser = () => {
       });
     }
   }, [usernameData]);
-
 
   useEffect(() => {
     if (updateUserData && updateUserData.statusCode === 200) {
@@ -64,7 +78,7 @@ const EditUser = () => {
       setImage(null);
       dispatch(clearUsernameData());
     }
-  }, [updateUserData,dispatch]);
+  }, [updateUserData, dispatch]);
   
   const handleUserIdChange = (e) => {
     setAuthLogin(e.target.value);
@@ -82,6 +96,11 @@ const EditUser = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!usernameData) {
+      toast.error('Please enter a valid User ID first');
+      return;
+    }
+    
     const formData = new FormData();
     formData.append('LoginID', authLogin);
     formData.append('FName', fields.fName);
@@ -103,14 +122,14 @@ const EditUser = () => {
               <label className="block mb-1 text-sm font-semibold text-gray-700">Enter User ID :</label>
               <input
                 type="text"
-                className={`w-full px-4 py-3 text-base bg-gray-100 border border-gray-200 rounded-lg${usernameData ? ' cursor-not-allowed' : ''}`}
+                className={`w-full px-4 py-3 text-base bg-gray-100 border ${usernameError ? 'border-red-500' : 'border-gray-200'} rounded-lg${usernameData ? ' cursor-not-allowed' : ''}`}
                 value={authLogin}
                 onChange={handleUserIdChange}
                 placeholder="Enter User Id"
                 readOnly={!!usernameData}
                 tabIndex={usernameData ? -1 : 0}
               />
-              {errors.title && <div className="mt-1 text-sm text-red-500">{errors.title}</div>}
+              {usernameError && <div className="mt-1 text-sm text-red-500">{usernameError.message || 'Invalid User ID'}</div>}
             </div>
             <div className="flex-1">
               <label className="block mb-1 text-sm font-semibold text-gray-700">User Name :</label>
@@ -125,6 +144,7 @@ const EditUser = () => {
               />
             </div>
           </div>
+          {/* Rest of your form remains the same */}
           <div className="flex flex-col gap-4 md:flex-row">
             <div className="flex-1">
               <label className="block mb-1 text-sm font-semibold text-gray-700">First Name :</label>
@@ -197,13 +217,13 @@ const EditUser = () => {
               />
             </div>
           </div>
-          {/* Button row */}
           <div>
             <button
               type="submit"
               className="w-full py-3 mt-2 text-lg font-semibold text-white transition-colors rounded-lg bg-gradient-to-r from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-300"
+              disabled={!usernameData || loading}
             >
-              Update
+              {loading ? 'Updating...' : 'Update'}
             </button>
           </div>
         </form>
