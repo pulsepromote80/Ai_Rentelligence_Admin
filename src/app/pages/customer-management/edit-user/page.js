@@ -26,8 +26,7 @@ const EditUser = () => {
     walletBep20: "",
   });
   const [errors, setErrors] = useState({});
-
- 
+  
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (authLogin && authLogin.trim()) {
