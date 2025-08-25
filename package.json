@@ -31,6 +31,7 @@
     "@tiptap/starter-kit": "^2.24.0",
     "axios": "^1.8.4",
     "dompurify": "^3.2.6",
+    "ethers": "^6.15.0",
     "file-saver": "^2.0.5",
     "init": "^0.1.2",
     "js-cookie": "^3.0.5",
@@ -45,6 +46,7 @@
     "react-select": "^5.10.1",
     "react-toastify": "^11.0.5",
     "recharts": "^2.15.3",
+    "web3": "^4.16.0",
     "xlsx": "^0.18.5",
     "yup": "^1.6.1"
   },
