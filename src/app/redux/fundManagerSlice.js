@@ -6,7 +6,9 @@ const API_ENDPOINTS = {
     GET_RENT_WALLET: "/AdminManageUser/getRentWallet",
     GET_ALL_INCOME_REQUEST_ADMIN: "/FundManager/getAllIncomeRequest_Admin",
     UPDATE_INCOME_WITHDRAW_REQUEST_STATUS_ADMIN: "/FundManager/UpIncomeWithdReqStatus_Admin",
-    UPDATE_RENT_WITHDRAW_REQUEST_STATUS_ADMIN: "/FundManager/upRentWithdReqStatus_Admin"
+    UPDATE_RENT_WITHDRAW_REQUEST_STATUS_ADMIN: "/FundManager/upRentWithdReqStatus_Admin",
+    UPDATE_INCOME_WALLET_ADDRESS: "/WalletReport/updateIncomeWalletAdress",
+    UPDATE_RENT_WALLET_ADDRESS: "/WalletReport/updateRentWalletAdress"
 };
 export const getAllFundRequestReportAdmin = createAsyncThunk(
     "fundManager/getAllFundRequestReportAdmin",
@@ -116,6 +118,37 @@ export const updateRentWithdrawRequestStatusAdmin = createAsyncThunk(
     }
 );
 
+export const updateIncomeWalletAdressUSDT = createAsyncThunk(
+    "fundManager/updateIncomeWalletAdressUSDT",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await postRequest(
+                API_ENDPOINTS.UPDATE_INCOME_WALLET_ADDRESS,
+                data
+            );
+            return response.data;
+        } catch (error) {
+            console.error("API Error:", error.response?.data || error.message);
+            return rejectWithValue(error.response?.data?.message || "Failed to fetch community data");
+        }
+    }
+);
+export const updateRentWalletAdressUSDT = createAsyncThunk(
+    "fundManager/updateRentWalletAdressUSDT",
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await postRequest(
+                API_ENDPOINTS.UPDATE_RENT_WALLET_ADDRESS,
+                data
+            );
+            return response.data;
+        } catch (error) {
+            console.error("API Error:", error.response?.data || error.message);
+            return rejectWithValue(error.response?.data?.message || "Failed to fetch community data");
+        }
+    }
+);
+
 const fundManagerSlice = createSlice({
     name: "fundManager",
     initialState: {
@@ -126,7 +159,9 @@ const fundManagerSlice = createSlice({
         rentWalletData: null,
         withdrawRequestData: null,
         updateIncomingRequestData: null,
-        updateRentWithdrawRequestData: null
+        updateRentWithdrawRequestData: null,
+        updateIncomingRequestUSDTData: null,
+        updateRentRequestUSDTData: null,
     },
     reducers: {
     },
@@ -208,6 +243,31 @@ const fundManagerSlice = createSlice({
                 state.error = action.payload;
             })
 
+            .addCase(updateIncomeWalletAdressUSDT.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateIncomeWalletAdressUSDT.fulfilled, (state, action) => {
+                state.loading = false;
+                state.updateIncomingRequestUSDTData = action.payload;
+            })
+            .addCase(updateIncomeWalletAdressUSDT.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            
+            .addCase(updateRentWalletAdressUSDT.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(updateRentWalletAdressUSDT.fulfilled, (state, action) => {
+                state.loading = false;
+                state.updateRentRequestUSDTData = action.payload;
+            })
+            .addCase(updateRentWalletAdressUSDT.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
 
     }
 });
