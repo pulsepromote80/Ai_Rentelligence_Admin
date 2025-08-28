@@ -28,9 +28,9 @@ const EditUser = () => {
   const [errors, setErrors] = useState({});
   
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(async() => {
       if (authLogin && authLogin.trim()) {
-        dispatch(usernameLoginId(authLogin));
+       await dispatch(usernameLoginId(authLogin)); 
       }
     }, 100);
     return () => clearTimeout(timeoutId);
