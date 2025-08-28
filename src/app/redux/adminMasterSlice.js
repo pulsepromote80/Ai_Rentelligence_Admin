@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { postRequest, getRequestLoginId,postRequestLoginId, getRequest } from "@/app/pages/api/auth";
+import { toast } from "react-toastify";
 
 const API_ENDPOINTS = {
     CHANGE_ADMIN_PASSWORD: "/AdminMaster/chanegAdminPassword",
@@ -31,8 +32,13 @@ export const usernameLoginId = createAsyncThunk(
         try {
             const response = await getRequestLoginId(`${API_ENDPOINTS.USERNAME_BY_LOGINID}?authLogin=${authLogin}`);
 
+            console.log("reponse", response);
+            
+
             if (!response) {
                 throw new Error('Invalid user wallet details data received');
+            }else if(response.statusCode===409){
+                toast.error(response.message)
             }
 
             return response.data;

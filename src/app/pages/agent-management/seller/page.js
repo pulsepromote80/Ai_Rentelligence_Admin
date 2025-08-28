@@ -363,7 +363,7 @@ const SellerPage = () => {
             </div>
 
             {/* Password Field */}
-            <div className="relative">
+            <div className="relative ">
               <label className="block font-medium">
               User Password<span className="text-red-500">*</span></label>
               <input
