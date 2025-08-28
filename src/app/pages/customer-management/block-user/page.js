@@ -12,9 +12,15 @@ const BlockUser = () => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(async() => {
       if (authLogin && authLogin.trim()) {
-        dispatch(usernameLoginId(authLogin));
+       const result = await  dispatch(usernameLoginId(authLogin));
+       if (!result.payload) {
+          setErrors({ authLogin: "User not found" });
+        } else {
+          setErrors({});
+        }
+       
         setTouched(true);
       }
     }, 100); 
@@ -45,13 +51,14 @@ const BlockUser = () => {
 
     try {
       const result = await dispatch(blockUserByAdmin(authLogin));
+      console.log(result)
       
       if (result.payload) {
         toast.success(result.payload.message || 'User blocked successfully!');
         setAuthLogin('');
         setTouched(false);
       } else {
-        toast.error('Failed to block user. Please try again.');
+        toast.error("User not found");
       }
     } catch (error) {
       toast.error('Error blocking user: ' + (error.message || 'Unknown error'));
@@ -75,6 +82,11 @@ const BlockUser = () => {
                 placeholder="Enter User Id"
                 
               />
+              {errors.authLogin && (
+                <div className="mt-1 text-sm text-red-500">
+                  {errors.authLogin}
+                </div>
+              )}
               {errors.title && <div className="mt-1 text-sm text-red-500">{errors.title}</div>}
             </div>
             <div className="flex-1">

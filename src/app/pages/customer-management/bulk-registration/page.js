@@ -39,7 +39,13 @@ const BulkRegistration = () => {
       if (userId && userId.trim()) {
         dispatch(usernameLoginId(userId)).then((res) => {
           setIntroURID(res.payload?.urid || '');
+           if (!res.payload) {
+            setErrors({ authLogin: 'User not found' })
+          } else {
+            setErrors({})
+          }
         });
+       
         setTouched(true);
       } else {
         setIntroURID('');
@@ -56,6 +62,11 @@ const BulkRegistration = () => {
     if (userId && userId.trim()) {
       dispatch(usernameLoginId(userId)).then((res) => {
         setIntroURID(res.payload?.urid || '');
+         if (!res.payload) {
+                    toast.error("user not Found")
+                  } else {
+                    setErrors({})
+                  }
       });
       setTouched(true);
     }
@@ -147,6 +158,11 @@ const BulkRegistration = () => {
                 onBlur={handleBlurOrFetch}
                 placeholder="Enter User Id"
               />
+              {errors.authLogin && (
+                <div className="mt-1 text-sm text-red-500">
+                  {errors.authLogin}
+                </div>
+              )}
               {errors.userId && <div className="mt-1 text-sm text-red-500">{errors.userId}</div>}
             </div>
             <div className="flex-1">

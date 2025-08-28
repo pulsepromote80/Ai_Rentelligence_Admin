@@ -20,8 +20,13 @@ const CreditDebitFund = () => {
  
   useEffect(() => {
     if (!form.loginId) return;
-    const handler = setTimeout(() => {
-      dispatch(getUserWalletDetails(form.loginId));
+    const handler = setTimeout(async() => {
+      const result = await dispatch(getUserWalletDetails(form.loginId));
+      if (!result.payload) {
+        setErrors({ authLogin: "User not found" });
+      } else {
+        setErrors({});
+      }
     }, 100); 
     return () => clearTimeout(handler);
   }, [form.loginId, dispatch]);
@@ -149,6 +154,7 @@ const handleSubmit = async (e) => {
 
   try {
     const response = await dispatch(addFund(payload)).unwrap();
+    console.log(response);
     if (response.statusCode === 200) {
       toast.success(response.message || 'Fund added successfully!');
     }
@@ -184,6 +190,11 @@ const handleSubmit = async (e) => {
               placeholder="Enter User Id"
               autoComplete="off"
             />
+            {errors.authLogin && (
+                <div className="mt-1 text-sm text-red-500">
+                  {errors.authLogin}
+                </div>
+              )}
             {errors.loginId && <div className="mt-1 text-sm text-red-500">{errors.loginId}</div>}
           </div>
           <div>
