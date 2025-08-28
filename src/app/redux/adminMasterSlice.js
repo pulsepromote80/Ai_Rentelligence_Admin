@@ -31,14 +31,10 @@ export const usernameLoginId = createAsyncThunk(
     async (authLogin, { rejectWithValue }) => {
         try {
             const response = await getRequestLoginId(`${API_ENDPOINTS.USERNAME_BY_LOGINID}?authLogin=${authLogin}`);
-
-            console.log("reponse", response);
             
 
             if (!response) {
                 throw new Error('Invalid user wallet details data received');
-            }else if(response.statusCode===409){
-                toast.error(response.message)
             }
 
             return response.data;
