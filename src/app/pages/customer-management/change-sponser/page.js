@@ -61,11 +61,7 @@ const ChangeSponser = () => {
     if (authLogin && authLogin.trim()) {
       dispatch(usernameLoginId(authLogin)).then((res) => {
         setUserName(res.payload?.name || res.payload?.userName || '')
-        if (!res.payload) {
-            toast.error("user not Found")
-          } else {
-            setErrors({})
-          }
+        
 
       })
       setTouched(true)
@@ -199,7 +195,7 @@ const ChangeSponser = () => {
           <button
             type="submit"
             className="w-full py-3 mt-2 text-lg font-semibold text-white transition-colors rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            disabled={loading}
+            disabled={!!errors.authLogin}
           >
             {loading ? 'Processing...' : 'Submit'}
           </button>

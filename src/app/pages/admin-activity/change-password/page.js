@@ -76,6 +76,7 @@ const ChangePassword = () => {
 
     try {
       const result = await dispatch(ChangePasswordAdminMaster(formData)).unwrap();
+      console.log(result)
       if (result && result.statusCode === 200) {
         toast.success(result.message || 'Password Updated Successfully');
         setFormData({
@@ -83,6 +84,8 @@ const ChangePassword = () => {
           oldPassword: '',
           newPassword: ''
         });
+      }else if(result.statusCode === 409){
+        toast.error(result.message);
       }
     } catch (error) {
       console.error('Password change failed:', error);

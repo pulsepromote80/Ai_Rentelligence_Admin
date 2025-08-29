@@ -294,6 +294,7 @@ const handleSubmit = async (e) => {
         {error && <div className="mb-4 text-center text-red-600">{typeof error === 'string' ? error : 'Failed to fetch wallet details.'}</div>}
         <button
           type="submit"
+           disabled={!!errors.authLogin}
           className="w-full py-3 text-lg font-bold text-white transition rounded-lg shadow bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
           Submit
