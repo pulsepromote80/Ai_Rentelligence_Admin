@@ -62,11 +62,7 @@ const BulkRegistration = () => {
     if (userId && userId.trim()) {
       dispatch(usernameLoginId(userId)).then((res) => {
         setIntroURID(res.payload?.urid || '');
-         if (!res.payload) {
-                    toast.error("user not Found")
-                  } else {
-                    setErrors({})
-                  }
+        
       });
       setTouched(true);
     }
@@ -226,7 +222,7 @@ const BulkRegistration = () => {
           <button
             type="submit"
             className="w-full py-3 mt-2 text-lg font-semibold text-white transition-colors rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            disabled={userLoading || regLoading || countryLoading}
+            disabled={userLoading || regLoading || countryLoading || !!errors.authLogin} 
           >
             {(userLoading || regLoading || countryLoading) ? 'Processing...' : 'Submit'}
           </button>

@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
 const ImagePopup = ({ src, alt }) => {
   const [isOpen, setIsOpen] = useState(false);
   const openPopup = () => setIsOpen(true);
@@ -8,7 +7,7 @@ const ImagePopup = ({ src, alt }) => {
 
   return (
     <div className="flex items-center justify-center">
-      <Image
+      <img
         src={src}
         alt={alt}
         className="object-cover rounded-md cursor-pointer"
@@ -26,7 +25,7 @@ const ImagePopup = ({ src, alt }) => {
             className="max-w-[50%] max-h-[50%] relative"
             onClick={(e) => e.stopPropagation()} 
           >
-            <Image
+            <img
               src={src}
               alt={alt}
               width={500} 

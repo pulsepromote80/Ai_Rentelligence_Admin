@@ -57,9 +57,7 @@ const BlockUser = () => {
         toast.success(result.payload.message || 'User blocked successfully!');
         setAuthLogin('');
         setTouched(false);
-      } else {
-        toast.error("User not found");
-      }
+      } 
     } catch (error) {
       toast.error('Error blocking user: ' + (error.message || 'Unknown error'));
     }
@@ -103,7 +101,7 @@ const BlockUser = () => {
           <button
             type="submit"
             className="w-full py-3 mt-2 text-lg font-semibold text-white transition-colors rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            disabled={loading}
+            disabled={loading || !!errors.authLogin}
           >
             {loading ? 'Blocking...' : 'Submit'}
           </button>
