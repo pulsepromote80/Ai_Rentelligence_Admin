@@ -183,7 +183,7 @@ const [usdBalance, setUsdBalance] = useState('0.00');
       const handleAccountsChanged = async (accounts) => {
         if (!accounts || accounts.length === 0) {
           setAccount(null);
-          setBalanceInUsdt(null);
+          setBalanceInUsdt(0);
           return;
         }
         setAccount(accounts[0]);
@@ -268,7 +268,7 @@ const [usdBalance, setUsdBalance] = useState('0.00');
 
   const disconnectLocal = () => {
     setAccount(null);
-    setBalanceInUsdt(null);
+    setBalanceInUsdt(0);
     toast.info('Disconnected locally. To fully disconnect, remove this site in MetaMask > Connected sites.');
   };
 
@@ -507,7 +507,7 @@ const [usdBalance, setUsdBalance] = useState('0.00');
              {account && (
                 <div className="flex flex-col ml-2">
                   <span className="font-semibold text-green-600 text-md">
-                    Wallet Balance: ${balanceInUsdt.toFixed(2)}
+                    Wallet Balance: ${Number(balanceInUsdt).toFixed(2)}
                   </span>
                 </div>
               )}
