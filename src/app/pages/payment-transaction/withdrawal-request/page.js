@@ -5,18 +5,21 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAllIncomeRequestAdmin, UpIncomeWithdReqStatusAdmin, updateIncomeWalletAdressUSDT } from '@/app/redux/fundManagerSlice';
 import { toast } from 'react-toastify';
 import { FaCopy } from 'react-icons/fa';
+import { ethers } from "ethers";
+
 
 const WithdrawalRequest = () => {
   const dispatch = useDispatch();
   const { withdrawRequestData, loading, error } = useSelector((state) => state.fundManager);
 
   // MetaMask state
-  const [isMetamaskInstalled, setIsMetamaskInstalled] = useState(false);
+ const [isMetamaskInstalled, setIsMetamaskInstalled] = useState(false);
   const [account, setAccount] = useState(null);
   const [chainId, setChainId] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(null);
+  const [usdBalance, setUsdBalance] = useState('0.00');
   const [isSending, setIsSending] = useState(false);
+  const [balanceInUsdt, setBalanceInUsdt] = useState(0)
 
   // Table state
   const [currentPage, setCurrentPage] = useState(1);
@@ -34,6 +37,10 @@ const WithdrawalRequest = () => {
   const BSC_CURRENCY_SYMBOL = 'BNB';
   const BSC_BLOCK_EXPLORER_URL = 'https://bscscan.com';
 
+  const ERC20_ABI = [
+  "function balanceOf(address owner) view returns (uint256)"
+];
+
   // USDT Contract Details (BEP-20)
   const USDT_CONTRACT_ADDRESS = '0x55d398326f99059fF775485246999027B3197955';
   const USDT_DECIMALS = 18;
@@ -42,31 +49,45 @@ const WithdrawalRequest = () => {
     dispatch(getAllIncomeRequestAdmin());
   }, [dispatch]);
 
-  // Function to fetch BSC wallet balance
-  const fetchWalletBalance = async (accountAddress) => {
-    if (!window.ethereum || !accountAddress) {
-      console.error('MetaMask not available or account address is invalid');
-      setWalletBalance('0.0000');
-      return 0;
-    }
 
+ const fetchWalletBalances = async (accountAddress) => {
     try {
-      const balance = await window.ethereum.request({
-        method: 'eth_getBalance',
-        params: [accountAddress, 'latest'],
-      });
+      const provider = new ethers.JsonRpcProvider(BSC_RPC_URL);
 
-      // Convert from wei to BNB
-      const balanceInBnb = parseInt(balance, 16) / 1e18; 
-      const formattedBalance = balanceInBnb.toFixed(4);
-      setWalletBalance(formattedBalance);
-      return balanceInBnb;
+      // BNB balance
+      const balanceWei = await provider.getBalance(accountAddress);
+      const balanceInBnb = parseFloat(ethers.formatEther(balanceWei));
+
+      // USDT balance - FIXED calculation
+      const usdtContract = new ethers.Contract(
+        USDT_CONTRACT_ADDRESS,
+        ERC20_ABI,
+        provider
+      );
+      
+      const usdtRaw = await usdtContract.balanceOf(accountAddress);
+      
+      // USDT has 18 decimals on BSC, so we need to divide by 10^18
+      const usdtBalance = parseFloat(ethers.formatUnits(usdtRaw, 18));
+
+      // Set the USDT balance to state
+      setBalanceInUsdt(usdtBalance);
+
+      // Calculate total USD value (just USDT for now)
+      const totalUsdValue = usdtBalance;
+      setUsdBalance(totalUsdValue.toFixed(2));
+
+      return {  usdt: usdtBalance };
     } catch (error) {
-      console.error('Error fetching balance:', error.message || error);
-      setWalletBalance('Error');
-      return 0;
+      console.error("Error fetching balances:", error);
+      setUsdBalance('0.00');
+      setBalanceInUsdt(0);
+      return { bnb: 0, usdt: 0 };
     }
   };
+
+
+
 
   // Switch to BSC network
   const switchToBSCNetwork = async () => {
@@ -117,7 +138,6 @@ const WithdrawalRequest = () => {
 
     try {
       setIsSending(true);
-
       // Convert amount to wei (considering USDT has 18 decimals)
       const amountInWei = BigInt(Math.floor(amount * 10 ** USDT_DECIMALS)).toString(16);
 
@@ -155,6 +175,8 @@ const WithdrawalRequest = () => {
     }
   };
 
+
+
   // Detect MetaMask + restore connection
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -166,17 +188,17 @@ const WithdrawalRequest = () => {
       const handleAccountsChanged = async (accounts) => {
         if (!accounts || accounts.length === 0) {
           setAccount(null);
-          setWalletBalance(null);
+          setBalanceInUsdt(null);
           return;
         }
         setAccount(accounts[0]);
-        await fetchWalletBalance(accounts[0]); // Fetch balance after account change
+        await fetchWalletBalances(accounts[0]); // Fetch balance after account change
       };
 
       const handleChainChanged = (chainIdHex) => {
         setChainId(chainIdHex);
         if (account) {
-          fetchWalletBalance(account); // Refresh balance on chain change
+          fetchWalletBalances(account); 
         }
       };
 
@@ -186,7 +208,7 @@ const WithdrawalRequest = () => {
         .then(async (accounts) => {
           if (accounts && accounts.length > 0) {
             setAccount(accounts[0]);
-            await fetchWalletBalance(accounts[0]);
+            await fetchWalletBalances(accounts[0]);
           }
         })
         .catch((err) => console.error('Error fetching accounts:', err));
@@ -213,43 +235,59 @@ const WithdrawalRequest = () => {
 
   // MetaMask helpers
   const connectWallet = async () => {
-    if (!window?.ethereum) {
-      toast.error('MetaMask not found. Please install it first.');
-      return;
-    }
-    try {
-      setIsConnecting(true);
+  if (!window.ethereum) {
+    toast.error("MetaMask not found!");
+    return;
+  }
 
-      // First switch to BSC network
-      const switched = await switchToBSCNetwork();
-      if (!switched) {
-        setIsConnecting(false);
-        return;
-      }
+  try {
+    // ✅ First switch to BSC
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: BSC_CHAIN_ID }],
+    });
 
-      // Then request accounts
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      if (accounts && accounts.length > 0) {
-        setAccount(accounts[0]);
-        await fetchWalletBalance(accounts[0]);
-        const id = await window.ethereum.request({ method: 'eth_chainId' });
-        setChainId(id);
-        toast.success('Wallet connected to BSC!');
-      }
-    } catch (err) {
-      if (err?.code === 4001) {
-        toast.info('Connection request rejected.');
-      } else {
-        toast.error('Failed to connect wallet.');
-      }
-    } finally {
-      setIsConnecting(false);
+    // ✅ Request account
+    const accounts = await window.ethereum.request({
+      method: "eth_requestAccounts",
+    });
+    if (accounts.length > 0) {
+      setAccount(accounts[0]);
+      await fetchWalletBalances(accounts[0]); 
+      toast.success("Wallet connected to BSC!");
     }
-  };
+  } catch (err) {
+    if (err.code === 4902) {
+      // If BSC not added, add chain
+      await window.ethereum.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: BSC_CHAIN_ID,
+            chainName: BSC_CHAIN_NAME,
+            rpcUrls: [BSC_RPC_URL],
+            nativeCurrency: {
+              name: "BNB",
+              symbol: BSC_CURRENCY_SYMBOL,
+              decimals: 18,
+            },
+            blockExplorerUrls: [BSC_BLOCK_EXPLORER_URL],
+          },
+        ],
+      });
+    } else if (err.code === 4001) {
+      toast.error("User rejected connection request.");
+    } else {
+      console.error("Error connecting wallet:", err);
+      toast.error("Failed to connect wallet.");
+    }
+  }
+};
+
 
   const disconnectLocal = () => {
     setAccount(null);
-    setWalletBalance(null);
+    setBalanceInUsdt(null);
     toast.info('Disconnected locally. To fully disconnect, remove this site in MetaMask > Connected sites.');
   };
 
@@ -284,64 +322,52 @@ const WithdrawalRequest = () => {
     setApprovePopupOpen(true);
   };
 
-  const handleApproveUSDTClick = async (row) => {
-    // Check if wallet is connected
-    if (!account) {
-      toast.error('Please connect your MetaMask wallet first');
-      return;
+const handleApproveUSDTClick = async (row) => {
+  if (!account) {
+    toast.error('Please connect your MetaMask wallet first');
+    return;
+  }
+
+  if (chainId !== BSC_CHAIN_ID) {
+    toast.error(`Please switch to ${BSC_CHAIN_NAME} in your wallet`);
+    return;
+  }
+
+  // ✅ Fetch balances
+  const {  usdt } = await fetchWalletBalances(account);
+
+  // ✅ Ensure enough USDT for transfer
+  if (usdt < row.Release) {
+    toast.error(`Insufficient USDT Balance!`);
+    return;
+  }
+
+
+
+  try {
+    setIsSending(true);
+    toast.info('Please confirm the transaction in MetaMask...', { autoClose: 1000 });
+
+    const txHash = await sendUSDTTransaction(row.Wallet, row.Release);
+
+    if (txHash) {
+      await dispatch(updateIncomeWalletAdressUSDT({
+        authLoginId: row.AuthLogin,
+        debit: row.Release,
+        wallet: row.Wallet,
+        transHash: txHash,
+      }));
+
+      toast.success('USDT Transaction Approved Successfully!');
+      dispatch(getAllIncomeRequestAdmin());
     }
-
-    // Check if connected to BSC
-    if (chainId !== BSC_CHAIN_ID) {
-      toast.error(`Please switch to ${BSC_CHAIN_NAME} in your wallet`);
-      return;
-    }
-
-    // Get current balance
-    const currentBalance = await fetchWalletBalance(account);
-    if (currentBalance < row.Release) {
-      toast.error(`Insufficient BNB!`);
-      return;
-    }
-
-    // Directly trigger MetaMask transaction
-    try {
-      setIsSending(true);
-      toast.info('Please confirm the transaction in MetaMask...', { autoClose: 1000 });
-
-      const txHash = await sendUSDTTransaction(row.Wallet, row.Release);
-
-      if (txHash) {
-        // Update the database with the transaction hash
-        await dispatch(updateIncomeWalletAdressUSDT({
-          authLoginId: row.AuthLogin,
-          debit: row.Release,
-          wallet: row.Wallet,
-          transHash: txHash,
-        }));
-
-        toast.success('USDT Transaction Approved Successfully!', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-
-        dispatch(getAllIncomeRequestAdmin());
-      }
-    } catch (error) {
-      console.error('Error approving USDT:', error);
-      if (error.code === 4001) {
-        toast.error('Transaction rejected by Admin');
-      } else {
-        toast.error('Failed to approve USDT transaction');
-      }
-    } finally {
-      setIsSending(false);
-    }
-  };
+  } catch (error) {
+    console.error('Error approving USDT:', error);
+    toast.error(error.code === 4001 ? 'Transaction rejected by Admin' : 'Failed to approve USDT transaction');
+  } finally {
+    setIsSending(false);
+  }
+};
 
   const handleRejectClick = (authLoginId) => {
     setSelectedAuthLoginId(authLoginId);
@@ -464,11 +490,14 @@ const WithdrawalRequest = () => {
                   <FaCopy className="w-3 h-3" />
                 </button>
               </div>
-              {walletBalance !== null && (
-                <span className="ml-2 font-semibold text-green-600 text-md">
-                  Balance: {walletBalance}
-                </span>
+             {account && (
+                <div className="flex flex-col ml-2">
+                  <span className="font-semibold text-green-600 text-md">
+                    Wallet Balance: ${balanceInUsdt.toFixed(2)}
+                  </span>
+                </div>
               )}
+
             </div>
           ) : (
             <span className="text-gray-700">Wallet not connected.</span>
@@ -552,7 +581,6 @@ const WithdrawalRequest = () => {
                 <th className="px-4 py-2 text-sm font-semibold text-center border">User ID</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Name</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Amount ($)</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Debit ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Admin Charges ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Release ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">TransType</th>
@@ -613,9 +641,6 @@ const WithdrawalRequest = () => {
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
                       {row.TotWithdl}
-                    </td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                      {row.debit}
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
                       {row.AdminCharges}
