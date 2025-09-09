@@ -11,7 +11,8 @@ const API_ENDPOINTS = {
     GET_NEWS: "/AdminMaster/getNews",
     UPDATE_NEWS: "/AdminMaster/updateNews",
     GET_LEASE_AGENT: "/AdminMaster/getLeaseAgent",
-    GET_ALL_CONTACT_US: "/Geography/getAllContacUs"
+    GET_ALL_CONTACT_US: "/Geography/getAllContacUs",
+   GET_ACC_STATEMENT:"/WalletReport/getAccStatemtnt"
 };
 
 export const ChangePasswordAdminMaster = createAsyncThunk(
@@ -137,6 +138,18 @@ export const getAllContactUs = createAsyncThunk(
     }
 );
 
+export const getAccStatemtnt = createAsyncThunk(
+    'adminMaster/getAccStatemtnt',
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await postRequest(API_ENDPOINTS.GET_ACC_STATEMENT, data);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || 'Error fetching contact us data');
+        }
+    }
+);
+
 const adminMasterSlice = createSlice({
     name: "adminMaster",
     initialState: {
@@ -151,7 +164,8 @@ const adminMasterSlice = createSlice({
         sponserData: null,
         excelData: null,
         leaseAgentData: null,
-        contactUsData: null
+        contactUsData: null,
+        accStatementData:null
     },
     reducers: {
         clearError: (state) => {
@@ -280,6 +294,20 @@ const adminMasterSlice = createSlice({
                 state.error = null;
             })
             .addCase(getAllContactUs.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            }) 
+
+              .addCase(getAccStatemtnt.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getAccStatemtnt.fulfilled, (state, action) => {
+                state.loading = false;
+                state.accStatementData = action.payload;
+                state.error = null;
+            })
+            .addCase(getAccStatemtnt.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             }) 
