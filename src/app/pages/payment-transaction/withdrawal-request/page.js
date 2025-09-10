@@ -86,6 +86,10 @@ const WithdrawalRequest = () => {
     }
   };
 
+  const totalRelease = withdrawRequestData?.unApWithIncome?.reduce(
+    (sum, txn) => sum + (Number(txn.Release) || 0),
+    0
+  ) || 0;
 
 
 
@@ -392,7 +396,7 @@ const handleApproveUSDTClick = async (row) => {
           pauseOnHover: true,
           draggable: true,
         });
-        dispatch(getAllIncomeRequestAdmin());
+        
       } catch (error) {
         toast.error('Failed to approve request', {
           position: 'top-right',
@@ -545,7 +549,7 @@ const handleApproveUSDTClick = async (row) => {
 
       {/* Original Table Section */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="w-full mb-4 text-2xl font-bold text-center text-gray-700">Withdrawal Requests</h1>
+        <h1 className="w-full mb-4 text-2xl font-bold text-center text-gray-700">Withdrawal Requests: ${totalRelease}</h1>
 
         <div className="relative w-60">
           <input
@@ -580,16 +584,20 @@ const handleApproveUSDTClick = async (row) => {
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Action</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">User ID</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Name</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Date</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Amount ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Admin Charges ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Release ($)</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">TransType</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Hash</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Withdrawal Mode</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Email</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Package</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border"> Wallet Address</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Hash</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Remark</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Action</th>
               </tr>
+{/* Date,,, , , , hash,reamrk, ,email, Package, */}
             </thead>
-            <tbody>
+            <tbody> 
               {paginatedRows.length === 0 ? (
                 <tr>
                   <td colSpan={12} className="py-10 text-lg text-center text-gray-400">
@@ -640,6 +648,9 @@ const handleApproveUSDTClick = async (row) => {
                       {row.FullName || '-'}
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                      {row.date || '-'}
+                    </td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">
                       {row.TotWithdl}
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
@@ -649,8 +660,12 @@ const handleApproveUSDTClick = async (row) => {
                       {row.Release}
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                      {row.TransType}
+                      {row.email || '-'}
                     </td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                      {row.package || '-'}
+                    </td>
+                   
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
                       <div className="flex items-center justify-center gap-1 group">
                         <span className="cursor-pointer" title={row.Wallet || '-'}>
@@ -667,8 +682,11 @@ const handleApproveUSDTClick = async (row) => {
                         )}
                       </div>
                     </td>
+                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                      {row.hash || '-'}
+                    </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                      {row.withdrawalmode}
+                      {row.remark || '-'}
                     </td>
                     <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center">
                       <button

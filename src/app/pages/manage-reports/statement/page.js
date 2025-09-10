@@ -65,7 +65,6 @@ const totalDebit = accStatementData?.reduce(
     }
   };
 
-  // Yeh effect userId change hone par API hit karega
 useEffect(() => {
   const fetchUsername = async () => {
     if (!userId.trim()) {
@@ -78,17 +77,15 @@ useEffect(() => {
 
     if (result?.payload && result.payload.name) {
       setUsername(result.payload.name);
-      setUserError(""); // ✅ No error
+      setUserError(""); 
     } else {
       setUsername("");
-      setUserError("Invalid User ID"); // ❌ Error
+      setUserError("Invalid User ID"); 
     }
   };
 
   fetchUsername();
 }, [userId, dispatch]);
-
-
 
 
   const handleSearch = () => {
@@ -112,7 +109,6 @@ useEffect(() => {
     return;
   }
 
-  // 1️⃣ Table data ko JSON se worksheet me convert karo
   const worksheet = XLSX.utils.json_to_sheet(
     accStatementData.map((txn, index) => ({
       "Sr.No.": index + 1,
@@ -125,27 +121,21 @@ useEffect(() => {
     }))
   );
 
-  // 2️⃣ Workbook banao
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
 
-  // 3️⃣ Excel buffer banao
   const excelBuffer = XLSX.write(workbook, {
     bookType: "xlsx",
     type: "array",
   });
 
-  // 4️⃣ Download trigger karo
   const data = new Blob([excelBuffer], { type: "application/octet-stream" });
   saveAs(data, "Transactions.xlsx");
 };
 
   return (
     <div className="min-h-screen p-6">
-      
-     
       <div className="mx-auto max-w-7xl">
-         
         {/* Filters Section */}
 <div className="p-6 mb-6 bg-white rounded-lg shadow">
    <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2">
