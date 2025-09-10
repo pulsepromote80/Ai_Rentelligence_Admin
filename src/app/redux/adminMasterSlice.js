@@ -12,7 +12,8 @@ const API_ENDPOINTS = {
     UPDATE_NEWS: "/AdminMaster/updateNews",
     GET_LEASE_AGENT: "/AdminMaster/getLeaseAgent",
     GET_ALL_CONTACT_US: "/Geography/getAllContacUs",
-   GET_ACC_STATEMENT:"/WalletReport/getAccStatemtnt"
+   GET_ACC_STATEMENT:"/WalletReport/getAccStatemtnt",
+   GET_LEASE_STATEMENT:"/AdminMaster/getGetLeaseStatement"
 };
 
 export const ChangePasswordAdminMaster = createAsyncThunk(
@@ -150,6 +151,18 @@ export const getAccStatemtnt = createAsyncThunk(
     }
 );
 
+export const getLeaseStatemtnt = createAsyncThunk(
+    'adminMaster/getLeaseStatemtnt',
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await postRequest(API_ENDPOINTS.GET_LEASE_STATEMENT, data);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || 'Error fetching contact us data');
+        }
+    }
+);
+
 const adminMasterSlice = createSlice({
     name: "adminMaster",
     initialState: {
@@ -165,7 +178,8 @@ const adminMasterSlice = createSlice({
         excelData: null,
         leaseAgentData: null,
         contactUsData: null,
-        accStatementData:null
+        accStatementData:null,
+        LeaseStatementData:null
     },
     reducers: {
         clearError: (state) => {
@@ -308,6 +322,20 @@ const adminMasterSlice = createSlice({
                 state.error = null;
             })
             .addCase(getAccStatemtnt.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            }) 
+
+             .addCase(getLeaseStatemtnt.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getLeaseStatemtnt.fulfilled, (state, action) => {
+                state.loading = false;
+                state.LeaseStatementData = action.payload;
+                state.error = null;
+            })
+            .addCase(getLeaseStatemtnt.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             }) 
