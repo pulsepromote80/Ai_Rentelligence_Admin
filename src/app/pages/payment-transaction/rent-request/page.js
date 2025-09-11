@@ -3,9 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRentWallet, updateRentWithdrawRequestStatusAdmin,updateRentWalletAdressUSDT } from '@/app/redux/fundManagerSlice';
+import { usernameLoginId } from "@/app/redux/adminMasterSlice";
 import { toast } from 'react-toastify';
 import { FaCopy } from 'react-icons/fa';
 import { ethers } from "ethers";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const RentRequest = () => {
   const dispatch = useDispatch();
@@ -25,10 +28,26 @@ const [usdBalance, setUsdBalance] = useState('0.00');
   const [rejectPopupOpen, setRejectPopupOpen] = useState(false);
   const [selectedAuthLoginId, setSelectedAuthLoginId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(500);
   const [remark, setRemark] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [userId, setUserId] = useState(""); 
+    const [username, setUsername] = useState("");
+     const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
+    const [userError, setUserError] = useState("");
+    const [hasSearched, setHasSearched] = useState(false);
 
+     const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const [year, month, day] = dateString.split("-");
+    return `${day}-${month}-${year}`;
+  };
+
+  const totalRelease = rentWalletData?.unApWithrentwallet?.reduce(
+    (sum, txn) => sum + (Number(txn.Release) || 0),
+    0
+  ) || 0;
   // BSC chain configuration
   const BSC_CHAIN_ID = '0x38'; // BSC Mainnet
   const BSC_CHAIN_NAME = 'BNB Smart Chain';
@@ -45,8 +64,71 @@ const [usdBalance, setUsdBalance] = useState('0.00');
   const USDT_DECIMALS = 18;
 
   useEffect(() => {
-    dispatch(getRentWallet());
-  }, [dispatch]);
+    const fetchUsername = async () => {
+      if (!userId.trim()) {
+        setUsername("");
+        setUserError("");
+        return;
+      }
+  
+      const result = await dispatch(usernameLoginId(userId));
+  
+      if (result?.payload && result.payload.name) {
+        setUsername(result.payload.name);
+        setUserError(""); 
+      } else {
+        setUsername("");
+        setUserError("Invalid User ID"); 
+      }
+    };
+  
+    fetchUsername();
+  }, [userId, dispatch]);
+
+  // useEffect(() => {
+  //   dispatch(getRentWallet());
+  // }, [dispatch]);
+   const handleSearch = () => {
+      const payload = {
+        authLogin: userId || "",
+        fromDate: formatDate(fromDate) || "",
+        toDate: formatDate(toDate) || "",
+      };
+  
+      dispatch(getRentWallet(payload));
+      setHasSearched(true);
+    };
+
+     const handleExport = () => {
+        if (!rentWalletData?.unApWithrentwallet || rentWalletData?.unApWithrentwallet?.length === 0) {
+          alert("No data available to export");
+          return;
+        }
+      
+        const worksheet = XLSX.utils.json_to_sheet(
+          rentWalletData?.unApWithrentwallet?.map((txn, index) => ({
+            "Sr.No.": index + 1,
+            Username: txn.AuthLogin,
+            Name: txn.FullName,
+            Email:txn.Email,
+            Request: txn.TotWithdl,
+            Release:txn.Release,
+            WalletAddress:txn.Wallet,
+            Remark: txn.Remark,
+          }))
+        );
+      
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
+      
+        const excelBuffer = XLSX.write(workbook, {
+          bookType: "xlsx",
+          type: "array",
+        });
+      
+        const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+        saveAs(data, "Transactions.xlsx");
+      };
 
   // Function to fetch BSC wallet balance
   const fetchWalletBalances = async (accountAddress) => {
@@ -276,10 +358,12 @@ const [usdBalance, setUsdBalance] = useState('0.00');
 
   const chainLabel = chainId === BSC_CHAIN_ID ? BSC_CHAIN_NAME : (chainId || '-');
 
-  const unApprovedRows = rentWalletData?.rentWallet?.filter(
-    row => row.trStatus === 0 && row.transType === "Withdrawal"
-  ) || [];
-
+ 
+ 
+  const unApprovedRows = rentWalletData?.unApWithrentwallet?.filter(
+  row => row.trStatus === 0 && row.transType === "Withdrawal"
+) || [];
+  
   const mappedRows = unApprovedRows.map(row => ({
     AuthLogin: row.AuthLogin,
     FullName: row.FullName,
@@ -370,7 +454,11 @@ const [usdBalance, setUsdBalance] = useState('0.00');
         }));
   
         toast.success('USDT Transaction Approved Successfully!');
-        dispatch(getRentWallet());
+          dispatch(getRentWallet({
+          authLogin: userId || "",
+          fromDate: formatDate(fromDate) || "",
+          toDate: formatDate(toDate) || "",
+        }));
       }
     } catch (error) {
       console.error('Error approving USDT:', error);
@@ -402,7 +490,11 @@ const [usdBalance, setUsdBalance] = useState('0.00');
           pauseOnHover: true,
           draggable: true,
         });
-        dispatch(getRentWallet());
+         dispatch(getRentWallet({
+          authLogin: userId || "",
+          fromDate: formatDate(fromDate) || "",
+          toDate: formatDate(toDate) || "",
+        }));
       } catch (error) {
         toast.error('Failed to approve request', {
           position: "top-right",
@@ -435,7 +527,11 @@ const [usdBalance, setUsdBalance] = useState('0.00');
           pauseOnHover: true,
           draggable: true,
         });
-        dispatch(getRentWallet());
+         dispatch(getRentWallet({
+          authLogin: userId || "",
+          fromDate: formatDate(fromDate) || "",
+          toDate: formatDate(toDate) || "",
+        }));
       } catch (error) {
         toast.error('Failed to reject request', {
           position: "top-right",
@@ -557,34 +653,86 @@ const [usdBalance, setUsdBalance] = useState('0.00');
       </div>
 
       <div className="flex items-center justify-between mb-6">
-        <h1 className="w-full text-2xl font-bold text-center text-gray-700">Rent Request</h1>
+        <h1 className="w-full text-2xl font-bold text-center text-gray-700">Yield Request: ${Number(totalRelease.toFixed(2))}</h1>
 
         {/* Search Box */}
-        <div className="relative w-60">
-          <input
-            type="text"
-            className="w-full py-2 pl-3 pr-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600"
-            >
-              ×
-            </button>
-          )}
-        </div>
+       
       </div>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+  <div>
+    <label className="block mb-1 text-sm font-medium text-blue-800">
+      From Date
+    </label>
+    <input
+      type="date"
+      value={fromDate}
+      onChange={(e) => setFromDate(e.target.value)}
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+    />
+  </div>
 
+  <div>
+    <label className="block mb-1 text-sm font-medium text-blue-800">
+      To Date
+    </label>
+    <input
+      type="date"
+      value={toDate}
+      onChange={(e) => setToDate(e.target.value)}
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+    />
+  </div>
+
+  <div>
+    <label className="block mb-1 text-sm font-medium text-blue-800">
+      User ID
+    </label>
+    <input
+      type="text"
+      value={userId}
+      onChange={(e) => setUserId(e.target.value)}
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+    />
+    {userError && <p className="mt-1 text-sm text-red-600">{userError}</p>}
+  </div>
+
+  <div>
+    <label className="block mb-1 text-sm font-medium text-blue-800 cursor-not-allowed">
+      Username
+    </label>
+    <input
+      type="text"
+      value={username}
+      readOnly
+      onChange={(e) => setUsername(e.target.value)}
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+    />
+  </div>
+
+  {/* Search Button row */}
+  <div className="flex items-end space-x-4">
+    <button
+      onClick={handleSearch}
+      className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+    >
+      Search
+    </button>
+    <button
+      onClick={handleExport}
+      className="px-6 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
+    >
+      Export Excel
+    </button>
+  </div>
+</div>
+{hasSearched && (
+        <>
       {loading ? (
         <div className="py-10 text-center">Loading...</div>
       ) : error ? (
         <div className="py-10 text-center text-red-500">{error}</div>
       ) : (
-        <div className="mt-2 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
+        <div className="mt-4 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
           <table className="min-w-full border border-gray-200 rounded-xl">
             <thead className="sticky top-0 z-10 text-white bg-blue-500">
               <tr>
@@ -593,15 +741,13 @@ const [usdBalance, setUsdBalance] = useState('0.00');
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Action</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">UserId</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Username</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Payment Mode</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Type</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Code</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Hash</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Email</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Wallet Address</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Request ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Charges ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Release ($)</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Created Date</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Approval Date</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Date</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Remark</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Action</th>
               </tr>
             </thead>
@@ -639,9 +785,7 @@ const [usdBalance, setUsdBalance] = useState('0.00');
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.AuthLogin || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.FullName || '-'}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.payMode || '-'}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.transType || '-'}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.trCode || '-'}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Email || '-' }</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
                       <div className="flex items-center justify-center gap-1 group">
                         <span
@@ -664,8 +808,11 @@ const [usdBalance, setUsdBalance] = useState('0.00');
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Request}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Charges || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Release || '-'}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.CreatedDate ? new Date(row.CreatedDate).toLocaleString() : '-'}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.ApprovalDate ? new Date(row.ApprovalDate).toLocaleString() : '-'}</td>
+                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+  {row.CreatedDate ? row.CreatedDate.split("T")[0] : "-"}
+</td>
+                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Remark || '-'}</td>
+                   
                     <td className="px-4 py-2 text-sm text-center">
                       <button
                         className="px-3 py-1 font-semibold text-white bg-red-500 rounded hover:bg-red-600"
@@ -692,9 +839,9 @@ const [usdBalance, setUsdBalance] = useState('0.00');
                   }}
                   className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
+                  <option value="10">500</option>
+                  <option value="25">1000</option>
+                  <option value="50">1500</option>
                 </select>
               </div>
               <div className="text-sm text-gray-600">
@@ -723,6 +870,8 @@ const [usdBalance, setUsdBalance] = useState('0.00');
             </div>
           )}
         </div>
+      )}
+      </>
       )}
 
       {/* Approve Popup Modal */}

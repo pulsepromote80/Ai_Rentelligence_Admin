@@ -3,7 +3,7 @@ import { postRequest, getRequest } from "@/app/pages/api/auth";
 const API_ENDPOINTS = {
     GET_ALL_FUND_REQUEST_REPORT_ADMIN: "/FundManager/getAllFundRequestReport_Admin",
     UPDATE_REQUEST_STATUS_ADMIN: "/FundManager/updateFundRequestStatus_Admin",
-    GET_RENT_WALLET: "/AdminManageUser/getRentWallet",
+    GET_RENT_WALLET: "/AdminManageUser/getRentWithdrawalWallet",
     GET_ALL_INCOME_REQUEST_ADMIN: "/FundManager/getAllIncomeRequest_Admin",
     UPDATE_INCOME_WITHDRAW_REQUEST_STATUS_ADMIN: "/FundManager/UpIncomeWithdReqStatus_Admin",
     UPDATE_RENT_WITHDRAW_REQUEST_STATUS_ADMIN: "/FundManager/upRentWithdReqStatus_Admin",
@@ -50,7 +50,7 @@ export const getRentWallet = createAsyncThunk(
     "fundManager/getRentWallet",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await getRequest(
+            const response = await postRequest(
                 API_ENDPOINTS.GET_RENT_WALLET,
                 data
             );
@@ -66,7 +66,7 @@ export const getAllIncomeRequestAdmin = createAsyncThunk(
     "fundManager/getAllIncomeRequestAdmin",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await getRequest(
+            const response = await postRequest(
                 API_ENDPOINTS.GET_ALL_INCOME_REQUEST_ADMIN,
                 data
             );

@@ -3,10 +3,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllIncomeRequestAdmin, UpIncomeWithdReqStatusAdmin, updateIncomeWalletAdressUSDT } from '@/app/redux/fundManagerSlice';
+import { usernameLoginId } from "@/app/redux/adminMasterSlice";
 import { toast } from 'react-toastify';
 import { FaCopy } from 'react-icons/fa';
 import { ethers } from "ethers";
-
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const WithdrawalRequest = () => {
   const dispatch = useDispatch();
@@ -23,12 +25,24 @@ const WithdrawalRequest = () => {
 
   // Table state
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(100);
   const [approvePopupOpen, setApprovePopupOpen] = useState(false);
   const [rejectPopupOpen, setRejectPopupOpen] = useState(false);
   const [selectedAuthLoginId, setSelectedAuthLoginId] = useState(null);
   const [remark, setRemark] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [userId, setUserId] = useState(""); 
+  const [username, setUsername] = useState("");
+   const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [userError, setUserError] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
+
+   const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const [year, month, day] = dateString.split("-");
+    return `${day}-${month}-${year}`;
+  };
 
   // BSC chain configuration
   const BSC_CHAIN_ID = '0x38'; // BSC Mainnet
@@ -45,9 +59,71 @@ const WithdrawalRequest = () => {
   const USDT_CONTRACT_ADDRESS = '0x55d398326f99059fF775485246999027B3197955';
   const USDT_DECIMALS = 18;
 
-  useEffect(() => {
-    dispatch(getAllIncomeRequestAdmin());
-  }, [dispatch]);
+useEffect(() => {
+  const fetchUsername = async () => {
+    if (!userId.trim()) {
+      setUsername("");
+      setUserError("");
+      return;
+    }
+
+    const result = await dispatch(usernameLoginId(userId));
+
+    if (result?.payload && result.payload.name) {
+      setUsername(result.payload.name);
+      setUserError(""); 
+    } else {
+      setUsername("");
+      setUserError("Invalid User ID"); 
+    }
+  };
+
+  fetchUsername();
+}, [userId, dispatch]);
+
+ const handleSearch = () => {
+    const payload = {
+      authLogin: userId || "",
+      fromDate: formatDate(fromDate) || "",
+      toDate: formatDate(toDate) || "",
+    };
+
+    dispatch(getAllIncomeRequestAdmin(payload));
+    setHasSearched(true);
+  };
+  
+  
+
+  const handleExport = () => {
+    if (!withdrawRequestData?.unApWithIncome || withdrawRequestData?.unApWithIncome?.length === 0) {
+      alert("No data available to export");
+      return;
+    }
+  
+    const worksheet = XLSX.utils.json_to_sheet(
+      withdrawRequestData?.unApWithIncome?.map((txn, index) => ({
+        "Sr.No.": index + 1,
+        Username: txn.AuthLogin,
+        Name: txn.FullName,
+        Email:txn.Email,
+        Amount: txn.TotWithdl,
+        Release:txn.Release,
+        WalletAddress:txn.Wallet,
+        Remark: txn.Remark,
+      }))
+    );
+  
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
+  
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+  
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, "Transactions.xlsx");
+  };
 
 
  const fetchWalletBalances = async (accountAddress) => {
@@ -363,7 +439,12 @@ const handleApproveUSDTClick = async (row) => {
       }));
 
       toast.success('USDT Transaction Approved Successfully!');
-      dispatch(getAllIncomeRequestAdmin());
+      dispatch(getAllIncomeRequestAdmin({
+  authLogin: userId || "",
+  fromDate: formatDate(fromDate) || "",
+  toDate: formatDate(toDate) || "",
+}));
+
     }
   } catch (error) {
     console.error('Error approving USDT:', error);
@@ -396,7 +477,11 @@ const handleApproveUSDTClick = async (row) => {
           pauseOnHover: true,
           draggable: true,
         });
-        
+          dispatch(getAllIncomeRequestAdmin({
+  authLogin: userId || "",
+  fromDate: formatDate(fromDate) || "",
+  toDate: formatDate(toDate) || "",
+}));
       } catch (error) {
         toast.error('Failed to approve request', {
           position: 'top-right',
@@ -429,7 +514,11 @@ const handleApproveUSDTClick = async (row) => {
           pauseOnHover: true,
           draggable: true,
         });
-        dispatch(getAllIncomeRequestAdmin());
+          dispatch(getAllIncomeRequestAdmin({
+  authLogin: userId || "",
+  fromDate: formatDate(fromDate) || "",
+  toDate: formatDate(toDate) || "",
+}));
       } catch (error) {
         toast.error('Failed to reject request', {
           position: 'top-right',
@@ -546,36 +635,88 @@ const handleApproveUSDTClick = async (row) => {
           )}
         </div>
       </div>
-
-      {/* Original Table Section */}
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="w-full mb-4 text-2xl font-bold text-center text-gray-700">Withdrawal Requests: ${totalRelease}</h1>
-
-        <div className="relative w-60">
-          <input
-            type="text"
-            className="w-full py-2 pl-3 pr-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600"
-            >
-              ×
-            </button>
-          )}
-        </div>
+      <div>
+      <h1 className="w-full mb-4 text-xl font-bold text-center text-gray-700">Withdrawal Requests: ${Number(totalRelease.toFixed(2))}</h1>
       </div>
 
+   <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+  <div>
+    <label className="block mb-1 text-sm font-medium text-blue-800">
+      From Date
+    </label>
+    <input
+      type="date"
+      value={fromDate}
+      onChange={(e) => setFromDate(e.target.value)}
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+    />
+  </div>
+
+  <div>
+    <label className="block mb-1 text-sm font-medium text-blue-800">
+      To Date
+    </label>
+    <input
+      type="date"
+      value={toDate}
+      onChange={(e) => setToDate(e.target.value)}
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+    />
+  </div>
+
+  <div>
+    <label className="block mb-1 text-sm font-medium text-blue-800">
+      User ID
+    </label>
+    <input
+      type="text"
+      value={userId}
+      onChange={(e) => setUserId(e.target.value)}
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+    />
+    {userError && <p className="mt-1 text-sm text-red-600">{userError}</p>}
+  </div>
+
+  <div>
+    <label className="block mb-1 text-sm font-medium text-blue-800 cursor-not-allowed">
+      Username
+    </label>
+    <input
+      type="text"
+      value={username}
+      readOnly
+      onChange={(e) => setUsername(e.target.value)}
+      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+    />
+  </div>
+
+  {/* Search Button row */}
+  <div className="flex items-end space-x-4">
+    <button
+      onClick={handleSearch}
+      className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+    >
+      Search
+    </button>
+    <button
+      onClick={handleExport}
+      className="px-6 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
+    >
+      Export Excel
+    </button>
+  </div>
+</div>
+
+
+      {/* Original Table Section */}
+       {hasSearched && (
+        <>
       {loading ? (
         <div className="py-10 text-center">Loading...</div>
       ) : error ? (
         <div className="py-10 text-center text-red-500">{error}</div>
       ) : (
-        <div className="mt-2 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
+        <div className="mt-4 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
           <table className="min-w-full border border-gray-200 rounded-xl">
             <thead className="sticky top-0 z-10 text-white bg-blue-500">
               <tr>
@@ -585,13 +726,11 @@ const handleApproveUSDTClick = async (row) => {
                 <th className="px-4 py-2 text-sm font-semibold text-center border">User ID</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Name</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Date</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Amount ($)</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Admin Charges ($)</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Request ($)</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Charges ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Release ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Email</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Package</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border"> Wallet Address</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Hash</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Remark</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Action</th>
               </tr>
@@ -631,14 +770,16 @@ const handleApproveUSDTClick = async (row) => {
                       </button>
                     </td>
 
-                    <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center">
-                      <button
-                        className="px-3 py-1 font-semibold text-white bg-green-500 rounded hover:bg-green-600"
-                        onClick={() => handleApproveClick(row.AuthLogin)}
-                      >
-                        Approve
-                      </button>
-                    </td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+  <div className="flex justify-center">
+    <button
+      className="px-3 py-1 font-semibold text-white bg-green-500 rounded hover:bg-green-600"
+      onClick={() => handleApproveClick(row.AuthLogin)}
+    >
+      Approve
+    </button>
+  </div>
+</td>
 
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
                       {row.AuthLogin || '-'}
@@ -648,22 +789,20 @@ const handleApproveUSDTClick = async (row) => {
                       {row.FullName || '-'}
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                      {row.date || '-'}
-                    </td>
+  {row.CreatedDate ? row.CreatedDate.split("T")[0] : "-"}
+</td>
+
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
                       {row.TotWithdl}
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                      {row.AdminCharges}
+                      {row.AdminCharge}
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
                       {row.Release}
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                      {row.email || '-'}
-                    </td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                      {row.package || '-'}
+                      {row.Email || '-'}
                     </td>
                    
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
@@ -682,11 +821,8 @@ const handleApproveUSDTClick = async (row) => {
                         )}
                       </div>
                     </td>
-                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                      {row.hash || '-'}
-                    </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                      {row.remark || '-'}
+                      {row.Remark || '-'}
                     </td>
                     <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center">
                       <button
@@ -714,9 +850,9 @@ const handleApproveUSDTClick = async (row) => {
                   }}
                   className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
+                  <option value="10">500</option>
+                  <option value="25">1000</option>
+                  <option value="50">1500</option>
                 </select>
               </div>
               <div className="text-sm text-gray-600">
@@ -762,8 +898,12 @@ const handleApproveUSDTClick = async (row) => {
               </div>
             </div>
           )}
+          
         </div>
       )}
+      </>
+      )}
+    
 
       {/* Approve Popup Modal (kept for non-USDT approve) */}
       {approvePopupOpen && (
