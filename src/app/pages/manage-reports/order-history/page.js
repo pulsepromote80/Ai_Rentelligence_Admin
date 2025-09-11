@@ -243,7 +243,13 @@ useEffect(() => {
               Product Name
             </th>
             <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
-              Price
+              Price ($)
+            </th>
+            <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
+              Weekly ROI ($)
+            </th>
+            <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
+              Order Date
             </th>
             <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
               Image
@@ -266,10 +272,16 @@ useEffect(() => {
         {transaction.FullName}
       </td>
       <td className="px-4 py-2 text-sm text-center text-green-700 border">
-        ${transaction.name}
+        {transaction.name}
       </td>
       <td className="px-4 py-2 text-sm text-center text-red-700 border">
-        ${transaction.Rkprice}
+        {Number(transaction.Rkprice.toFixed(2))}
+      </td>
+      <td className="px-4 py-2 text-sm text-center text-red-700 border">
+        {Number(transaction.WeeklyReturn.toFixed(2))}
+      </td>
+      <td className="px-4 py-2 text-sm text-center text-red-700 border">{transaction.RDate? transaction.RDate.split("T")[0] : "-"}
+       
       </td>
     <td className="px-4 py-2 text-center border">
                     {transaction.imageUrl ? (
