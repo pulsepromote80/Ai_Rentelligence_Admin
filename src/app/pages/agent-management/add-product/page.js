@@ -421,7 +421,7 @@ useEffect(() => {
 
       {activeTab === 'addProduct' ? (
         <div>
-          <h3 className="mb-4 text-2xl font-bold text-center text-add-label">Add Agent</h3>
+          <h3 className="mb-4 font-bold text-left text-black">Add Agent</h3>
           <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
             <div>
               <label className="block text-sm font-medium">Category</label>

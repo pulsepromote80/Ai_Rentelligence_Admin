@@ -104,9 +104,9 @@ const Agent = () => {
   };
 
   return (
-    <div className="max-w-full pt-8 mx-auto mt-5 mb-6 bg-white rounded-lg">
+    <div className="max-w-full mx-auto bg-white rounded-lg">
       <div className="flex items-center justify-between">
-        <div className="w-full sm:w-[45%] flex sm:justify-start justify-center mb-4">
+        <div className="w-full sm:w-[45%] flex sm:justify-start justify-center p-4 pb-0 ">
           {!showForm && !editProduct && !addProductImage && !showProductDetails && (
             <button
               onClick={() => setShowForm(true)}

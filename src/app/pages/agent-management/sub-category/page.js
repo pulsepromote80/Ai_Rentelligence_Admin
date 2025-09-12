@@ -162,10 +162,10 @@ const SubCategory = () => {
   const submitButtonText = loading ? (editMode ? "Updating..." : "Adding...") : (editMode ? "Update" : "Submit");
 
   return (
-    <div className="max-w-full pt-8 mx-auto mt-5 mb-6 bg-white rounded-lg">
+    <div className="max-w-full mx-auto bg-white rounded-lg">
       {/*  Add Subcategory Button */}
       <div className='flex'>
-        <div className="flex justify-center w-full sm:justify-start">
+        <div className="flex justify-center w-full sm:justify-start p-4 pb-0">
           {!showForm && (
             <button
               onClick={() => {
@@ -183,7 +183,7 @@ const SubCategory = () => {
 
       {showForm && (
         <div className="p-4 mb-4 rounded-md ">
-          <h2 className="mb-10 text-2xl font-bold text-center text-add-label">
+          <h2 className="mb-10 font-bold text-left text-black">
             {editMode ? 'Edit Subcategory' : 'Add Subcategory'}
           </h2>
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">

@@ -172,9 +172,9 @@ const SubMenu = () => {
       ? 'Update'
       : 'Submit'
   return (
-    <div className="max-w-full pt-8 mx-auto mt-5 mb-6 bg-white rounded-lg">
+    <div className="max-w-full mx-auto bg-white rounded-lg">
       <div className="flex">
-        <div className="w-full md:w-[45%] flex justify-center md:justify-start">
+        <div className="w-full md:w-[45%] flex justify-center md:justify-start  p-4 pb-0">
           {!showForm && (
             <button
               onClick={() => {

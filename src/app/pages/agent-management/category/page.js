@@ -138,9 +138,9 @@ const Category = () => {
   const submitButtonText = loading ? (editMode ? "Updating..." : "Adding...") : (editMode ? "Update" : "Submit");
 
   return (
-    <div className="max-w-full pt-8 mx-auto mt-5 mb-6 bg-white rounded-lg">
+    <div className="max-w-full mx-auto bg-white rounded-lg">
       {/* Add Category Button */}
-      <div className="flex items-center justify-start md:justify-between">
+      <div className="p-4 pb-0 flex items-center justify-start md:justify-between">
         {!showForm && (
           <button
             onClick={() => {
@@ -161,7 +161,7 @@ const Category = () => {
       {/* Form */}
       {showForm && (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <h2 className="mb-4 text-2xl font-bold text-center text-add-label">{formTitle}</h2>
+          <h2 className="mb-4 font-bold text-left text-black">{formTitle}</h2>
           <label className="block font-medium">Category Name</label>
           <input
             type="text"

@@ -247,9 +247,9 @@ const SellerPage = () => {
   })
 
   return (
-    <div className="max-w-full pt-8 mx-auto mt-5 mb-6 bg-white rounded-lg">
+    <div className="max-w-full mx-auto bg-white rounded-lg">
     
-        <div className="flex justify-center w-full sm:justify-start">
+        <div className="flex justify-center w-full sm:justify-start p-4 pb-0">
           {!showForm && (
             <button
               onClick={() => {
@@ -271,7 +271,7 @@ const SellerPage = () => {
           onSubmit={handleSubmit}
           className="p-4 mb-4 rounded"
         >
-          <h2 className="mb-4 text-2xl font-bold text-center text-add-label">
+          <h2 className="mb-2 font-bold text-left text-black">
             {editMode ? 'Edit Seller' : 'Add Seller'}
           </h2>
           <div className="grid grid-cols-2 gap-4">
