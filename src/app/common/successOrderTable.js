@@ -81,7 +81,7 @@
 //   if (loading) return <Loading />
 
 //   return (
-//     <div className="p-4 mt-3 rounded-md shadow-custom-1">
+//     <div className="p-4 rounded-md shadow-custom-1">
 //       <div className="flex items-center justify-end mb-4">
 //         {title && (
 //           <h2 className="flex-1 text-xl font-semibold text-center text-gray-800">
@@ -338,7 +338,7 @@ const SuccessOrderTable = ({ columns, data, loading, title, onSelectionChange })
   if (loading) return <Loading />
 
   return (
-    <div className="p-4 mt-3 rounded-md shadow-custom-1">
+    <div className="p-4 rounded-md shadow-custom-1">
       <div className="flex flex-col items-center justify-between mb-4 md:flex-row">
         {title && (
           <h2 className="mb-4 text-xl font-semibold text-center text-gray-800 md:mb-0 md:text-left md:flex-1">

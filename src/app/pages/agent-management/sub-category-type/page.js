@@ -189,8 +189,8 @@ const SubCategoryType = () => {
   }))
 
   return (
-    <div className="max-w-full pt-8 mx-auto mt-5 mb-6 bg-white rounded-lg">
-      <div className="flex justify-center md:justify-start">
+    <div className="max-w-full mx-auto bg-white rounded-lg">
+      <div className="flex justify-center md:justify-start w-full p-4 pb-0">
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}
@@ -204,7 +204,7 @@ const SubCategoryType = () => {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-          <h2 className="mb-10 text-2xl font-bold text-center text-add-label">
+          <h2 className="font-bold text-left text-black">
             {editMode ? 'Edit Subcategory Type' : 'Add Subcategory Type'}
           </h2>
           <label className="block font-medium">Category Name</label>

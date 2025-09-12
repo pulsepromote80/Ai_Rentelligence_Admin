@@ -60,7 +60,7 @@ const TableWithCheckbox = ({ columns, data, loading, title, onSelectionChange, s
   if (loading) return <Loading />
 
   return (
-    <div className="p-4 mt-3 rounded-md shadow-custom-1">
+    <div className="p-4 rounded-md shadow-custom-1">
       <div className="flex flex-col items-center justify-between mb-4 sm:flex-row">
         {title && (
           <h2 className="mb-2 text-xl font-semibold text-gray-800 sm:mb-0 sm:text-center">

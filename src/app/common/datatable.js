@@ -58,7 +58,7 @@ const Table = ({
   if (loading) return <Loading />
 
   return (
-    <div className="p-4 mt-3 rounded-md shadow-custom-1">
+    <div className="p-4 rounded-md shadow-custom-1">
       <div className="flex flex-col items-center justify-between mb-4 sm:flex-row">
         <div className="w-full mb-2 sm:w-auto sm:mb-0">
           {title && (

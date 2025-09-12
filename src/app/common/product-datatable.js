@@ -82,7 +82,7 @@ const ProductTable = ({ columns, data = [], onEdit, onDelete, onAddImage, onRowC
     };
 
     return (
-        <div className="p-4 mt-6 rounded-md shadow-custom-1">
+        <div className="p-4 rounded-md shadow-custom-1">
             {/* Search */}
             <div className="flex flex-col items-center justify-end mb-4 sm:flex-row">
                 <h1 className="flex-1 text-xl font-semibold text-center text-gray-800 text-list-label sm:text-left sm:mr-4">
