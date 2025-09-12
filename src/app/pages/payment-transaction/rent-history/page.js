@@ -72,8 +72,8 @@ const handleSearch = () => {
             Username: txn.AuthLogin,
             Name: txn.FullName,
             Email:txn.Email,
-            Request: txn.Request,
-            Release:txn.Release,
+            Request: `$${txn.Request}`,
+            Release:`$${txn.Release}`,
             WalletAddress:txn.Wallet,
             TransactionHash:txn.TransHash,
             CreatedDate: txn.CreatedDate ? txn.CreatedDate.split("T")[0] : "-",
@@ -93,6 +93,17 @@ const handleSearch = () => {
         const data = new Blob([excelBuffer], { type: "application/octet-stream" });
         saveAs(data, "Transactions.xlsx");
       };
+
+      
+      const handleRefresh = () => {
+    setFromDate("");
+    setToDate("");
+    setUserId("");
+    setUsername("");
+    setUserError("");
+    setCurrentPage(1);
+    setHasSearched(false);
+  };
 
   const walletRows = rentWalletData?.aprWithrentwallet || [];
   const filteredRows = walletRows.filter(row =>
@@ -196,6 +207,12 @@ const handleSearch = () => {
                 className="px-5 py-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700"
               >
                 Export Excel
+              </button>
+              <button
+                onClick={handleRefresh}
+                className="px-5 py-2 text-sm text-white bg-gray-600 rounded-md hover:bg-gray-700"
+              >
+                Refresh
               </button>
             </div>
           </div>

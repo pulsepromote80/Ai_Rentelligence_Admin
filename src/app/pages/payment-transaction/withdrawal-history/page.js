@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllIncomeRequestAdmin } from '@/app/redux/fundManagerSlice';
+import { usernameLoginId } from "@/app/redux/adminMasterSlice";
 import { FaCopy } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import * as XLSX from "xlsx";
@@ -61,23 +62,23 @@ const WithdrawalHistory = () => {
   };
 
   const handleExport = () => {
-    if (!withdrawRequestData?.unApWithIncome || withdrawRequestData?.unApWithIncome?.length === 0) {
+    if (!withdrawRequestData?.aprWithIncome || withdrawRequestData?.aprWithIncome?.length === 0) {
       alert("No data available to export");
       return;
     }
 
     const worksheet = XLSX.utils.json_to_sheet(
-      withdrawRequestData?.unApWithIncome?.map((txn, index) => ({
+      withdrawRequestData?.aprWithIncome?.map((txn, index) => ({
         "Sr.No.": index + 1,
         Username: txn.AuthLogin,
         Name: txn.FullName,
         Email: txn.Email,
-        Amount: txn.TotWithdl,
-        Release: txn.Release,
+        Amount: `$${txn.TotWithdl}`,
+        Release: `$${txn.Release}`,
         WalletAddress: txn.Wallet,
         CreatedDate: txn.CreatedDate ? txn.CreatedDate.split("T")[0] : "-",
         ApprovalDate: txn.ApprovalDate ? txn.ApprovalDate.split("T")[0] : "-",
-        TransactionHash: txn.Transhash,
+        TransactionHash: txn.TransHash,
         Remark: txn.Remark,
         Status: txn.status,
       }))
@@ -93,6 +94,17 @@ const WithdrawalHistory = () => {
 
     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(data, "Transactions.xlsx");
+  };
+
+  
+      const handleRefresh = () => {
+    setFromDate("");
+    setToDate("");
+    setUserId("");
+    setUsername("");
+    setUserError("");
+    setCurrentPage(1);
+    setHasSearched(false);
   };
 
   const approvedRows = withdrawRequestData?.aprWithIncome || [];
@@ -204,6 +216,12 @@ const WithdrawalHistory = () => {
               >
                 Export Excel
               </button>
+              <button
+                onClick={handleRefresh}
+                className="px-5 py-2 text-sm text-white bg-gray-600 rounded-md hover:bg-gray-700"
+              >
+                Refresh
+              </button>
             </div>
           </div>
         </div>
@@ -281,15 +299,15 @@ const WithdrawalHistory = () => {
                           <div className="flex items-center justify-center gap-1">
                             <div className="relative group">
                               <span className="cursor-default">
-                                {truncateRefNo(row.Transhash)}
+                                {truncateRefNo(row.TransHash)}
                               </span>
-                              {row.Transhash && row.Transhash.length > 15 && (
+                              {row.TransHash && row.TransHash.length > 15 && (
                                 <div className="absolute z-10 hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-600 rounded-md group-hover:block whitespace-nowrap -top-8 left-1/2">
                                   {row.TransHash}
                                 </div>
                               )}
                             </div>
-                            {row.Transhash && (
+                            {row.TransHash && (
                               <button
                                 onClick={() => copyToClipboard(row.TransHash)}
                                 className="p-1 text-blue-500 hover:text-blue-700"

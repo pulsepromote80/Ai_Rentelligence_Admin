@@ -2,19 +2,110 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getAllFundRequestReportAdmin } from '@/app/redux/fundManagerSlice';
+import { usernameLoginId } from "@/app/redux/adminMasterSlice";
 import { FaCopy } from 'react-icons/fa';
 import { toast } from 'react-toastify';
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 const DepositHistory = () => {
   const dispatch = useDispatch();
   const { fundRequestData, loading, error } = useSelector((state) => state.fundManager);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10); 
+  const [rowsPerPage, setRowsPerPage] = useState(500); 
   const [searchTerm, setSearchTerm] = useState('');
+  const [userId, setUserId] = useState("");
+    const [username, setUsername] = useState("");
+    const [fromDate, setFromDate] = useState("");
+    const [toDate, setToDate] = useState("");
+    const [userError, setUserError] = useState("");
+    const [hasSearched, setHasSearched] = useState(false);
 
-  useEffect(() => {
-    dispatch(getAllFundRequestReportAdmin());
-  }, [dispatch]);
+   const formatDate = (dateString) => {
+      if (!dateString) return "";
+      const [year, month, day] = dateString.split("-");
+      return `${day}-${month}-${year}`;
+    };
+  
+    const totalRelease = fundRequestData?.approvedFundRequest?.reduce(
+      (sum, txn) => sum + (Number(txn.Amount) || 0),
+      0
+    ) || 0;
+    useEffect(() => {
+      const fetchUsername = async () => {
+        if (!userId.trim()) {
+          setUsername("");
+          setUserError("");
+          return;
+        }
+  
+        const result = await dispatch(usernameLoginId(userId));
+  
+        if (result?.payload && result.payload.name) {
+          setUsername(result.payload.name);
+          setUserError("");
+        } else {
+          setUsername("");
+          setUserError("Invalid User ID");
+        }
+      };
+  
+      fetchUsername();
+    }, [userId, dispatch]);
+  
+    const handleSearch = () => {
+      const payload = {
+        authLogin: userId || "",
+        fromDate: formatDate(fromDate) || "",
+        toDate: formatDate(toDate) || "",
+      };
+  
+      dispatch(getAllFundRequestReportAdmin(payload));
+      setHasSearched(true);
+    };
+  
+    const handleExport = () => {
+      if (!fundRequestData?.approvedFundRequest  || fundRequestData?.approvedFundRequest ?.length === 0) {
+        alert("No data available to export");
+        return;
+      }
+  
+      const worksheet = XLSX.utils.json_to_sheet(
+        fundRequestData?.approvedFundRequest?.map((txn, index) => ({
+          "Sr.No.": index + 1,
+          Username: txn.AuthLogin,
+          Name: txn.Name,
+          Email: txn.Email,
+          Amount: `$${txn.Amount}`,
+          TransactionHash: txn.RefrenceNo,
+          PaymentMode: txn.PaymentMode,
+          PaymentDate: txn.PaymentDate,
+        }))
+      );
+  
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
+  
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+  
+      const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+      saveAs(data, "Transactions.xlsx");
+    };
+  const handleRefresh = () => {
+  setFromDate("");
+  setToDate("");
+  setUserId("");
+  setUsername("");
+  setUserError("");
+  setSearchTerm("");
+  setCurrentPage(1);
+
+ setHasSearched(false);
+};
+
 
   const approvedRows = fundRequestData?.approvedFundRequest || [];
   const rejectedRows = fundRequestData?.rejectedFundRequest || [];
@@ -57,26 +148,86 @@ const DepositHistory = () => {
 
   return (
     <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
-      <div className='flex items-center justify-between mb-6'>
-        <h1 className="w-full ml-6 text-2xl font-bold text-center text-gray-700">Deposit History</h1>
-        <div className="relative w-60">
-          <input
-            type="text"
-            className="w-full py-2 pl-3 pr-4 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm('')}
-              className="absolute right-2.5 top-2.5 text-gray-400 hover:text-gray-600"
-            >
-              ×
-            </button>
-          )}
+       <h1 className="w-full ml-6 text-2xl font-bold text-center text-gray-700">Deposit History: ${Number(totalRelease.toFixed(2))}</h1>
+      <div className='flex items-center justify-between mt-3 mb-6'>
+       
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <label className="block mb-1 text-sm font-medium text-blue-800">
+              From Date
+            </label>
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 text-sm font-medium text-blue-800">
+              To Date
+            </label>
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+            />
+          </div>
+
+          <div>
+            <label className="block mb-1 text-sm font-medium text-blue-800">
+              User ID
+            </label>
+            <input
+              type="text"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+            />
+            {userError && <p className="mt-1 text-sm text-red-600">{userError}</p>}
+          </div>
+
+          <div>
+            <label className="block mb-1 text-sm font-medium text-blue-800 cursor-not-allowed">
+              Username
+            </label>
+            <input
+              type="text"
+              value={username}
+              readOnly
+              onChange={(e) => setUsername(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+            />
+          </div>
+
+          {/* Search Button row */}
+          <div className="flex items-end space-x-4">
+  <button
+    onClick={handleSearch}
+    className="w-32 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+  >
+    Search
+  </button>
+  <button
+    onClick={handleExport}
+    className="w-32 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
+  >
+    Export Excel
+  </button>
+  <button
+    onClick={handleRefresh}
+    className="w-32 py-2 text-white bg-gray-600 rounded-md hover:bg-gray-700"
+  >
+    Refresh
+  </button>
+</div>
+
         </div>
       </div>
+      {hasSearched && (
+        <>
       {loading ? (
         <div className="py-10 text-center">Loading...</div>
       ) : error ? (
@@ -89,6 +240,7 @@ const DepositHistory = () => {
                 <th className="px-4 py-2 text-sm font-medium text-center border rounded-tl-lg">Sr.No.</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">User ID</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">UserName</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border">Email</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Amount ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Payment Method</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Hash</th>
@@ -111,6 +263,7 @@ const DepositHistory = () => {
                     <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border">{startItem + idx}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.AuthLogin || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Name || '-'}</td>
+                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Email || '-'}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Amount}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.PaymentMode}</td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
@@ -161,9 +314,9 @@ const DepositHistory = () => {
                   }}
                   className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
-                  <option value="10">10</option>
-                  <option value="25">25</option>
-                  <option value="50">50</option>
+                  <option value="10">500</option>
+                  <option value="25">1000</option>
+                  <option value="50">1500</option>
                 </select>
               </div>
               <div className="text-sm text-gray-600">
@@ -192,7 +345,10 @@ const DepositHistory = () => {
             </div>
           )}
         </div>
+        )}
+      </>
       )}
+      
     </div>
   );
 };

@@ -106,10 +106,11 @@ useEffect(() => {
         Username: txn.AuthLogin,
         Name: txn.FullName,
         Email:txn.Email,
-        Amount: txn.TotWithdl,
-        Release:txn.Release,
+        Amount: `$${txn.TotWithdl}`,
+        Release:`$${txn.Release}`,
         WalletAddress:txn.Wallet,
         Remark: txn.Remark,
+        Status:txn.status
       }))
     );
   
@@ -123,6 +124,17 @@ useEffect(() => {
   
     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(data, "Transactions.xlsx");
+  };
+
+  
+      const handleRefresh = () => {
+    setFromDate("");
+    setToDate("");
+    setUserId("");
+    setUsername("");
+    setUserError("");
+    setCurrentPage(1);
+    setHasSearched(false);
   };
 
 
@@ -692,19 +704,26 @@ const handleApproveUSDTClick = async (row) => {
 
   {/* Search Button row */}
   <div className="flex items-end space-x-4">
-    <button
-      onClick={handleSearch}
-      className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-    >
-      Search
-    </button>
-    <button
-      onClick={handleExport}
-      className="px-6 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
-    >
-      Export Excel
-    </button>
-  </div>
+  <button
+    onClick={handleSearch}
+    className="w-32 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 whitespace-nowrap"
+  >
+    Search
+  </button>
+  <button
+    onClick={handleExport}
+    className="w-32 py-2 text-white bg-green-600 rounded-md hover:bg-green-700 whitespace-nowrap"
+  >
+    Export Excel
+  </button>
+  <button
+    onClick={handleRefresh}
+    className="w-32 py-2 text-white bg-gray-600 rounded-md hover:bg-gray-700 whitespace-nowrap"
+  >
+    Refresh
+  </button>
+</div>
+
 </div>
 
 
@@ -731,6 +750,7 @@ const handleApproveUSDTClick = async (row) => {
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Release ($)</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Email</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border"> Wallet Address</th>
+                <th className="px-4 py-2 text-sm font-semibold text-center border"> Status</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border">Remark</th>
                 <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Action</th>
               </tr>
@@ -820,6 +840,9 @@ const handleApproveUSDTClick = async (row) => {
                           </button>
                         )}
                       </div>
+                    </td>
+                    <td className="px-4 py-2 text-sm text-center text-yellow-700 border">
+                      {row.status || '-'}
                     </td>
                     <td className="px-4 py-2 text-sm text-center text-gray-700 border">
                       {row.Remark || '-'}
