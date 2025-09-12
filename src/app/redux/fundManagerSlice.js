@@ -14,7 +14,7 @@ export const getAllFundRequestReportAdmin = createAsyncThunk(
     "fundManager/getAllFundRequestReportAdmin",
     async (data, { rejectWithValue }) => {
         try {
-            const response = await getRequest(
+            const response = await postRequest(
                 API_ENDPOINTS.GET_ALL_FUND_REQUEST_REPORT_ADMIN,
                 data
             );
