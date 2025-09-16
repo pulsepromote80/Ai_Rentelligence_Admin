@@ -128,6 +128,7 @@ const RentRequest = () => {
         Email: txn.Email,
         Request: `$${txn.Request}`,
         Release: `$${txn.Release}`,
+        Charges: txn.Charges ? `$${txn.Charges}` : "$0",
         WalletAddress: txn.Wallet,
         Remark: txn.Remark,
       })),
@@ -615,8 +616,8 @@ const RentRequest = () => {
 
   return (
     <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 mb-6 border border-orange-200 rounded-2xl bg-gradient-to-r from-orange-50 via-orange-100 to-orange-50 shadow-sm">
-        <div className="text-sm flex flex-col md:flex-row md:items-center md:gap-4">
+      <div className="flex flex-col gap-4 p-4 mb-6 border border-orange-200 shadow-sm md:flex-row md:items-center md:justify-between rounded-2xl bg-gradient-to-r from-orange-50 via-orange-100 to-orange-50">
+        <div className="flex flex-col text-sm md:flex-row md:items-center md:gap-4">
           {!isMetamaskInstalled ? (
             <span className="text-gray-700">
               MetaMask not detected.{' '}
@@ -624,15 +625,15 @@ const RentRequest = () => {
                 href="https://metamask.io/download/"
                 target="_blank"
                 rel="noreferrer"
-                className="font-semibold underline text-orange-600 hover:text-orange-800 transition"
+                className="font-semibold text-orange-600 underline transition hover:text-orange-800"
               >
                 Install MetaMask
               </a>
             </span>
           ) : account ? (
             <div className="flex flex-wrap items-center gap-3">
-              <span className="text-gray-700 font-medium">Connected :</span>
-              <div className="flex items-center gap-2 px-3 py-1 bg-white border rounded-xl shadow-md">
+              <span className="font-medium text-gray-700">Connected :</span>
+              <div className="flex items-center gap-2 px-3 py-1 bg-white border shadow-md rounded-xl">
                 <span
                   className="font-mono text-xs text-gray-800"
                   title={account}
@@ -641,7 +642,7 @@ const RentRequest = () => {
                 </span>
                 <button
                   onClick={() => copyToClipboard(account)}
-                  className="p-1 text-gray-500 hover:text-gray-700 transition"
+                  className="p-1 text-gray-500 transition hover:text-gray-700"
                   title="Copy address"
                 >
                   <FaCopy className="w-3 h-3" />
@@ -666,7 +667,7 @@ const RentRequest = () => {
               href="https://metamask.io/download/"
               target="_blank"
               rel="noreferrer"
-              className="px-4 py-2 text-sm font-semibold text-white bg-orange-600 rounded-xl hover:bg-orange-700 shadow-md transition"
+              className="px-4 py-2 text-sm font-semibold text-white transition bg-orange-600 shadow-md rounded-xl hover:bg-orange-700"
             >
               Install MetaMask
             </a>
@@ -675,14 +676,14 @@ const RentRequest = () => {
               {chainId !== BSC_CHAIN_ID && (
                 <button
                   onClick={switchToBSCNetwork}
-                  className="px-4 py-2 text-sm font-semibold text-white bg-yellow-600 rounded-xl hover:bg-yellow-700 shadow-md transition"
+                  className="px-4 py-2 text-sm font-semibold text-white transition bg-yellow-600 shadow-md rounded-xl hover:bg-yellow-700"
                 >
                   Switch to BSC
                 </button>
               )}
               <button
                 onClick={disconnectLocal}
-                className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-xl hover:bg-gray-300 shadow-sm transition"
+                className="px-4 py-2 text-sm font-semibold text-gray-700 transition bg-gray-200 shadow-sm rounded-xl hover:bg-gray-300"
               >
                 Disconnect
               </button>
@@ -715,14 +716,14 @@ const RentRequest = () => {
               From Date
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2">
                 <FaCalendarAlt />
               </span>
               <input
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+                className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
               />
             </div>
           </div>
@@ -733,14 +734,14 @@ const RentRequest = () => {
               To Date
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2">
                 <FaCalendarAlt />
               </span>
               <input
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+                className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
               />
             </div>
           </div>
@@ -751,14 +752,14 @@ const RentRequest = () => {
               User ID
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2">
                 <FaUser />
               </span>
               <input
                 type="text"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+                className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
               />
             </div>
             {userError && (
@@ -772,7 +773,7 @@ const RentRequest = () => {
               Username
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+              <span className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2">
                 <FaIdBadge />
               </span>
               <input
@@ -780,7 +781,7 @@ const RentRequest = () => {
                 value={username}
                 readOnly
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200 bg-gray-50"
+                className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-200 bg-gray-50"
               />
             </div>
           </div>
@@ -789,19 +790,19 @@ const RentRequest = () => {
           <div className="flex items-end space-x-4">
             <button
               onClick={handleSearch}
-              className="px-5 py-2 rounded-xl bg-blue-600 text-white shadow hover:bg-blue-700 transition flex items-center gap-2"
+              className="flex items-center gap-2 px-5 py-2 text-white transition bg-blue-600 shadow rounded-xl hover:bg-blue-700"
             >
               <FaSearch className="w-4 h-4" /> Search
             </button>
             <button
               onClick={handleExport}
-              className="px-5 py-2 rounded-xl bg-green-600 text-white shadow hover:bg-green-700 transition flex items-center gap-2"
+              className="flex items-center gap-2 px-5 py-2 text-white transition bg-green-600 shadow rounded-xl hover:bg-green-700"
             >
               <FaFileExcel className="w-4 h-4" /> Export
             </button>
             <button
               onClick={handleRefresh}
-              className="px-5 py-2 rounded-xl bg-gray-600 text-white shadow hover:bg-gray-700 transition flex items-center gap-2"
+              className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
             >
               <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" /> Refresh
             </button>

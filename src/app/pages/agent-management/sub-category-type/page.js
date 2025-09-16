@@ -41,7 +41,7 @@ const SubCategoryType = () => {
   const [showForm, setShowForm] = useState(false)
   const [editMode, setEditMode] = useState(false)
   const [editSubCategoryTypeId, setEditSubCategoryTypeId] = useState(null)
-  const [active, setActive] = useState(false) // State for the "active" checkbox
+  const [active, setActive] = useState(false) 
   const [showDeletePopup, setShowDeletePopup] = useState(false)
   const [subCategoryTypeToDelete, setSubCategoryTypeToDelete] = useState(null);
   useState(null)
@@ -190,7 +190,7 @@ const SubCategoryType = () => {
 
   return (
     <div className="max-w-full mx-auto bg-white rounded-lg">
-      <div className="flex justify-center md:justify-start w-full p-4 pb-0">
+      <div className="flex justify-center w-full p-4 pb-0 md:justify-start">
         {!showForm && (
           <button
             onClick={() => setShowForm(true)}

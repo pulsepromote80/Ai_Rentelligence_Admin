@@ -207,7 +207,7 @@ const DepositRequest = () => {
   }
 
   return (
-    <div className="max-w-7xl p-8 mx-auto mt-10 mb-12 bg-gradient-to-b from-white via-blue-50 to-white border border-blue-100 shadow-2xl rounded-3xl">
+    <div className="p-8 mx-auto mt-10 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
       <h6 className="heading">
         Deposit Request:{' '}
         <span className="text-green-600">

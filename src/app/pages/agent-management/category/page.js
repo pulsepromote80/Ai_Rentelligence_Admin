@@ -124,7 +124,7 @@ const Category = () => {
     if (!image) return null;
     const src = typeof image === 'string' ? image : URL.createObjectURL(image);
     return (
-      <Image
+      <img
         src={src}
         width={128}
         height={128}
@@ -140,7 +140,7 @@ const Category = () => {
   return (
     <div className="max-w-full mx-auto bg-white rounded-lg">
       {/* Add Category Button */}
-      <div className="p-4 pb-0 flex items-center justify-start md:justify-between">
+      <div className="flex items-center justify-start p-4 pb-0 md:justify-between">
         {!showForm && (
           <button
             onClick={() => {
