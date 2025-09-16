@@ -13,7 +13,7 @@ import { saveAs } from "file-saver";
 const WithdrawalRequest = () => {
   const dispatch = useDispatch();
   const { withdrawRequestData, loading, error } = useSelector((state) => state.fundManager);
-
+ console.log("testt-->",withdrawRequestData);
   // MetaMask state
  const [isMetamaskInstalled, setIsMetamaskInstalled] = useState(false);
   const [account, setAccount] = useState(null);
@@ -107,12 +107,14 @@ useEffect(() => {
         Name: txn.FullName,
         Email:txn.Email,
         Amount: `$${txn.TotWithdl}`,
+        Charges: txn.AdminCharge ? `$${txn.AdminCharge}` : "$0",
         Release:`$${txn.Release}`,
         WalletAddress:txn.Wallet,
         Remark: txn.Remark,
         Status:txn.status
       }))
     );
+   
   
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
@@ -873,9 +875,9 @@ const handleApproveUSDTClick = async (row) => {
                   }}
                   className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
-                  <option value="10">500</option>
-                  <option value="25">1000</option>
-                  <option value="50">1500</option>
+                  <option value="500">500</option>
+                  <option value="1000">1000</option>
+                  <option value="1500">1500</option>
                 </select>
               </div>
               <div className="text-sm text-gray-600">

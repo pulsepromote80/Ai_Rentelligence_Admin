@@ -45,18 +45,19 @@ const dashboardSlice = createSlice({
       .addCase(fetchDashboardData.fulfilled, (state, action) => {
         state.loading = false;
         state.stats = {
-          totalJoining: action.payload.totalJoining || 0,
-          totalTodayJoining: action.payload.totalTodayJoining || 0,
-          totalactive: action.payload.totalactive || 0,
-          totalBusiness: action.payload.totalBusiness || 0,
-          todayBusiness: action.payload.todayBusiness || 0,
-          totalIncomeWallet: action.payload.totalIncomeWallet || 0,
-          totalDepositWallet: action.payload.totalDepositWallet || 0,
-          todayDeposit: action.payload.todayDeposit || 0,
+          totalJoining: action.payload.TotalJoining || 0,
+          totalTodayJoining: action.payload.TotalToadyJoining || 0,
+          totalactive: action.payload.TotalActivated || 0,
+          totalBusiness: action.payload.TotalBusiness || 0,
+          todayBusiness: action.payload.TodayBusiness || 0,
+          totalRentWallet:action.payload.TotalRentWallet ||0,
+          totalIncomeWallet: action.payload.TotalIncomeWallet || 0,
+          totalDepositWallet: action.payload.TotalDepositWallet || 0,
+          todayDeposit: action.payload.TodayDeposit || 0,
           totalWithdrawal: action.payload.totalWithdrawal || 0,
-          totalROI: action.payload.totalROI || 0,
-          workingIncomeToday: action.payload.workingIncomeToday || 0,
-          workingIncomeTotal: action.payload.workingIncomeTotal || 0,
+          totalROI: action.payload.TotalROI || 0,
+          workingIncomeToday: action.payload.WorkingIncomeToday || 0,
+          workingIncomeTotal: action.payload.WorkingIncomeTotal || 0,
         };
         state.transactions = action.payload.todayOrderList || [];
       })

@@ -1,22 +1,22 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { postRequest,getRequest, getToken } from "../pages/api/auth";
+import { postRequest, getRequest, getToken } from "../pages/api/auth";
 
 const API_ENDPOINTS = {
   GET_ADMIN_USER_DETAILS: "/AdminAuthentication/getAdminUserDetails",
-  GET_ALL_ADMIN_LIST:"/AdminAuthentication/getAllAdminList",
-  ADMIN_DEACTIVATE:"/AdminAuthentication/adminDeActivate",
-  ADMIN_ACTIVATE:"/AdminAuthentication/adminActivate"
+  GET_ALL_ADMIN_LIST: "/AdminAuthentication/getAllAdminList",
+  ADMIN_DEACTIVATE: "/AdminAuthentication/adminDeActivate",
+  ADMIN_ACTIVATE: "/AdminAuthentication/adminActivate",
+  UPDATE_ADMIN_PROFILE: "/AdminAuthentication/updateAdminProfile"
 };
 
 export const fetchAdminUserDetails = createAsyncThunk(
   "admin/fetchAdminUserDetails",
-  async ({ adminUserId, username }, { rejectWithValue }) => 
-    {
+  async ({ adminUserId, username }, { rejectWithValue }) => {
     try {
-      const token = getToken(); 
+      const token = getToken();
       if (!token) throw new Error("No token found, please login again");
 
-      const response = await postRequest(API_ENDPOINTS.GET_ADMIN_USER_DETAILS, { adminUserId, username }, token); 
+      const response = await postRequest(API_ENDPOINTS.GET_ADMIN_USER_DETAILS, { adminUserId, username }, token);
 
       if (!response) throw new Error("Invalid API response: response is null");
       if (response.statusCode === 400) return rejectWithValue(response.message);
@@ -66,14 +66,29 @@ export const fetchAllAdminUsersList = createAsyncThunk(
     }
   }
 );
+export const updateAdminProfile = createAsyncThunk(
+  'admin/updateAdminProfile',
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(API_ENDPOINTS.UPDATE_ADMIN_PROFILE, data);
+      if (!response || !response.data) {
+        throw new Error('Invalid admin user data received');
+      }
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Error fetching admin users');
+    }
+  }
+);
 
 const adminUserSlice = createSlice({
   name: "admin",
   initialState: {
     user: null,
-    allAdminListData:[],
+    allAdminListData: [],
     activateStatus: null,
     deactivateStatus: null,
+    UpdateAdminData: null,
     loading: false,
     error: null,
   },
@@ -117,6 +132,19 @@ const adminUserSlice = createSlice({
         state.activateStatus = action.payload;
       })
       .addCase(fetchDeActivateAdminUser.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      .addCase(updateAdminProfile.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateAdminProfile.fulfilled, (state, action) => {
+        state.loading = false;
+        state.UpdateAdminData = action.payload;
+        state.error = null;
+      })
+      .addCase(updateAdminProfile.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       })
   },

@@ -314,9 +314,9 @@ const DepositHistory = () => {
                   }}
                   className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                 >
-                  <option value="10">500</option>
-                  <option value="25">1000</option>
-                  <option value="50">1500</option>
+                  <option value="500">500</option>
+                  <option value="1000">1000</option>
+                  <option value="1500">1500</option>
                 </select>
               </div>
               <div className="text-sm text-gray-600">

@@ -23,22 +23,22 @@ const Dashboard = () => {
   }, [token, dispatch])
 
   return (
-    <div className="min-h-screen from-gray-50 to-gray-100 space-y-8">
+    <div className="min-h-screen space-y-8 from-gray-50 to-gray-100">
       {/* Top Stats */}
-      <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 md:p-8 hover:shadow-2xl transition-shadow duration-300">
+      <div className="p-6 transition-shadow duration-300 bg-white border border-gray-100 shadow-xl rounded-3xl md:p-8 hover:shadow-2xl">
         <Card stats={stats} loading={loading} error={error} />
       </div>
 
       {/* Middle Section */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
         {/* Left Stat Card */}
         <div className="md:col-span-1">
           <StatCard />
         </div>
 
         {/* Orders Chart */}
-        <div className="md:col-span-3 bg-white rounded-3xl shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-shadow duration-300">
-          <h5 className="text-2xl font-bold mb-5 flex items-center gap-2">
+        <div className="p-6 transition-shadow duration-300 bg-white border border-gray-100 shadow-xl md:col-span-3 rounded-3xl hover:shadow-2xl">
+          <h5 className="flex items-center gap-2 mb-5 text-2xl font-bold">
             Orders Overview
           </h5>
           <div className="h-[300px]">
@@ -61,7 +61,7 @@ const Dashboard = () => {
       </div>
 
       {/* Mini Cards Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
         <MiniChartCard
           title="Total Orders Completed"
           value={stats?.totalOrder ?? 0}
@@ -75,7 +75,7 @@ const Dashboard = () => {
           bgColor="from-red-500 to-red-300"
         />
         <div className="bg-gradient-to-tr from-green-500 to-green-300 rounded-3xl shadow-xl border border-gray-200 p-6 hover:scale-[1.02] transition-transform duration-300">
-          <h2 className="text-xl font-bold mb-3 text-white">Inventory Alert</h2>
+          <h2 className="mb-3 text-xl font-bold text-white">Inventory Alert</h2>
           <ul className="space-y-2 text-sm text-white/90">
             <li>
               Low-Stock Agents:{' '}
@@ -94,7 +94,7 @@ const Dashboard = () => {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 hover:shadow-2xl transition-shadow duration-300">
+      <div className="p-6 transition-shadow duration-300 bg-white border border-gray-100 shadow-xl rounded-3xl hover:shadow-2xl">
         <RecentActivity transactions={transactions} loading={loading} />
       </div>
     </div>
@@ -106,7 +106,7 @@ function StatCard() {
 
   if (!stats) {
     return (
-      <div className="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 text-center">
+      <div className="p-6 text-center bg-white border border-gray-100 shadow-xl rounded-3xl">
         Loading...
       </div>
     )
@@ -114,12 +114,12 @@ function StatCard() {
 
   return (
     <div className="bg-gradient-to-br from-indigo-500 to-indigo-300 text-white rounded-3xl shadow-xl p-6 hover:scale-[1.02] transition-transform duration-300">
-      <h2 className="text-lg font-bold mb-4">Agent Stats</h2>
+      <h2 className="mb-4 text-lg font-bold">Agent Stats</h2>
       <div className="space-y-3 text-sm">
         <p>Total Joining: <span className="font-bold">{stats.totalJoining}</span></p>
         <p>Total Income Wallet: <span className="font-bold">{stats.totalIncomeWallet}</span></p>
         <p>Total Deposit Wallet: <span className="font-bold">{stats.totalDepositWallet}</span></p>
-        <p>Total Active Agents: <span className="font-bold">{stats.totalactive}</span></p>
+        <p>Total Activated Agents: <span className="font-bold">{stats.totalactive}</span></p>
         <p>Total Working Income: <span className="font-bold">{stats.workingIncomeTotal}</span></p>
       </div>
     </div>
@@ -132,7 +132,7 @@ function MiniChartCard({ title, value, data, bgColor }) {
       className={`bg-gradient-to-tr ${bgColor} rounded-3xl shadow-xl p-6 text-white hover:scale-[1.02] transition-transform duration-300`}
     >
       <p className="text-sm">{title}</p>
-      <p className="text-3xl font-bold mt-1">{value}</p>
+      <p className="mt-1 text-3xl font-bold">{value}</p>
       <div className="h-12 mt-3">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data}>
