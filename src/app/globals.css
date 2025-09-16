@@ -170,3 +170,34 @@ body {
     justify-content: center;
   }
 }
+
+.heading {
+    font-size: 16px;
+    font-weight: 500;
+    border-bottom: 1px solid gainsboro;
+    padding-bottom: 15px;
+}.modal-label{
+  width: 130px;
+}
+.th-wrap-text {
+    white-space: nowrap;
+}
+.td-wrap-text {
+    white-space: nowrap;
+    font-size: 13px;
+    color: #4d2885;
+    font-weight: 500;
+    font-family: '__nextjs-Geist';
+}
+.animate-spin-on-hover:hover {
+  animation: spin 0.5s linear;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

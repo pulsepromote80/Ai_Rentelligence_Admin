@@ -1,299 +1,351 @@
-"use client";
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getAllFundRequestReportAdmin } from '@/app/redux/fundManagerSlice';
-import { usernameLoginId } from "@/app/redux/adminMasterSlice";
-import { FaCopy } from 'react-icons/fa';
-import { toast } from 'react-toastify';
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+'use client'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllFundRequestReportAdmin } from '@/app/redux/fundManagerSlice'
+import { usernameLoginId } from '@/app/redux/adminMasterSlice'
+import { FaCopy } from 'react-icons/fa'
+import { toast } from 'react-toastify'
+import * as XLSX from 'xlsx'
+import { saveAs } from 'file-saver';
+import { FaCalendarAlt, FaUser, FaIdBadge } from "react-icons/fa";
+import { FaSearch, FaFileExcel, FaSyncAlt } from "react-icons/fa";
 
 const DepositHistory = () => {
-  const dispatch = useDispatch();
-  const { fundRequestData, loading, error } = useSelector((state) => state.fundManager);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(500); 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [userId, setUserId] = useState("");
-    const [username, setUsername] = useState("");
-    const [fromDate, setFromDate] = useState("");
-    const [toDate, setToDate] = useState("");
-    const [userError, setUserError] = useState("");
-    const [hasSearched, setHasSearched] = useState(false);
+  const dispatch = useDispatch()
+  const { fundRequestData, loading, error } = useSelector(
+    (state) => state.fundManager,
+  )
+  const [currentPage, setCurrentPage] = useState(1)
+  const [rowsPerPage, setRowsPerPage] = useState(500)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [userId, setUserId] = useState('')
+  const [username, setUsername] = useState('')
+  const [fromDate, setFromDate] = useState('')
+  const [toDate, setToDate] = useState('')
+  const [userError, setUserError] = useState('')
+  const [hasSearched, setHasSearched] = useState(false)
 
-   const formatDate = (dateString) => {
-      if (!dateString) return "";
-      const [year, month, day] = dateString.split("-");
-      return `${day}-${month}-${year}`;
-    };
-  
-    const totalRelease = fundRequestData?.approvedFundRequest?.reduce(
+  const formatDate = (dateString) => {
+    if (!dateString) return ''
+    const [year, month, day] = dateString.split('-')
+    return `${day}-${month}-${year}`
+  }
+
+  const totalRelease =
+    fundRequestData?.approvedFundRequest?.reduce(
       (sum, txn) => sum + (Number(txn.Amount) || 0),
-      0
-    ) || 0;
-    useEffect(() => {
-      const fetchUsername = async () => {
-        if (!userId.trim()) {
-          setUsername("");
-          setUserError("");
-          return;
-        }
-  
-        const result = await dispatch(usernameLoginId(userId));
-  
-        if (result?.payload && result.payload.name) {
-          setUsername(result.payload.name);
-          setUserError("");
-        } else {
-          setUsername("");
-          setUserError("Invalid User ID");
-        }
-      };
-  
-      fetchUsername();
-    }, [userId, dispatch]);
-  
-    const handleSearch = () => {
-      const payload = {
-        authLogin: userId || "",
-        fromDate: formatDate(fromDate) || "",
-        toDate: formatDate(toDate) || "",
-      };
-  
-      dispatch(getAllFundRequestReportAdmin(payload));
-      setHasSearched(true);
-    };
-  
-    const handleExport = () => {
-      if (!fundRequestData?.approvedFundRequest  || fundRequestData?.approvedFundRequest ?.length === 0) {
-        alert("No data available to export");
-        return;
+      0,
+    ) || 0
+
+  useEffect(() => {
+    const fetchUsername = async () => {
+      if (!userId.trim()) {
+        setUsername('')
+        setUserError('')
+        return
       }
-  
-      const worksheet = XLSX.utils.json_to_sheet(
-        fundRequestData?.approvedFundRequest?.map((txn, index) => ({
-          "Sr.No.": index + 1,
-          Username: txn.AuthLogin,
-          Name: txn.Name,
-          Email: txn.Email,
-          Amount: `$${txn.Amount}`,
-          TransactionHash: txn.RefrenceNo,
-          PaymentMode: txn.PaymentMode,
-          PaymentDate: txn.PaymentDate,
-        }))
-      );
-  
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
-  
-      const excelBuffer = XLSX.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-  
-      const data = new Blob([excelBuffer], { type: "application/octet-stream" });
-      saveAs(data, "Transactions.xlsx");
-    };
+      const result = await dispatch(usernameLoginId(userId))
+      if (result?.payload && result.payload.name) {
+        setUsername(result.payload.name)
+        setUserError('')
+      } else {
+        setUsername('')
+        setUserError('Invalid User ID')
+      }
+    }
+    fetchUsername()
+  }, [userId, dispatch])
+
+  const handleSearch = () => {
+    const payload = {
+      authLogin: userId || '',
+      fromDate: formatDate(fromDate) || '',
+      toDate: formatDate(toDate) || '',
+    }
+    dispatch(getAllFundRequestReportAdmin(payload))
+    setHasSearched(true)
+  }
+
+  const handleExport = () => {
+    if (
+      !fundRequestData?.approvedFundRequest ||
+      fundRequestData?.approvedFundRequest?.length === 0
+    ) {
+      alert('No data available to export')
+      return
+    }
+    const worksheet = XLSX.utils.json_to_sheet(
+      fundRequestData?.approvedFundRequest?.map((txn, index) => ({
+        'Sr.No.': index + 1,
+        Username: txn.AuthLogin,
+        Name: txn.Name,
+        Email: txn.Email,
+        Amount: `$${txn.Amount}`,
+        TransactionHash: txn.RefrenceNo,
+        PaymentMode: txn.PaymentMode,
+        PaymentDate: txn.PaymentDate,
+      })),
+    )
+    const workbook = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions')
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array',
+    })
+    const data = new Blob([excelBuffer], { type: 'application/octet-stream' })
+    saveAs(data, 'Transactions.xlsx')
+  }
+
   const handleRefresh = () => {
-  setFromDate("");
-  setToDate("");
-  setUserId("");
-  setUsername("");
-  setUserError("");
-  setSearchTerm("");
-  setCurrentPage(1);
+    setFromDate('')
+    setToDate('')
+    setUserId('')
+    setUsername('')
+    setUserError('')
+    setSearchTerm('')
+    setCurrentPage(1)
+    setHasSearched(false)
+  }
 
- setHasSearched(false);
-};
+  const approvedRows = fundRequestData?.approvedFundRequest || []
+  const rejectedRows = fundRequestData?.rejectedFundRequest || []
+  const allRows = [...approvedRows, ...rejectedRows]
 
+  const filteredRows = allRows.filter(
+    (row) =>
+      row.AuthLogin?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.Amount?.toString().includes(searchTerm) ||
+      row.PaymentMode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.RefrenceNo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      row.PaymentDate?.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
 
-  const approvedRows = fundRequestData?.approvedFundRequest || [];
-  const rejectedRows = fundRequestData?.rejectedFundRequest || [];
-  const allRows = [...approvedRows, ...rejectedRows];
-
-  const filteredRows = allRows.filter(row =>
-    (row.AuthLogin?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (row.Name?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (row.Amount?.toString().includes(searchTerm)) ||
-    (row.PaymentMode?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (row.RefrenceNo?.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (row.PaymentDate?.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
-  const rowsToDisplay = searchTerm ? filteredRows : allRows;
-
+  const rowsToDisplay = searchTerm ? filteredRows : allRows
   const paginatedRows = rowsToDisplay.slice(
     (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
-  const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage);
-  const startItem = (currentPage - 1) * rowsPerPage + 1;
-  const endItem = Math.min(currentPage * rowsPerPage, rowsToDisplay.length);
+    currentPage * rowsPerPage,
+  )
+  const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage)
+  const startItem = (currentPage - 1) * rowsPerPage + 1
+  const endItem = Math.min(currentPage * rowsPerPage, rowsToDisplay.length)
 
   const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(text)
     toast.success('Copied to clipboard!', {
-      position: "top-right",
+      position: 'top-right',
       autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-    });
-  };
+    })
+  }
 
   const truncateRefNo = (refNo) => {
-    if (!refNo) return '-';
-    return refNo.length > 15 ? `${refNo.substring(0, 15)}...` : refNo;
-  };
+    if (!refNo) return '-'
+    return refNo.length > 15 ? `${refNo.substring(0, 15)}...` : refNo
+  }
 
   return (
-    <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
-       <h1 className="w-full ml-6 text-2xl font-bold text-center text-gray-700">Deposit History: ${Number(totalRelease.toFixed(2))}</h1>
-      <div className='flex items-center justify-between mt-3 mb-6'>
-       
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <div>
-            <label className="block mb-1 text-sm font-medium text-blue-800">
-              From Date
-            </label>
-            <input
-              type="date"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-            />
-          </div>
+    <div className="p-8 mx-auto mt-10 border border-gray-200 shadow-2xl max-w-7xl bg-gradient-to-br from-blue-50 to-white rounded-3xl">
+      {/* Header */}
+      <h6 className="heading">
+        Deposit History Total Released:{' '}
+        <span className="font-bold text-green-600">
+          ${Number(totalRelease.toFixed(2))}
+        </span>
+      </h6>
 
-          <div>
-            <label className="block mb-1 text-sm font-medium text-blue-800">
-              To Date
-            </label>
-            <input
-              type="date"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-            />
-          </div>
 
-          <div>
-            <label className="block mb-1 text-sm font-medium text-blue-800">
-              User ID
-            </label>
-            <input
-              type="text"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-            />
-            {userError && <p className="mt-1 text-sm text-red-600">{userError}</p>}
-          </div>
+{/* Filters Section */}
+<div className="grid grid-cols-1 gap-6 mt-4 md:grid-cols-2 lg:grid-cols-4">
+  {/* From Date */}
+  <div>
+    <label className="block mb-1 text-sm font-semibold text-blue-700">
+      From Date
+    </label>
+    <div className="relative">
+      <FaCalendarAlt className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+      <input
+        type="date"
+        value={fromDate}
+        onChange={(e) => setFromDate(e.target.value)}
+        className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+      />
+    </div>
+  </div>
 
-          <div>
-            <label className="block mb-1 text-sm font-medium text-blue-800 cursor-not-allowed">
-              Username
-            </label>
-            <input
-              type="text"
-              value={username}
-              readOnly
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-            />
-          </div>
+  {/* To Date */}
+  <div>
+    <label className="block mb-1 text-sm font-semibold text-blue-700">
+      To Date
+    </label>
+    <div className="relative">
+      <FaCalendarAlt className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+      <input
+        type="date"
+        value={toDate}
+        onChange={(e) => setToDate(e.target.value)}
+        className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+      />
+    </div>
+  </div>
 
-          {/* Search Button row */}
-          <div className="flex items-end space-x-4">
+  {/* User ID */}
+  <div>
+    <label className="block mb-1 text-sm font-semibold text-blue-700">
+      User ID
+    </label>
+    <div className="relative">
+      <FaIdBadge className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+      <input
+        type="text"
+        value={userId}
+        onChange={(e) => setUserId(e.target.value)}
+        className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+      />
+    </div>
+    {userError && (
+      <p className="mt-1 text-sm text-red-600">{userError}</p>
+    )}
+  </div>
+
+  {/* Username */}
+  <div>
+    <label className="block mb-1 text-sm font-semibold text-blue-700">
+      Username
+    </label>
+    <div className="relative">
+      <FaUser className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+      <input
+        type="text"
+        value={username}
+        readOnly
+        className="w-full py-2 pl-10 pr-3 bg-gray-100 border border-gray-200 shadow-inner cursor-not-allowed rounded-xl"
+      />
+    </div>
+  </div>
+</div>
+
+{/* Buttons */}
+<div className="flex flex-wrap gap-3 mt-6 mb-6 btn-flex">
+  {/* Search Button */}
   <button
     onClick={handleSearch}
-    className="w-32 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
+    className="flex items-center gap-2 px-5 py-2 text-white transition bg-blue-600 shadow rounded-xl hover:bg-blue-700"
   >
-    Search
+    <FaSearch className="w-4 h-4" /> Search
   </button>
+
+  {/* Export Button */}
   <button
     onClick={handleExport}
-    className="w-32 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
+    className="flex items-center gap-2 px-5 py-2 text-white transition bg-green-600 shadow rounded-xl hover:bg-green-700"
   >
-    Export Excel
+    <FaFileExcel className="w-4 h-4" /> Export Excel
   </button>
+
+  {/* Refresh Button */}
   <button
     onClick={handleRefresh}
-    className="w-32 py-2 text-white bg-gray-600 rounded-md hover:bg-gray-700"
+    className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
   >
-    Refresh
+    <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" /> Refresh
   </button>
 </div>
 
-        </div>
+
+      {/* Table Section */}
+    {/* Table Section */}
+{hasSearched && (
+  <>
+    {loading ? (
+      <div className="py-10 mt-10 font-semibold text-center text-blue-600 bg-white border border-gray-200 shadow-xl rounded-2xl">
+        Loading...
       </div>
-      {hasSearched && (
-        <>
-      {loading ? (
-        <div className="py-10 text-center">Loading...</div>
-      ) : error ? (
-        <div className="py-10 text-center text-red-500">{error}</div>
-      ) : (
-        <div className="mt-2 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
-          <table className="min-w-full border border-gray-200 rounded-xl">
-            <thead className="sticky top-0 z-10 text-white bg-blue-500">
+    ) : error ? (
+      <div className="py-10 font-semibold text-center text-red-500">
+        {error}
+      </div>
+    ) : (
+      <div className="overflow-hidden bg-white border border-gray-200 shadow-xl rounded-2xl">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm text-center border-collapse">
+            {/* Table Header */}
+            <thead className="text-white bg-blue-600">
               <tr>
-                <th className="px-4 py-2 text-sm font-medium text-center border rounded-tl-lg">Sr.No.</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">User ID</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">UserName</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Email</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Amount ($)</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Payment Method</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Hash</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Payment Date</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border">Remark</th>
-                <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Status</th>
+                {[
+                  'Sr.No.',
+                  'User ID',
+                  'Username',
+                  'Email',
+                  'Amount ($)',
+                  'Payment Method',
+                  'Transaction Hash',
+                  'Payment Date',
+                  'Remark',
+                  'Status',
+                ].map((heading, i) => (
+                  <th
+                    key={i}
+                    className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text"
+                  >
+                    {heading}
+                  </th>
+                ))}
               </tr>
             </thead>
+
+            {/* Table Body */}
             <tbody>
               {paginatedRows.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
+                  <td
+                    colSpan={10}
+                    className="py-10 text-lg text-center text-gray-400"
+                  >
+                    No Data Found
+                  </td>
                 </tr>
               ) : (
                 paginatedRows.map((row, idx) => (
                   <tr
                     key={idx}
-                    className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}
+                    className="transition-colors border-b hover:bg-blue-50 last:border-none td-wrap-text"
                   >
-                    <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border">{startItem + idx}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.AuthLogin || '-'}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Name || '-'}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Email || '-'}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Amount}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.PaymentMode}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                    <td className="px-4 py-3 font-medium td-wrap-text">{startItem + idx}</td>
+                    <td className="px-4 py-3 td-wrap-text">{row.AuthLogin || '-'}</td>
+                    <td className="px-4 py-3 td-wrap-text">{row.Name || '-'}</td>
+                    <td className="px-4 py-3 td-wrap-text">{row.Email || '-'}</td>
+                    <td className="px-4 py-3 font-semibold text-blue-700 td-wrap-text">
+                      {row.Amount}
+                    </td>
+                    <td className="px-4 py-3 td-wrap-text">{row.PaymentMode}</td>
+                    <td className="px-4 py-3 td-wrap-text">
                       <div className="flex items-center justify-center gap-1">
-                        <div className="relative group">
-                          <span className="cursor-default">
-                            {truncateRefNo(row.RefrenceNo)}
-                          </span>
-                          {row.RefrenceNo && row.RefrenceNo.length > 15 && (
-                            <div className="absolute z-10 hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-600 rounded-md group-hover:block whitespace-nowrap -top-8 left-1/2">
-                              {row.RefrenceNo}
-                            </div>
-                          )}
-                        </div>
+                        <span
+                          className="truncate max-w-[100px]"
+                          title={row.RefrenceNo}
+                        >
+                          {truncateRefNo(row.RefrenceNo)}
+                        </span>
                         {row.RefrenceNo && (
                           <button
                             onClick={() => copyToClipboard(row.RefrenceNo)}
-                            className="p-1 text-blue-500 hover:text-blue-700"
-                            title="Copy to clipboard"
+                            className="px-3 py-1 text-xs font-semibold text-blue-500 rounded-full hover:text-blue-700 bg-blue"
                           >
                             <FaCopy className="w-3 h-3" />
                           </button>
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.PaymentDate}</td>
-                    <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Remark}</td>
-                    <td className="px-4 py-2 text-sm text-center border">
-                      <span className={`px-2 py-1 rounded ${row.Rf_Status === 'Approved' ? 'text-green-600' : 'text-red-600'
-                        }`}>
+                    <td className="px-4 py-3 td-wrap-text">{row.PaymentDate}</td>
+                    <td className="px-4 py-3 td-wrap-text">{row.Remark}</td>
+                    <td className="px-4 py-3 td-wrap-text">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          row.Rf_Status === 'Approved'
+                            ? 'bg-green-100 text-green-700'
+                            : 'bg-red-100 text-red-600'
+                        }`}
+                      >
                         {row.Rf_Status}
                       </span>
                     </td>
@@ -345,12 +397,68 @@ const DepositHistory = () => {
             </div>
           )}
         </div>
-        )}
-      </>
-      )}
-      
-    </div>
-  );
-};
 
-export default DepositHistory;
+        {/* Pagination */}
+        {rowsToDisplay.length > 0 && (
+          <div className="flex flex-col items-center justify-between gap-3 px-4 py-3 md:flex-row bg-gray-50 rounded-b-2xl">
+            {/* Rows per page selector */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Rows per page:</span>
+              <select
+                value={rowsPerPage}
+                onChange={(e) => {
+                  setRowsPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="p-1 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
+              >
+                <option value="500">500</option>
+                <option value="1000">1000</option>
+                <option value="1500">1500</option>
+              </select>
+            </div>
+
+            {/* Item range display */}
+            <div className="text-sm text-gray-600">
+              {startItem}-{endItem} of {rowsToDisplay.length}
+            </div>
+
+            {/* Pagination buttons */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 rounded-md ${
+                  currentPage === 1
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-blue-600 hover:bg-blue-100'
+                }`}
+              >
+                ‹ Prev
+              </button>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 rounded-md ${
+                  currentPage === totalPages
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-blue-600 hover:bg-blue-100'
+                }`}
+              >
+                Next ›
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+  </>
+)}
+
+    </div>
+  )
+}
+
+export default DepositHistory
