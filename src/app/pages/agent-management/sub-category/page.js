@@ -64,7 +64,7 @@ const SubCategory = () => {
       if (!image) return null;
       const src = typeof image === 'string' ? image : URL.createObjectURL(image);
       return (
-        <Image
+        <img
           src={src}
           width={128}
           height={128}
@@ -165,7 +165,7 @@ const SubCategory = () => {
     <div className="max-w-full mx-auto bg-white rounded-lg">
       {/*  Add Subcategory Button */}
       <div className='flex'>
-        <div className="flex justify-center w-full sm:justify-start p-4 pb-0">
+        <div className="flex justify-center w-full p-4 pb-0 sm:justify-start">
           {!showForm && (
             <button
               onClick={() => {

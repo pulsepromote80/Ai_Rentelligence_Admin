@@ -114,6 +114,7 @@ const WithdrawalRequest = () => {
         Email: txn.Email,
         Amount: `$${txn.TotWithdl}`,
         Release: `$${txn.Release}`,
+        Charges: txn.AdminCharge ? `$${txn.AdminCharge}` : "$0",
         WalletAddress: txn.Wallet,
         Remark: txn.Remark,
         Status: txn.status,
@@ -586,7 +587,7 @@ const WithdrawalRequest = () => {
   return (
     <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
       {/* MetaMask Wallet Connection Section */}
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 mb-6 rounded-2xl border border-orange-200 bg-gradient-to-br from-orange-50 to-white shadow-lg">
+    <div className="flex flex-col gap-4 p-4 mb-6 border border-orange-200 shadow-lg md:flex-row md:items-center md:justify-between rounded-2xl bg-gradient-to-br from-orange-50 to-white">
   {/* Left Section */}
   <div className="text-sm">
     {!isMetamaskInstalled ? (
@@ -596,21 +597,21 @@ const WithdrawalRequest = () => {
           href="https://metamask.io/download/"
           target="_blank"
           rel="noreferrer"
-          className="font-semibold underline text-orange-600 hover:text-orange-700"
+          className="font-semibold text-orange-600 underline hover:text-orange-700"
         >
           Install MetaMask
         </a>
       </span>
     ) : account ? (
       <div className="flex flex-wrap items-center gap-3">
-        <span className="text-gray-700 font-medium">Connected :</span>
+        <span className="font-medium text-gray-700">Connected :</span>
         <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-xl shadow-sm">
           <span className="font-mono text-xs text-gray-800" title={account}>
             {formatAddress(account)}
           </span>
           <button
             onClick={() => copyToClipboard(account)}
-            className="p-1 text-gray-500 hover:text-gray-700 transition"
+            className="p-1 text-gray-500 transition hover:text-gray-700"
             title="Copy address"
           >
             <FaCopy className="w-4 h-4" />
@@ -636,7 +637,7 @@ const WithdrawalRequest = () => {
         href="https://metamask.io/download/"
         target="_blank"
         rel="noreferrer"
-        className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow hover:from-orange-600 hover:to-orange-700 transition"
+        className="px-4 py-2 text-sm font-semibold text-white transition shadow bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl hover:from-orange-600 hover:to-orange-700"
       >
         Install MetaMask
       </a>
@@ -645,14 +646,14 @@ const WithdrawalRequest = () => {
         {chainId !== BSC_CHAIN_ID && (
           <button
             onClick={switchToBSCNetwork}
-            className="px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl shadow hover:from-yellow-600 hover:to-yellow-700 transition"
+            className="px-4 py-2 text-sm font-semibold text-white transition shadow bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl hover:from-yellow-600 hover:to-yellow-700"
           >
             Switch to BSC
           </button>
         )}
         <button
           onClick={disconnectLocal}
-          className="px-4 py-2 text-sm font-semibold text-gray-700 bg-gray-100 border border-gray-300 rounded-xl hover:bg-gray-200 transition"
+          className="px-4 py-2 text-sm font-semibold text-gray-700 transition bg-gray-100 border border-gray-300 rounded-xl hover:bg-gray-200"
         >
           Disconnect
         </button>
@@ -684,48 +685,48 @@ const WithdrawalRequest = () => {
       <div className="grid grid-cols-1 gap-6 mt-6 mb-6 md:grid-cols-2 lg:grid-cols-4">
         {/* From Date */}
         <div>
-          <label className="block mb-1 text-sm font-medium text-blue-800 flex items-center gap-2">
+          <label className="flex items-center block gap-2 mb-1 text-sm font-medium text-blue-800">
             From Date
           </label>
           <div className="relative">
-            <FaCalendarAlt className="absolute left-3 top-3 text-gray-500" />
+            <FaCalendarAlt className="absolute text-gray-500 left-3 top-3" />
             <input
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-200"
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-200"
             />
           </div>
         </div>
 
         {/* To Date */}
         <div>
-          <label className="block mb-1 text-sm font-medium text-blue-800 flex items-center gap-2">
+          <label className="flex items-center block gap-2 mb-1 text-sm font-medium text-blue-800">
             To Date
           </label>
           <div className="relative">
-            <FaCalendarAlt className="absolute left-3 top-3 text-gray-500" />
+            <FaCalendarAlt className="absolute text-gray-500 left-3 top-3" />
             <input
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-200"
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-200"
             />
           </div>
         </div>
 
         {/* User ID */}
         <div>
-          <label className="block mb-1 text-sm font-medium text-blue-800 flex items-center gap-2">
+          <label className="flex items-center block gap-2 mb-1 text-sm font-medium text-blue-800">
             User ID
           </label>
           <div className="relative">
-            <FaIdBadge className="absolute left-3 top-3 text-gray-500" />
+            <FaIdBadge className="absolute text-gray-500 left-3 top-3" />
             <input
               type="text"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-200"
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-lg shadow-sm focus:ring focus:ring-blue-200"
             />
           </div>
           {userError && (
@@ -735,17 +736,17 @@ const WithdrawalRequest = () => {
 
         {/* Username */}
         <div>
-          <label className="block mb-1 text-sm font-medium text-blue-800 cursor-not-allowed flex items-center gap-2">
+          <label className="flex items-center block gap-2 mb-1 text-sm font-medium text-blue-800 cursor-not-allowed">
             Username
           </label>
           <div className="relative">
-            <FaUser className="absolute left-3 top-3 text-gray-500" />
+            <FaUser className="absolute text-gray-500 left-3 top-3" />
             <input
               type="text"
               value={username}
               readOnly
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700 shadow-sm"
+              className="w-full py-2 pl-10 pr-3 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg shadow-sm"
             />
           </div>
         </div>
@@ -754,19 +755,19 @@ const WithdrawalRequest = () => {
         <div className="flex items-end space-x-4">
           <button
             onClick={handleSearch}
-            className="px-5 py-2 rounded-xl bg-blue-600 text-white shadow hover:bg-blue-700 transition flex items-center gap-2"
+            className="flex items-center gap-2 px-5 py-2 text-white transition bg-blue-600 shadow rounded-xl hover:bg-blue-700"
           >
             <FaSearch className="w-4 h-4" /> Search
           </button>
           <button
             onClick={handleExport}
-            className="px-5 py-2 rounded-xl bg-green-600 text-white shadow hover:bg-green-700 transition flex items-center gap-2"
+            className="flex items-center gap-2 px-5 py-2 text-white transition bg-green-600 shadow rounded-xl hover:bg-green-700"
           >
             <FaFileExcel className="w-4 h-4" /> Export
           </button>
           <button
             onClick={handleRefresh}
-            className="px-5 py-2 rounded-xl bg-gray-600 text-white shadow hover:bg-gray-700 transition flex items-center gap-2"
+            className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
           >
             <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" /> Refresh
           </button>
@@ -777,62 +778,62 @@ const WithdrawalRequest = () => {
       {hasSearched && (
         <>
           {loading ? (
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-xl py-10 text-center text-blue-600 font-semibold">
+            <div className="py-10 font-semibold text-center text-blue-600 bg-white border border-gray-200 shadow-xl rounded-2xl">
               Loading...
             </div>
           ) : error ? (
-            <div className="text-center py-10 text-red-500 font-semibold">
+            <div className="py-10 font-semibold text-center text-red-500">
               {error}
             </div>
           ) : (
-            <div className="overflow-hidden border border-gray-200 rounded-2xl shadow-xl bg-white">
+            <div className="overflow-hidden bg-white border border-gray-200 shadow-xl rounded-2xl">
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm text-center border-collapse">
                   {/* Table Header */}
-                  <thead className="bg-blue-600 text-white">
+                  <thead className="text-white bg-blue-600">
                     <tr>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         Sr.No.
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         Action
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         Action
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         User ID
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         Name
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         Date
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         Request ($)
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         Charges ($)
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         Release ($)
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         Email
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         {' '}
                         Wallet Address
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         {' '}
                         Status
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         Remark
                       </th>
-                      <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                         Action
                       </th>
                     </tr>
@@ -843,7 +844,7 @@ const WithdrawalRequest = () => {
                       <tr>
                         <td
                           colSpan={12}
-                          className="py-10 text-center text-gray-400 text-lg"
+                          className="py-10 text-lg text-center text-gray-400"
                         >
                           No Approve Withdrawal Requests Found
                         </td>
@@ -951,7 +952,7 @@ const WithdrawalRequest = () => {
                           </td>
                           <td className="px-4 py-3 td-wrap-text">
                             <button
-                              className="bg-red-100 px-3 py-1 rounded-full text-xs font-semibold"
+                              className="px-3 py-1 text-xs font-semibold bg-red-100 rounded-full"
                               onClick={() => handleRejectClick(row.AuthLogin)}
                             >
                               Reject

@@ -35,6 +35,11 @@ const Navbar = () => {
     router.push("/pages/profile");
   };
 
+  const handleUpdateAdmin = () =>{
+    setMenuOpen(!menuOpen);
+    router.push("/pages/update-profile-admin")
+  }
+
   const handleLogout = () => {
     setIsLoggingOut(true);
 
@@ -109,7 +114,8 @@ const Navbar = () => {
                 >
                   <User className="w-3 h-3 sm:w-4 sm:h-4" /> Profile
                 </li>
-                <li className="flex items-center gap-2 px-3 py-1 text-sm cursor-pointer sm:px-4 sm:py-2 hover:bg-gray-200 sm:text-base">
+                <li className="flex items-center gap-2 px-3 py-1 text-sm cursor-pointer sm:px-4 sm:py-2 hover:bg-gray-200 sm:text-base"
+                  onClick={handleUpdateAdmin}>
                   <Settings className="w-3 h-3 sm:w-4 sm:h-4" /> Settings
                 </li>
                 <li

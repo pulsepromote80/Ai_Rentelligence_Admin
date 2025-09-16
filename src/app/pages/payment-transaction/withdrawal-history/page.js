@@ -75,6 +75,7 @@ const WithdrawalHistory = () => {
         Email: txn.Email,
         Amount: `$${txn.TotWithdl}`,
         Release: `$${txn.Release}`,
+        Charges: txn.AdminCharges ? `$${txn.AdminCharges}` : "$0",
         WalletAddress: txn.Wallet,
         CreatedDate: txn.CreatedDate ? txn.CreatedDate.split("T")[0] : "-",
         ApprovalDate: txn.ApprovalDate ? txn.ApprovalDate.split("T")[0] : "-",
@@ -161,12 +162,12 @@ const WithdrawalHistory = () => {
         <label className="block mb-1 text-sm font-medium text-blue-800">
           From Date
         </label>
-        <FaCalendarAlt className="absolute left-3 top-9 text-gray-500" />
+        <FaCalendarAlt className="absolute text-gray-500 left-3 top-9" />
         <input
           type="date"
           value={fromDate}
           onChange={(e) => setFromDate(e.target.value)}
-          className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+          className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
         />
       </div>
 
@@ -175,12 +176,12 @@ const WithdrawalHistory = () => {
         <label className="block mb-1 text-sm font-medium text-blue-800">
           To Date
         </label>
-        <FaCalendarAlt className="absolute left-3 top-9 text-gray-500" />
+        <FaCalendarAlt className="absolute text-gray-500 left-3 top-9" />
         <input
           type="date"
           value={toDate}
           onChange={(e) => setToDate(e.target.value)}
-          className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+          className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
         />
       </div>
 
@@ -189,12 +190,12 @@ const WithdrawalHistory = () => {
         <label className="block mb-1 text-sm font-medium text-blue-800">
           User ID
         </label>
-        <FaIdBadge className="absolute left-3 top-9 text-gray-500" />
+        <FaIdBadge className="absolute text-gray-500 left-3 top-9" />
         <input
           type="text"
           value={userId}
           onChange={(e) => setUserId(e.target.value)}
-          className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+          className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
         />
         {userError && <p className="mt-1 text-sm text-red-600">{userError}</p>}
       </div>
@@ -204,13 +205,13 @@ const WithdrawalHistory = () => {
         <label className="block mb-1 text-sm font-medium text-blue-800 cursor-not-allowed">
           Username
         </label>
-        <FaUser className="absolute left-3 top-9 text-gray-500" />
+        <FaUser className="absolute text-gray-500 left-3 top-9" />
         <input
           type="text"
           value={username}
           readOnly
           onChange={(e) => setUsername(e.target.value)}
-          className="w-full pl-10 px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+          className="w-full px-3 py-2 pl-10 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
         />
       </div>
 
@@ -218,19 +219,19 @@ const WithdrawalHistory = () => {
       <div className="flex items-end space-x-4">
         <button
           onClick={handleSearch}
-          className="px-5 py-2 rounded-xl bg-blue-600 text-white shadow hover:bg-blue-700 transition flex items-center gap-2"
+          className="flex items-center gap-2 px-5 py-2 text-white transition bg-blue-600 shadow rounded-xl hover:bg-blue-700"
                    >
                      <FaSearch className="w-4 h-4" /> Search
         </button>
         <button
           onClick={handleExport}
-          className="px-5 py-2 rounded-xl bg-green-600 text-white shadow hover:bg-green-700 transition flex items-center gap-2"
+          className="flex items-center gap-2 px-5 py-2 text-white transition bg-green-600 shadow rounded-xl hover:bg-green-700"
                  >
                    <FaFileExcel className="w-4 h-4" /> Export
         </button>
         <button
           onClick={handleRefresh}
-          className="px-5 py-2 rounded-xl bg-gray-600 text-white shadow hover:bg-gray-700 transition flex items-center gap-2"
+          className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
                  >
                    <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" /> Refresh
         </button>
@@ -246,35 +247,35 @@ const WithdrawalHistory = () => {
     ) : error ? (
       <div className="py-10 text-center text-red-500">{error}</div>
     ) : (
-      <div className="mt-4 overflow-x-auto border border-blue-200 shadoew-lg rounded-2xl bg-white">
+      <div className="mt-4 overflow-x-auto bg-white border border-blue-200 shadoew-lg rounded-2xl">
         <table className="min-w-full text-sm border-collapse">
-          <thead className="sticky top-0 z-10 bg-blue-600 text-white">
+          <thead className="sticky top-0 z-10 text-white bg-blue-600">
             <tr>
-              <th className="px-4 py-3 text-center font-semibold border border-blue-300 rounded-tl-2xl">
+              <th className="px-4 py-3 font-semibold text-center border border-blue-300 rounded-tl-2xl">
                 SR.NO.
               </th>
-              <th className="px-4 py-3 text-center font-semibold border border-blue-300">
+              <th className="px-4 py-3 font-semibold text-center border border-blue-300">
                 ACTION
               </th>
-              <th className="px-4 py-3 text-center font-semibold border border-blue-300">
+              <th className="px-4 py-3 font-semibold text-center border border-blue-300">
                 ACTION
               </th>
-              <th className="px-4 py-3 text-center font-semibold border border-blue-300">
+              <th className="px-4 py-3 font-semibold text-center border border-blue-300">
                 USER ID
               </th>
-              <th className="px-4 py-3 text-center font-semibold border border-blue-300">
+              <th className="px-4 py-3 font-semibold text-center border border-blue-300">
                 NAME
               </th>
-              <th className="px-4 py-3 text-center font-semibold border border-blue-300">
+              <th className="px-4 py-3 font-semibold text-center border border-blue-300">
                 DATE
               </th>
-              <th className="px-4 py-3 text-center font-semibold border border-blue-300">
+              <th className="px-4 py-3 font-semibold text-center border border-blue-300">
                 REQUEST ($)
               </th>
-              <th className="px-4 py-3 text-center font-semibold border border-blue-300">
+              <th className="px-4 py-3 font-semibold text-center border border-blue-300">
                 CHARGES ($)
               </th>
-              <th className="px-4 py-3 text-center font-semibold border border-blue-300 rounded-tr-2xl">
+              <th className="px-4 py-3 font-semibold text-center border border-blue-300 rounded-tr-2xl">
                 RELEASE ($)
               </th>
             </tr>
@@ -285,7 +286,7 @@ const WithdrawalHistory = () => {
               <tr>
                 <td
                   colSpan={9}
-                  className="py-10 text-center text-gray-400 text-base"
+                  className="py-10 text-base text-center text-gray-400"
                 >
                   No Data Found
                 </td>
@@ -300,31 +301,31 @@ const WithdrawalHistory = () => {
                       : "bg-blue-50 hover:bg-blue-100"
                   }`}
                 >
-                  <td className="px-4 py-2 text-center border border-blue-100 font-medium text-gray-700">
+                  <td className="px-4 py-2 font-medium text-center text-gray-700 border border-blue-100">
                     {startItem + idx}
                   </td>
-                  <td className="px-4 py-2 text-center border border-blue-100 text-blue-600 font-medium">
+                  <td className="px-4 py-2 font-medium text-center text-blue-600 border border-blue-100">
                     Approve USDT
                   </td>
-                  <td className="px-4 py-2 text-center border border-blue-100 text-blue-600 cursor-pointer hover:underline">
+                  <td className="px-4 py-2 text-center text-blue-600 border border-blue-100 cursor-pointer hover:underline">
                     Approve
                   </td>
-                  <td className="px-4 py-2 text-center border border-blue-100 text-gray-700">
+                  <td className="px-4 py-2 text-center text-gray-700 border border-blue-100">
                     {row.AuthLogin || "-"}
                   </td>
-                  <td className="px-4 py-2 text-center border border-blue-100 text-gray-700">
+                  <td className="px-4 py-2 text-center text-gray-700 border border-blue-100">
                     {row.FullName || "-"}
                   </td>
-                  <td className="px-4 py-2 text-center border border-blue-100 text-gray-700">
+                  <td className="px-4 py-2 text-center text-gray-700 border border-blue-100">
                     {row.CreatedDate ? row.CreatedDate.split("T")[0] : "-"}
                   </td>
-                  <td className="px-4 py-2 text-center border border-blue-100 text-gray-700">
+                  <td className="px-4 py-2 text-center text-gray-700 border border-blue-100">
                     {row.TotWithdl}
                   </td>
-                  <td className="px-4 py-2 text-center border border-blue-100 text-gray-700">
+                  <td className="px-4 py-2 text-center text-gray-700 border border-blue-100">
                     {row.AdminCharges}
                   </td>
-                  <td className="px-4 py-2 text-center border border-blue-100 text-gray-700">
+                  <td className="px-4 py-2 text-center text-gray-700 border border-blue-100">
                     {row.Release}
                   </td>
                 </tr>

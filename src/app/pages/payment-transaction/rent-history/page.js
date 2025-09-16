@@ -162,12 +162,12 @@ const RentWallet = () => {
             From Date
           </label>
           <div className="relative">
-            <FaCalendarAlt className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <FaCalendarAlt className="absolute text-gray-500 -translate-y-1/2 left-3 top-1/2" />
             <input
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
             />
           </div>
         </div>
@@ -178,12 +178,12 @@ const RentWallet = () => {
             To Date
           </label>
           <div className="relative">
-            <FaCalendarAlt className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <FaCalendarAlt className="absolute text-gray-500 -translate-y-1/2 left-3 top-1/2" />
             <input
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
             />
           </div>
         </div>
@@ -194,12 +194,12 @@ const RentWallet = () => {
             User ID
           </label>
           <div className="relative">
-            <FaIdBadge className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <FaIdBadge className="absolute text-gray-500 -translate-y-1/2 left-3 top-1/2" />
             <input
               type="text"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
             />
           </div>
           {userError && (
@@ -213,13 +213,13 @@ const RentWallet = () => {
             Username
           </label>
           <div className="relative">
-            <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <FaUser className="absolute text-gray-500 -translate-y-1/2 left-3 top-1/2" />
             <input
               type="text"
               value={username}
               readOnly
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
             />
           </div>
         </div>
@@ -228,19 +228,19 @@ const RentWallet = () => {
         <div className="flex items-end space-x-4">
           <button
             onClick={handleSearch}
-            className="px-5 py-2 rounded-xl bg-blue-600 text-white shadow hover:bg-blue-700 transition flex items-center gap-2"
+            className="flex items-center gap-2 px-5 py-2 text-white transition bg-blue-600 shadow rounded-xl hover:bg-blue-700"
           >
             <FaSearch className="w-4 h-4" /> Search
           </button>
           <button
             onClick={handleExport}
-            className="px-5 py-2 rounded-xl bg-green-600 text-white shadow hover:bg-green-700 transition flex items-center gap-2"
+            className="flex items-center gap-2 px-5 py-2 text-white transition bg-green-600 shadow rounded-xl hover:bg-green-700"
           >
             <FaFileExcel className="w-4 h-4" /> Export
           </button>
           <button
             onClick={handleRefresh}
-            className="px-5 py-2 rounded-xl bg-gray-600 text-white shadow hover:bg-gray-700 transition flex items-center gap-2"
+            className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
           >
             <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" /> Refresh
           </button>
@@ -250,28 +250,28 @@ const RentWallet = () => {
     {hasSearched && (
   <>
     {loading ? (
-      <div className="py-10 text-center text-blue-600 font-medium">Loading...</div>
+      <div className="py-10 font-medium text-center text-blue-600">Loading...</div>
     ) : error ? (
-      <div className="py-10 text-center text-red-500 font-medium">{error}</div>
+      <div className="py-10 font-medium text-center text-red-500">{error}</div>
     ) : (
-      <div className="mt-2 overflow-x-auto border border-gray-200 shadow-lg rounded-xl bg-white">
+      <div className="mt-2 overflow-x-auto bg-white border border-gray-200 shadow-lg rounded-xl">
         <table className="min-w-full border border-gray-200 rounded-xl">
           {/* Header */}
           <thead className="sticky top-0 z-10 text-white bg-blue-600">
             <tr>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">Sr.No.</th>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">User ID</th>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">Username</th>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">Email</th>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">Wallet</th>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">Txn Hash</th>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">Request ($)</th>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">Charges ($)</th>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">Release ($)</th>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">Created</th>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">Approval</th>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">Remark</th>
-              <th className="px-4 py-3 text-sm uppercase tracking-wide th-wrap-text">Status</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Sr.No.</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">User ID</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Username</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Email</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Wallet</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Txn Hash</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Request ($)</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Charges ($)</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Release ($)</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Created</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Approval</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Remark</th>
+              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Status</th>
             </tr>
           </thead>
 
@@ -363,7 +363,7 @@ const RentWallet = () => {
 
         {/* Pagination */}
         {rowsToDisplay.length > 0 && (
-          <div className="flex items-center justify-between px-4 py-3 bg-gray-50 rounded-b-xl border-t">
+          <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50 rounded-b-xl">
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Rows per page:</span>
               <select

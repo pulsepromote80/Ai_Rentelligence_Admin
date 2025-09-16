@@ -144,11 +144,11 @@ const DepositHistory = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto mt-10 p-8 bg-gradient-to-br from-blue-50 to-white shadow-2xl border border-gray-200 rounded-3xl">
+    <div className="p-8 mx-auto mt-10 border border-gray-200 shadow-2xl max-w-7xl bg-gradient-to-br from-blue-50 to-white rounded-3xl">
       {/* Header */}
       <h6 className="heading">
         Deposit History Total Released:{' '}
-        <span className="text-green-600 font-bold">
+        <span className="font-bold text-green-600">
           ${Number(totalRelease.toFixed(2))}
         </span>
       </h6>
@@ -162,12 +162,12 @@ const DepositHistory = () => {
       From Date
     </label>
     <div className="relative">
-      <FaCalendarAlt className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500" />
+      <FaCalendarAlt className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
       <input
         type="date"
         value={fromDate}
         onChange={(e) => setFromDate(e.target.value)}
-        className="w-full pl-10 pr-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-300 focus:outline-none shadow-sm"
+        className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
       />
     </div>
   </div>
@@ -178,12 +178,12 @@ const DepositHistory = () => {
       To Date
     </label>
     <div className="relative">
-      <FaCalendarAlt className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500" />
+      <FaCalendarAlt className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
       <input
         type="date"
         value={toDate}
         onChange={(e) => setToDate(e.target.value)}
-        className="w-full pl-10 pr-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-300 focus:outline-none shadow-sm"
+        className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
       />
     </div>
   </div>
@@ -194,12 +194,12 @@ const DepositHistory = () => {
       User ID
     </label>
     <div className="relative">
-      <FaIdBadge className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500" />
+      <FaIdBadge className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
       <input
         type="text"
         value={userId}
         onChange={(e) => setUserId(e.target.value)}
-        className="w-full pl-10 pr-3 py-2 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-300 focus:outline-none shadow-sm"
+        className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
       />
     </div>
     {userError && (
@@ -213,23 +213,23 @@ const DepositHistory = () => {
       Username
     </label>
     <div className="relative">
-      <FaUser className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+      <FaUser className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2" />
       <input
         type="text"
         value={username}
         readOnly
-        className="w-full pl-10 pr-3 py-2 rounded-xl border border-gray-200 bg-gray-100 cursor-not-allowed shadow-inner"
+        className="w-full py-2 pl-10 pr-3 bg-gray-100 border border-gray-200 shadow-inner cursor-not-allowed rounded-xl"
       />
     </div>
   </div>
 </div>
 
 {/* Buttons */}
-<div className="flex flex-wrap btn-flex gap-3 mt-6 mb-6">
+<div className="flex flex-wrap gap-3 mt-6 mb-6 btn-flex">
   {/* Search Button */}
   <button
     onClick={handleSearch}
-    className="px-5 py-2 rounded-xl bg-blue-600 text-white shadow hover:bg-blue-700 transition flex items-center gap-2"
+    className="flex items-center gap-2 px-5 py-2 text-white transition bg-blue-600 shadow rounded-xl hover:bg-blue-700"
   >
     <FaSearch className="w-4 h-4" /> Search
   </button>
@@ -237,7 +237,7 @@ const DepositHistory = () => {
   {/* Export Button */}
   <button
     onClick={handleExport}
-    className="px-5 py-2 rounded-xl bg-green-600 text-white shadow hover:bg-green-700 transition flex items-center gap-2"
+    className="flex items-center gap-2 px-5 py-2 text-white transition bg-green-600 shadow rounded-xl hover:bg-green-700"
   >
     <FaFileExcel className="w-4 h-4" /> Export Excel
   </button>
@@ -245,7 +245,7 @@ const DepositHistory = () => {
   {/* Refresh Button */}
   <button
     onClick={handleRefresh}
-    className="px-5 py-2 rounded-xl bg-gray-600 text-white shadow hover:bg-gray-700 transition flex items-center gap-2"
+    className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
   >
     <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" /> Refresh
   </button>
@@ -257,19 +257,19 @@ const DepositHistory = () => {
 {hasSearched && (
   <>
     {loading ? (
-      <div className="mt-10 bg-white border border-gray-200 rounded-2xl shadow-xl py-10 text-center text-blue-600 font-semibold">
+      <div className="py-10 mt-10 font-semibold text-center text-blue-600 bg-white border border-gray-200 shadow-xl rounded-2xl">
         Loading...
       </div>
     ) : error ? (
-      <div className="text-center py-10 text-red-500 font-semibold">
+      <div className="py-10 font-semibold text-center text-red-500">
         {error}
       </div>
     ) : (
-      <div className="overflow-hidden border border-gray-200 rounded-2xl shadow-xl bg-white">
+      <div className="overflow-hidden bg-white border border-gray-200 shadow-xl rounded-2xl">
         <div className="overflow-x-auto">
           <table className="min-w-full text-sm text-center border-collapse">
             {/* Table Header */}
-            <thead className="bg-blue-600 text-white">
+            <thead className="text-white bg-blue-600">
               <tr>
                 {[
                   'Sr.No.',
@@ -285,7 +285,7 @@ const DepositHistory = () => {
                 ].map((heading, i) => (
                   <th
                     key={i}
-                    className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500"
+                    className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text"
                   >
                     {heading}
                   </th>
@@ -299,7 +299,7 @@ const DepositHistory = () => {
                 <tr>
                   <td
                     colSpan={10}
-                    className="py-10 text-center text-gray-400 text-lg"
+                    className="py-10 text-lg text-center text-gray-400"
                   >
                     No Data Found
                   </td>
@@ -308,13 +308,13 @@ const DepositHistory = () => {
                 paginatedRows.map((row, idx) => (
                   <tr
                     key={idx}
-                    className="hover:bg-blue-50 transition-colors border-b last:border-none td-wrap-text"
+                    className="transition-colors border-b hover:bg-blue-50 last:border-none td-wrap-text"
                   >
                     <td className="px-4 py-3 font-medium td-wrap-text">{startItem + idx}</td>
                     <td className="px-4 py-3 td-wrap-text">{row.AuthLogin || '-'}</td>
                     <td className="px-4 py-3 td-wrap-text">{row.Name || '-'}</td>
                     <td className="px-4 py-3 td-wrap-text">{row.Email || '-'}</td>
-                    <td className="px-4 py-3 text-blue-700 font-semibold td-wrap-text">
+                    <td className="px-4 py-3 font-semibold text-blue-700 td-wrap-text">
                       {row.Amount}
                     </td>
                     <td className="px-4 py-3 td-wrap-text">{row.PaymentMode}</td>
@@ -329,7 +329,7 @@ const DepositHistory = () => {
                         {row.RefrenceNo && (
                           <button
                             onClick={() => copyToClipboard(row.RefrenceNo)}
-                            className="text-blue-500 hover:text-blue-700 bg-blue px-3 py-1 rounded-full text-xs font-semibold"
+                            className="px-3 py-1 text-xs font-semibold text-blue-500 rounded-full hover:text-blue-700 bg-blue"
                           >
                             <FaCopy className="w-3 h-3" />
                           </button>
@@ -354,11 +354,53 @@ const DepositHistory = () => {
               )}
             </tbody>
           </table>
+          {rowsToDisplay.length > 0 && (
+            <div className="flex items-center justify-between px-4 py-3">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-600">Rows per page:</span>
+                <select
+                  value={rowsPerPage}
+                  onChange={(e) => {
+                    setRowsPerPage(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                >
+                  <option value="500">500</option>
+                  <option value="1000">1000</option>
+                  <option value="1500">1500</option>
+                </select>
+              </div>
+              <div className="text-sm text-gray-600">
+                {startItem}-{endItem} of {rowsToDisplay.length}
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className={`p-1 rounded ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className={`p-1 rounded ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Pagination */}
         {rowsToDisplay.length > 0 && (
-          <div className="flex flex-col md:flex-row items-center justify-between px-4 py-3 gap-3 bg-gray-50 rounded-b-2xl">
+          <div className="flex flex-col items-center justify-between gap-3 px-4 py-3 md:flex-row bg-gray-50 rounded-b-2xl">
             {/* Rows per page selector */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600">Rows per page:</span>
@@ -368,7 +410,7 @@ const DepositHistory = () => {
                   setRowsPerPage(Number(e.target.value));
                   setCurrentPage(1);
                 }}
-                className="p-1 rounded-md border border-gray-300 focus:ring focus:ring-blue-300"
+                className="p-1 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
               >
                 <option value="500">500</option>
                 <option value="1000">1000</option>

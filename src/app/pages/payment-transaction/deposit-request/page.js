@@ -145,7 +145,11 @@ const DepositRequest = () => {
       }));
       setApprovePopupOpen(false);
       setSelectedAuthLoginId(null);
-      dispatch(getAllFundRequestReportAdmin());
+       dispatch(getAllFundRequestReportAdmin({
+                authLogin: userId || "",
+                fromDate: formatDate(fromDate) || "",
+                toDate: formatDate(toDate) || "",
+              }));
     }
   };
 
@@ -160,8 +164,19 @@ const DepositRequest = () => {
         setRejectPopupOpen(false);
         setSelectedAuthLoginId(null);
         setRemark('');
-        toast.success('Rejected Successfully!', { position: "top-right", autoClose: 3000 });
-        dispatch(getAllFundRequestReportAdmin());
+        toast.success('Rejected Successfully!', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+        dispatch(getAllFundRequestReportAdmin({
+                authLogin: userId || "",
+                fromDate: formatDate(fromDate) || "",
+                toDate: formatDate(toDate) || "",
+              }));
       } catch (error) {
         toast.error('Failed to rejected request', { position: "top-right", autoClose: 3000 });
       }
@@ -181,7 +196,7 @@ const DepositRequest = () => {
   };
 
   return (
-    <div className="max-w-7xl p-8 mx-auto mt-10 mb-12 bg-gradient-to-b from-white via-blue-50 to-white border border-blue-100 shadow-2xl rounded-3xl">
+    <div className="p-8 mx-auto mt-10 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
       <h6 className="heading">
         Deposit Request: <span className="text-green-600">${Number(totalRelease.toFixed(2))}</span>
       </h6>
@@ -198,14 +213,13 @@ const DepositRequest = () => {
     From Date
   </label>
   <div className="relative">
-    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-500" />
+    <Calendar className="absolute w-5 h-5 text-blue-500 -translate-y-1/2 left-3 top-1/2" />
     <input
       type="date"
       id="fromDate"
       value={fromDate}
       onChange={(e) => setFromDate(e.target.value)}
-      className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 bg-white shadow-sm 
-                 focus:border-blue-500 focus:ring-2 focus:ring-blue-400 outline-none transition"
+      className="w-full py-3 pl-12 pr-4 transition bg-white border border-gray-300 rounded-lg shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
     />
   </div>
 </div>
@@ -219,14 +233,13 @@ const DepositRequest = () => {
     To Date
   </label>
   <div className="relative">
-    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-500" />
+    <Calendar className="absolute w-5 h-5 text-blue-500 -translate-y-1/2 left-3 top-1/2" />
     <input
       type="date"
       id="toDate"
       value={toDate}
       onChange={(e) => setToDate(e.target.value)}
-      className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 bg-white shadow-sm 
-                 focus:border-blue-500 focus:ring-2 focus:ring-blue-400 outline-none transition"
+      className="w-full py-3 pl-12 pr-4 transition bg-white border border-gray-300 rounded-lg shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
     />
   </div>
 </div>
@@ -239,7 +252,7 @@ const DepositRequest = () => {
     User ID
   </label>
   <div className="relative">
-    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-500" />
+    <User className="absolute w-5 h-5 text-blue-500 -translate-y-1/2 left-3 top-1/2" />
     <input
       type="text"
       value={userId}
@@ -264,13 +277,13 @@ const DepositRequest = () => {
     Username
   </label>
   <div className="relative">
-    <UserCircle2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+    <UserCircle2 className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
     <input
       type="text"
       value={username}
       readOnly
       id="username"
-      className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 bg-gray-100 shadow-sm cursor-not-allowed text-gray-600"
+      className="w-full py-3 pl-12 pr-4 text-gray-600 bg-gray-100 border border-gray-300 rounded-lg shadow-sm cursor-not-allowed"
     />
   </div>
 </div>
@@ -279,7 +292,7 @@ const DepositRequest = () => {
 
 
       {/* Action buttons */}
-      <div className="flex flex-wrap btn-flex gap-3 mt-6">
+      <div className="flex flex-wrap gap-3 mt-6 btn-flex">
   <button 
     onClick={handleSearch} 
     className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
@@ -298,7 +311,7 @@ const DepositRequest = () => {
 
   <button 
     onClick={handleRefresh} 
- className="px-5 py-2 rounded-xl bg-gray-600 text-white shadow hover:bg-gray-700 transition flex items-center gap-2"
+ className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
    >
      <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" /> Refresh
     Refresh
@@ -307,7 +320,7 @@ const DepositRequest = () => {
 
      {/* Table */}
 {hasSearched && (
-  <div className="mt-6 overflow-hidden border border-gray-200 rounded-2xl shadow-2xl bg-white">
+  <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
     {loading ? (
       <div className="py-10 text-center text-blue-600 animate-pulse">Loading...</div>
     ) : error ? (
@@ -316,18 +329,18 @@ const DepositRequest = () => {
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm text-center text-gray-700 border-collapse">
           {/* Table Header */}
-          <thead className="bg-gradient-to-r from-blue-700 to-blue-500 text-white">
+          <thead className="text-white bg-gradient-to-r from-blue-700 to-blue-500">
             <tr>
-              <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">#</th>
-              <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Approve</th>
-              <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">User ID</th>
-              <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Name</th>
-              <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Email</th>
-              <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Amount ($)</th>
-              <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Payment Method</th>
-              <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Txn Hash</th>
-              <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Date</th>
-              <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Reject</th>
+              <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">#</th>
+              <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Approve</th>
+              <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">User ID</th>
+              <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Name</th>
+              <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Email</th>
+              <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Amount ($)</th>
+              <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Payment Method</th>
+              <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Txn Hash</th>
+              <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Date</th>
+              <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Reject</th>
             </tr>
           </thead>
 
@@ -349,14 +362,14 @@ const DepositRequest = () => {
                   <td>
                     <button
                       onClick={() => handleApproveClick(row.AuthLogin)}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-green-500 rounded-lg shadow hover:bg-green-600 hover:scale-105 transition-transform">
+                      className="px-3 py-1 text-xs font-semibold text-white transition-transform bg-green-500 rounded-lg shadow hover:bg-green-600 hover:scale-105">
                       Approve
                     </button>
                   </td>
                   <td className="px-2 py-2 td-wrap-text">{row.AuthLogin || '-'}</td>
                   <td className="px-2 py-2 td-wrap-text">{row.Name || '-'}</td>
                   <td className="px-2 py-2 td-wrap-text">{row.Email || '-'}</td>
-                  <td className="font-semibold text-green-600 px-2 py-2 td-wrap-text">${row.Amount}</td>
+                  <td className="px-2 py-2 font-semibold text-green-600 td-wrap-text">${row.Amount}</td>
                   <td className="px-2 py-2 td-wrap-text">{row.PaymentMode}</td>
                   <td className="px-2 py-2 td-wrap-text">
                     <div className="flex items-center justify-center gap-1 ">
@@ -366,7 +379,7 @@ const DepositRequest = () => {
                       {row.RefrenceNo && (
                         <button
                           onClick={() => copyToClipboard(row.RefrenceNo)}
-                          className="p-1 text-blue-600 hover:text-blue-800 hover:scale-110 transition-transform"
+                          className="p-1 text-blue-600 transition-transform hover:text-blue-800 hover:scale-110"
                         >
                           <FaCopy className="w-4 h-4" />
                         </button>
@@ -377,7 +390,7 @@ const DepositRequest = () => {
                   <td>
                     <button
                       onClick={() => handleRejectClick(row.AuthLogin)}
-                      className="px-3 py-1 text-xs font-semibold text-white bg-red-500 rounded-lg shadow hover:bg-red-600 hover:scale-105 transition-transform"
+                      className="px-3 py-1 text-xs font-semibold text-white transition-transform bg-red-500 rounded-lg shadow hover:bg-red-600 hover:scale-105"
                     >
                       Reject
                     </button>
@@ -392,7 +405,7 @@ const DepositRequest = () => {
 
     {/* Pagination */}
     {rowsToDisplay.length > 0 && (
-      <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-t">
+      <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50">
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-600">Rows per page:</span>
           <select
@@ -430,29 +443,203 @@ const DepositRequest = () => {
   </div>
 )}
 
-{/* Approve Modal */}
-{approvePopupOpen && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-    <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-2xl animate-fadeIn">
-      <h2 className="mb-4 text-lg font-semibold text-gray-800">
-        Approve request for <span className="text-blue-600">{selectedAuthLoginId}</span>?
-      </h2>
-      <div className="flex justify-end gap-3">
-        <button onClick={handleApprove} className="px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 hover:scale-105 transition-transform">
-          Yes
-        </button>
-        <button onClick={handleCancel} className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300">
-          No
-        </button>
-      </div>
+      {hasSearched && (
+        <>
+          {loading ? (
+            <div className="py-10 text-center">Loading...</div>
+          ) : error ? (
+            <div className="py-10 text-center text-red-500">{error}</div>
+          ) : (
+            <div className="mt-2 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
+              <table className="min-w-full border border-gray-200 rounded-xl">
+                <thead className="sticky top-0 z-10 text-white bg-blue-500">
+                  <tr>
+                    <th className="px-4 py-2 text-sm font-medium text-center border rounded-tl-lg">Sr.No.</th>
+                    <th className="px-4 py-2 text-sm font-semibold text-center border">Action</th>
+                    <th className="px-4 py-2 text-sm font-semibold text-center border">User ID</th>
+                    <th className="px-4 py-2 text-sm font-semibold text-center border">UserName</th>
+                    <th className="px-4 py-2 text-sm font-semibold text-center border">Email</th>
+                    <th className="px-4 py-2 text-sm font-semibold text-center border">Amount ($)</th>
+                    <th className="px-4 py-2 text-sm font-semibold text-center border">Payment Method</th>
+                    <th className="px-4 py-2 text-sm font-semibold text-center border">Transaction Hash</th>
+                    <th className="px-4 py-2 text-sm font-semibold text-center border">Payment Date</th>
+                    <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedRows.length === 0 ? (
+                    <tr>
+                      <td colSpan={9} className="py-10 text-lg text-center text-gray-400">
+                        {searchTerm ? 'No matching requests found' : 'No Unapproved Requests Found'}
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedRows.map((row, idx) => (
+                      <tr
+                        key={idx}
+                        className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}
+                      >
+                        <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border">{startItem + idx}</td>
+                        <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center border ">
+                          <button
+                            className="px-3 py-1 font-semibold text-white bg-green-500 rounded hover:bg-green-600"
+                            onClick={() => handleApproveClick(row.AuthLogin)}
+                          >
+                            Approve
+                          </button>
+                        </td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.AuthLogin || '-'}</td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Name || '-'}</td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Email || '-'}</td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.Amount}</td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.PaymentMode}</td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                          <div className="flex items-center justify-center gap-1 group ">
+                            <span
+                              className="cursor-pointer"
+                              title={row.RefrenceNo || '-'}
+                            >
+                              {row.RefrenceNo ? `${row.RefrenceNo.substring(0, 15)}...` : '-'}
+                            </span>
+                            {row.RefrenceNo && (
+                              <button
+                                onClick={() => copyToClipboard(row.RefrenceNo)}
+                                className="p-1 text-blue-500 hover:text-blue-700"
+                                title="Copy to Clipboard"
+                              >
+                                <FaCopy className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">{row.PaymentDate}</td>
+                        <td className="flex items-center px-4 py-2 space-x-2 text-sm text-center border ">
+                          <button
+                            className="px-3 py-1 font-semibold text-white bg-red-500 rounded hover:bg-red-600"
+                            onClick={() => handleRejectClick(row.AuthLogin)}
+                          >
+                            Reject
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+
+              {rowsToDisplay.length > 0 && (
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Rows per page:</span>
+                    <select
+                      value={rowsPerPage}
+                      onChange={(e) => {
+                        setRowsPerPage(Number(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                      className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="500">500</option>
+                      <option value="1000">1000</option>
+                      <option value="1500">1500</option>
+                    </select>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {startItem}-{endItem} of {rowsToDisplay.length}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className={`p-1 rounded ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className={`p-1 rounded ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+          )}
+        </>
+      )}
+
+      {/* Approve Popup Modal */}
+      {approvePopupOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
+            <div className="mb-4 text-lg font-semibold text-gray-800">Do you want to approve AuthLoginID <span className="text-blue-600">{selectedAuthLoginId}</span>?</div>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleApprove}
+                className="px-4 py-2 font-semibold text-white bg-green-600 rounded hover:bg-green-700"
+              >
+                Yes
+              </button>
+              <button
+                onClick={handleCancel}
+                className="px-4 py-2 font-semibold text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reject Popup Modal */}
+      {rejectPopupOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
+            <div className="mb-4 text-lg font-semibold text-gray-800">Do you want to reject AuthLoginID <span className="text-blue-600">{selectedAuthLoginId}</span>?</div>
+            <div className="mb-4">
+              <label className="block mb-2 text-sm font-medium text-gray-700">Remark (Required)</label>
+              <textarea
+                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                rows={3}
+                value={remark}
+                onChange={(e) => setRemark(e.target.value)}
+                placeholder="Enter rejection reason..."
+                required
+              />
+            </div>
+            <div className="flex justify-end gap-4">
+              <button
+                onClick={handleReject}
+                className={`px-4 py-2 font-semibold text-white rounded ${!remark.trim() ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'}`}
+                disabled={!remark.trim()}
+              >
+                Submit
+              </button>
+              <button
+                onClick={handleCancel}
+                className="px-4 py-2 font-semibold text-gray-700 bg-gray-200 rounded hover:bg-gray-300"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  </div>
+  
 )}
 
 {/* Reject Modal */}
 {rejectPopupOpen && (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-    <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-2xl animate-fadeIn">
+    <div className="w-full max-w-md p-6 bg-white shadow-2xl rounded-2xl animate-fadeIn">
       <h2 className="mb-4 text-lg font-semibold text-gray-800">
         Reject request for <span className="text-blue-600">{selectedAuthLoginId}</span>?
       </h2>
@@ -479,8 +666,8 @@ const DepositRequest = () => {
   </div>
 )}
 
-    </div>
-  );
-};
+  
+
+
 
 export default DepositRequest;

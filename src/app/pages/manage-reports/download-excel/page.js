@@ -11,7 +11,7 @@ const DownloadExcel = () => {
   const [selectedReport, setSelectedReport] = useState('');
   const { loading, error, excelData } = useSelector((state) => state.adminMaster);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(500);
   const [showTable, setShowTable] = useState(false);
 
   const reportTypes = [
@@ -150,9 +150,9 @@ const DownloadExcel = () => {
                     }}
                     className="p-1 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                   >
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                    <option value="50">50</option>
+                    <option value="500">500</option>
+                    <option value="1000">1000</option>
+                    <option value="1500">1500</option>
                   </select>
                 </div>
                 <div className="text-sm text-gray-600">
