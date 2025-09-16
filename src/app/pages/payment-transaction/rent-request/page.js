@@ -816,47 +816,49 @@ const RentRequest = () => {
           ) : error ? (
             <div className="py-10 text-center text-red-500">{error}</div>
           ) : (
-            <div className="mt-4 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
-              <table className="min-w-full border border-gray-200 rounded-xl">
-                <thead className="sticky top-0 z-10 text-white bg-blue-500">
-                  <tr>
-                    <th className="px-4 py-2 text-sm font-medium text-center border rounded-tl-lg">
+            <div className="overflow-hidden border border-gray-200 rounded-2xl shadow-xl bg-white">
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm text-center border-collapse">
+                  {/* Table Header */}
+                  <thead className="bg-blue-600 text-white">
+                    <tr>
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
                       Sr.No.
                     </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-center border">
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
                       Action
                     </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-center border">
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
                       Action
                     </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-center border">
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
                       UserId
                     </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-center border">
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
                       Username
                     </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-center border">
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
                       Email
                     </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-center border">
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
                       Wallet Address
                     </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-center border">
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
                       Request ($)
                     </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-center border">
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
                       Charges ($)
                     </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-center border">
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
                       Release ($)
                     </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-center border">
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
                       Date
                     </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-center border">
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
                       Remark
                     </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-center border rounded-tr-lg">
+                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500 rounded-tr-lg">
                       Action
                     </th>
                   </tr>
@@ -866,7 +868,7 @@ const RentRequest = () => {
                     <tr>
                       <td
                         colSpan={16}
-                        className="py-10 text-lg text-center text-gray-400 "
+                        className="px-4 py-3 font-medium td-wrap-text"
                       >
                         {searchTerm
                           ? 'No matching requests found'
@@ -883,45 +885,51 @@ const RentRequest = () => {
                             : 'bg-white hover:bg-blue-50 transition'
                         }
                       >
-                        <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border">
+                        <td className="px-4 py-3 font-medium td-wrap-text">
                           {startItem + idx}
                         </td>
-                        <td className="px-4 py-2 text-sm text-center">
-                          <button
-                            className="px-3 py-1 font-semibold text-white bg-green-500 rounded hover:bg-green-600"
-                            onClick={() => handleApproveUSDTClick(row)}
-                            disabled={
-                              !account || chainId !== BSC_CHAIN_ID || isSending
-                            }
-                            title={
-                              !account
-                                ? 'Connect wallet first'
-                                : chainId !== BSC_CHAIN_ID
-                                  ? 'Switch to BSC network'
-                                  : ''
-                            }
-                          >
-                            Approve USDT
-                          </button>
-                        </td>
-                        <td className="px-4 py-2 text-sm text-center">
-                          <button
-                            className="px-3 py-1 font-semibold text-white bg-green-500 rounded hover:bg-green-600"
-                            onClick={() => handleApproveClick(row.AuthLogin)}
-                          >
-                            Approve
-                          </button>
-                        </td>
-                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                        <td className="px-4 py-3 font-medium td-wrap-text">
+                            <button
+                              className="px-4 py-3 font-medium bg-green-100 rounded-full td-wrap-text"
+                              onClick={() => handleApproveUSDTClick(row)}
+                              disabled={
+                                !account ||
+                                chainId !== BSC_CHAIN_ID ||
+                                isSending
+                              }
+                              title={
+                                !account
+                                  ? 'Connect wallet first'
+                                  : chainId !== BSC_CHAIN_ID
+                                    ? 'Switch to BSC network'
+                                    : ''
+                              }
+                            >
+                              Approve USDT
+                            </button>
+                          </td>
+                       <td className="px-4 py-3 font-medium td-wrap-text">
+                            <div className="flex items-center justify-center gap-1">
+                              <button
+                                className="text-blue-500 bg-green-100 rounded-full hover:text-blue-700 px-4 py-3"
+                                onClick={() =>
+                                  handleApproveClick(row.AuthLogin)
+                                }
+                              >
+                                Approve
+                              </button>
+                            </div>
+                          </td>
+                        <td className="px-4 py-3 font-medium td-wrap-text">
                           {row.AuthLogin || '-'}
                         </td>
-                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                        <td className="px-4 py-3 font-medium td-wrap-text">
                           {row.FullName || '-'}
                         </td>
-                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                        <td className="px-4 py-3 font-medium td-wrap-text ">
                           {row.Email || '-'}
                         </td>
-                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                        <td className="px-4 py-3 font-medium td-wrap-text">
                           <div className="flex items-center justify-center gap-1 group">
                             <span
                               className="cursor-pointer"
@@ -942,25 +950,25 @@ const RentRequest = () => {
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                        <td className="px-4 py-3 font-medium td-wrap-text">
                           {row.Request}
                         </td>
-                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                        <td className="px-4 py-3 font-medium td-wrap-text">
                           {row.Charges || '-'}
                         </td>
-                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                        <td className="px-4 py-3 font-medium td-wrap-text">
                           {row.Release || '-'}
                         </td>
-                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                        <td className="px-4 py-3 font-medium td-wrap-text">
                           {row.CreatedDate
                             ? row.CreatedDate.split('T')[0]
                             : '-'}
                         </td>
-                        <td className="px-4 py-2 text-sm text-center text-gray-700 border">
+                        <td className="px-4 py-3 font-medium td-wrap-text">
                           {row.Remark || '-'}
                         </td>
 
-                        <td className="px-4 py-2 text-sm text-center">
+                        <td className="px-4 py-3 font-medium td-wrap-text">
                           <button
                             className="px-3 py-1 font-semibold text-white bg-red-500 rounded hover:bg-red-600"
                             onClick={() => handleRejectClick(row.AuthLogin)}
@@ -988,9 +996,9 @@ const RentRequest = () => {
                       }}
                       className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                     >
-                      <option value="10">500</option>
-                      <option value="25">1000</option>
-                      <option value="50">1500</option>
+                      <option value="500">500</option>
+                      <option value="1000">1000</option>
+                      <option value="1500">1500</option>
                     </select>
                   </div>
                   <div className="text-sm text-gray-600">
@@ -1041,6 +1049,7 @@ const RentRequest = () => {
                 </div>
               )}
             </div>
+             </div>
           )}
         </>
       )}

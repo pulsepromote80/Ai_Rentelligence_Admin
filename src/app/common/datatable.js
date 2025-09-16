@@ -77,101 +77,112 @@ const Table = ({
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden overflow-x-auto sm:block tabel">
-        {!filteredData.length ? (
-          <div className="py-10 text-lg text-center text-black border rounded-md">
-            No Data found!
-          </div>
-        ) : (
-          <>
-            <table className="min-w-full border border-collapse border-gray-300">
-              <thead>
-                <tr className="bg-action">
-                  {(onEdit || onDelete) && (
-                    <th className="w-48 px-6 py-3 text-white border border-gray-300">
-                      Actions
-                    </th>
+   <div className="hidden overflow-x-auto sm:block tabel">
+  {!filteredData.length ? (
+    <div className="py-10 text-lg text-center text-black border rounded-md">
+      No Data found!
+    </div>
+  ) : (
+    <>
+      <table className="min-w-full border border-gray-200 shadow-lg rounded-xl overflow-hidden">
+        <thead>
+          <tr className="bg-blue-600">
+            {(onEdit || onDelete) && (
+              <th className="px-6 py-3 text-white text-center border border-gray-200">
+                Actions
+              </th>
+            )}
+            {columns?.map((col) => (
+              <th
+                key={col.key}
+                onClick={() => sortData(col.key)}
+                className="px-6 py-3 text-sm font-semibold tracking-wide text-center text-white uppercase border border-gray-200 cursor-pointer hover:bg-blue-700"
+              >
+                <div className="flex items-center justify-center">
+                  {col.label}
+                  {sortConfig.key === col.key && (
+                    <span className="ml-2">
+                      {sortConfig.order === 'asc' ? '▲' : '▼'}
+                    </span>
                   )}
-                  {columns?.map((col) => (
-                    <th
-                      key={col.key}
-                      onClick={() => sortData(col.key)}
-                      className="px-6 py-3 border cursor-pointer bg-header-tbl hover:bg-blue-600"
-                    >
-                      <div className="flex items-center justify-center text-white">
-                        {col.label}
-                        {sortConfig.key === col.key && (
-                          <span className="ml-2">
-                            {sortConfig.order === 'asc' ? '▲' : '▼'}
-                          </span>
-                        )}
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {currentRows.map((row, idx) => (
-                  <tr
-                    key={row.id || row.ticketId || idx}
-                    onClick={onRowClick ? () => onRowClick(row) : undefined}
-                    className={onRowClick ? 'cursor-pointer hover:bg-blue-50' : ''}
-                  >
-                    {(onEdit || onDelete || onAddImage) && (
-                      <td className="px-6 py-4 border border-gray-300">
-                        <div className="flex items-center justify-center gap-2">
-                          {onEdit && (
-                            <button
-                              onClick={() => onEdit(row)}
-                              className="flex items-center justify-center p-2 text-white rounded-md "
-                              title="Edit"
-                            >
-                              <MdEdit size={25} color="green" />
-                            </button>
-                          )}
-                          {onDelete && (
-                            <button
-                              onClick={() => row.active && onDelete(row)}
-                              className={`p-2 ml-2  flex items-center justify-center`}
-                              disabled={!row.active}
-                              title="Delete"
-                            >
-                              <MdDelete size={25} className={row.active ? 'text-red-600' : 'text-gray-300 cursor-not-allowed'} color="red"/>
-                            </button>
-                          )}
-                          {onAddImage && (
-                            <button
-                              onClick={() => onAddImage(row)}
-                              className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
-                            >
-                              Add Image
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    )}
-                    {columns.map((col) => (
-                      <td
-                        key={col.key}
-                        className="px-6 py-4 text-center border border-gray-300"
+                </div>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {currentRows.map((row, idx) => (
+            <tr
+              key={row.id || row.ticketId || idx}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
+              className={`${
+                onRowClick ? 'cursor-pointer hover:bg-blue-50' : ''
+              } odd:bg-white even:bg-gray-50`}
+            >
+              {(onEdit || onDelete || onAddImage) && (
+                <td className="px-6 py-4 text-center border border-gray-200">
+                  <div className="flex items-center justify-center gap-2">
+                    {onEdit && (
+                      <button
+                        onClick={() => onEdit(row)}
+                        className="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full hover:bg-green-600"
+                        title="Edit"
                       >
-                        {renderCell(col, row)}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <Pagination
-              currentPage={currentPage}
-              rowsPerPage={rowsPerPage}
-              totalRows={filteredData.length}
-              setRowsPerPage={setRowsPerPage}
-              setCurrentPage={setCurrentPage}
-            />
-          </>
-        )}
+                        <MdEdit size={18} className="text-white" />
+                      </button>
+                    )}
+                    {onDelete && (
+                      <button
+                        onClick={() => row.active && onDelete(row)}
+                        className={`w-8 h-8 flex items-center justify-center rounded-full ${
+                          row.active
+                            ? 'bg-red-500 hover:bg-red-600'
+                            : 'bg-gray-300 cursor-not-allowed'
+                        }`}
+                        disabled={!row.active}
+                        title="Delete"
+                      >
+                        <MdDelete size={18} className="text-white" />
+                      </button>
+                    )}
+                    {onAddImage && (
+                      <button
+                        onClick={() => onAddImage(row)}
+                        className="px-3 py-1 text-sm font-medium text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                      >
+                        Add Image
+                      </button>
+                    )}
+                  </div>
+                </td>
+              )}
+              {columns.map((col) => (
+                <td
+                  key={col.key}
+                  className="px-6 py-4 text-sm text-center border border-gray-200"
+                >
+                  {renderCell(col, row)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Pagination */}
+      <div className="mt-4">
+        <Pagination
+          currentPage={currentPage}
+          rowsPerPage={rowsPerPage}
+          totalRows={filteredData.length}
+          setRowsPerPage={setRowsPerPage}
+          setCurrentPage={setCurrentPage}
+        />
       </div>
+    </>
+  )}
+</div>
+
 
       {/* Mobile Card View */}
       <div className="space-y-4 sm:hidden">

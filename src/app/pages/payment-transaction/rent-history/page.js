@@ -374,9 +374,9 @@ const RentWallet = () => {
                 }}
                 className="p-1 mr-3 text-sm border rounded focus:ring-1 focus:ring-blue-500"
               >
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
+                <option value="500">500</option>
+                <option value="1000">1000</option>
+                <option value="1500">1500</option>
               </select>
             </div>
             <div className="text-sm text-gray-600">{startItem}-{endItem} of {rowsToDisplay.length}</div>

@@ -98,105 +98,116 @@ const ProductTable = ({ columns, data = [], onEdit, onDelete, onAddImage, onRowC
             </div>
 
             {/* Desktop Table */}
-            <div className="hidden overflow-x-auto md:block">
-                <table className="min-w-full border border-collapse border-gray-300">
-                    <thead>
-                        <tr className="bg-action">
-                            {(onEdit || onDelete) && (
-                                <th className="px-6 py-3 text-white border border-gray-300">Actions</th>
-                            )}
-                            {columns?.map((col) => (
-                                <th
-                                    key={col.key}
-                                    onClick={() => sortData(col.key)}
-                                    className="px-6 py-3 text-white border border-gray-300 cursor-pointer hover:bg-blue-600"
-                                >
-                                    <div className="flex items-center justify-center">
-                                        {col.label}
-                                        {sortConfig.key === col.key && (
-                                            <span className="ml-2">
-                                                {sortConfig.order === "asc" ? "▲" : "▼"}
-                                            </span>
-                                        )}
-                                    </div>
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {currentRows.map((row) => (
-                            <tr key={row.id} className="hover:bg-gray-100">
-                                {(onEdit || onDelete) && (
-                                    <td className="px-6 py-4 text-center border border-gray-300">
-                                        <div className="flex items-center justify-center gap-2">
-                                            {onEdit && (
-                                                <button
-                                                    onClick={() => onEdit(row)}
-                                                    className="flex items-center justify-center p-2 text-white"
-                                                    title="Edit"
-                                                >
-                                                    <MdEdit size={25} color="green"/>
-                                                </button>
-                                            )}
-                                            {onDelete && (
-                                                <button
-                                                    onClick={() => row.active && onDelete(row)}
-                                                    disabled={!row.active}
-                                                    className={`p-2 rounded-md flex items-center justify-center`}
-                                                    title="Delete"
-                                                >
-                                                    <MdDelete size={25} className={row.active ? 'text-red-600' : 'text-gray-300 cursor-not-allowed'} color="red"/>
-                                                </button>
-                                            )}
-                                        </div>
-                                    </td>
-                                )}
-                                {columns.map((col) => (
-                                    <td
-                                        key={col.key}
-                                        onClick={() => onRowClick(row)}
-                                        className="px-6 py-4 text-center border border-gray-300 cursor-pointer"
-                                    >
-                                        {col.key === "S.no" ? (
-                                            getSerialNumber(row)
-                                        ) : col.key === "image" || col.key === "imageUrl" ? (
-                                            <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    onAddImage(row);
-                                                }}
-                                                className="flex items-center justify-center p-2 text-white"
-                                                title="Add Image"
-                                            >
-                                                <RiImageAddLine size={25} color="green" />
-                                            </button>
-                                        ) : col.key === "username" ? (
-                                            <Link
-                                                href={`/pages/customer-management/customer-order-activity?username=${row[col.key]}`}
-                                                className="text-blue-500 hover:underline"
-                                            >
-                                                {row[col.key]}
-                                            </Link>
-                                        ) : col.key === "description" ? (
-                                            renderDescription(row[col.key])
-                                        ) : col.key === "productName" ? (
-                                            renderTitle(row[col.key])
-                                        ) : col.key === "subName" ? (
-                                            renderSubtitle(row[col.key])
-                                        ) : col.key === "categoryName" || col.key === "subCategoryName" || col.key === "subCategoryTypeName" ? (
-                                            renderCategory(row[col.key])
-                                        ) : col.render ? (
-                                            col.render(row[col.key], row)
-                                        ) : (
-                                            row[col.key]
-                                        )}
-                                    </td>
-                                ))}
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+         <div className="hidden overflow-x-auto md:block">
+  <table className="min-w-full border border-gray-200 shadow-lg rounded-xl overflow-hidden">
+    <thead>
+      <tr className="bg-blue-600">
+        {(onEdit || onDelete) && (
+          <th className=" th-wrap-text px-6 py-3 text-sm font-semibold tracking-wide text-center text-white border border-gray-200">
+            Actions
+          </th>
+        )}
+        {columns?.map((col) => (
+          <th
+            key={col.key}
+            onClick={() => sortData(col.key)}
+            className="th-wrap-text px-6 py-3 text-sm font-semibold tracking-wide text-center text-white uppercase border border-gray-200 cursor-pointer hover:bg-blue-700"
+          >
+            <div className="flex items-center justify-center">
+              {col.label}
+              {sortConfig.key === col.key && (
+                <span className="ml-2">
+                  {sortConfig.order === "asc" ? "▲" : "▼"}
+                </span>
+              )}
             </div>
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {currentRows.map((row) => (
+        <tr
+          key={row.id}
+          className="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition-colors"
+        >
+          {(onEdit || onDelete) && (
+            <td className="px-6 py-4 text-center border border-gray-200">
+              <div className="flex items-center justify-center gap-2">
+                {onEdit && (
+                  <button
+                    onClick={() => onEdit(row)}
+                    className="flex items-center justify-center w-8 h-8 bg-green-500 rounded-full hover:bg-green-600"
+                    title="Edit"
+                  >
+                    <MdEdit size={18} className="text-white" />
+                  </button>
+                )}
+                {onDelete && (
+                  <button
+                    onClick={() => row.active && onDelete(row)}
+                    disabled={!row.active}
+                    className={`w-8 h-8 flex items-center justify-center rounded-full ${
+                      row.active
+                        ? "bg-red-500 hover:bg-red-600"
+                        : "bg-gray-300 cursor-not-allowed"
+                    }`}
+                    title="Delete"
+                  >
+                    <MdDelete size={18} className="text-white" />
+                  </button>
+                )}
+              </div>
+            </td>
+          )}
+          {columns.map((col) => (
+            <td
+              key={col.key}
+              onClick={() => onRowClick(row)}
+              className="px-6 py-4 text-sm text-center border border-gray-200 cursor-pointer"
+            >
+              {col.key === "S.no" ? (
+                getSerialNumber(row)
+              ) : col.key === "image" || col.key === "imageUrl" ? (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAddImage(row);
+                  }}
+                  className="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full hover:bg-blue-600"
+                  title="Add Image"
+                >
+                  <RiImageAddLine size={18} className="text-white" />
+                </button>
+              ) : col.key === "username" ? (
+                <Link
+                  href={`/pages/customer-management/customer-order-activity?username=${row[col.key]}`}
+                  className="text-blue-600 hover:underline font-medium"
+                >
+                  {row[col.key]}
+                </Link>
+              ) : col.key === "description" ? (
+                renderDescription(row[col.key])
+              ) : col.key === "productName" ? (
+                renderTitle(row[col.key])
+              ) : col.key === "subName" ? (
+                renderSubtitle(row[col.key])
+              ) : col.key === "categoryName" ||
+                col.key === "subCategoryName" ||
+                col.key === "subCategoryTypeName" ? (
+                renderCategory(row[col.key])
+              ) : col.render ? (
+                col.render(row[col.key], row)
+              ) : (
+                row[col.key]
+              )}
+            </td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
             {/* Mobile Card Table */}
             <div className="space-y-4 md:hidden">

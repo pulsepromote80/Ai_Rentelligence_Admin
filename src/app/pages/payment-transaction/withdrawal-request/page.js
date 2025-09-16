@@ -32,7 +32,7 @@ const WithdrawalRequest = () => {
 
   // Table state
   const [currentPage, setCurrentPage] = useState(1)
-  const [rowsPerPage, setRowsPerPage] = useState(100)
+  const [rowsPerPage, setRowsPerPage] = useState(500)
   const [approvePopupOpen, setApprovePopupOpen] = useState(false)
   const [rejectPopupOpen, setRejectPopupOpen] = useState(false)
   const [selectedAuthLoginId, setSelectedAuthLoginId] = useState(null)
@@ -864,7 +864,7 @@ const WithdrawalRequest = () => {
 
                           <td className="px-4 py-3 font-medium td-wrap-text">
                             <button
-                              className="px-4 py-3 font-medium td-wrap-text"
+                              className="px-4 py-3 font-medium bg-green-100 rounded-full td-wrap-text"
                               onClick={() => handleApproveUSDTClick(row)}
                               disabled={
                                 !account ||
@@ -886,7 +886,7 @@ const WithdrawalRequest = () => {
                           <td className="px-4 py-3 font-medium td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
                               <button
-                                className="text-blue-500 hover:text-blue-700"
+                                className="py-3 px-4 text-blue-500 bg-green-100 rounded-full hover:text-blue-700"
                                 onClick={() =>
                                   handleApproveClick(row.AuthLogin)
                                 }
@@ -977,9 +977,9 @@ const WithdrawalRequest = () => {
                         }}
                         className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                       >
-                        <option value="10">500</option>
-                        <option value="25">1000</option>
-                        <option value="50">1500</option>
+                        <option value="500">500</option>
+                        <option value="1000">1000</option>
+                        <option value="1500">1500</option>
                       </select>
                     </div>
                     <div className="text-sm text-gray-600">
