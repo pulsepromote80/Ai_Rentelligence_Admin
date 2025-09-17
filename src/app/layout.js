@@ -1,5 +1,4 @@
 
-
 import NavbarLogin from "./navbar/page";
 import Footer from "./footer/page";
 import { ToastContainer } from "react-toastify";
