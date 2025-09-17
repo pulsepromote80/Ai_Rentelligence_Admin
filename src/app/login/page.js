@@ -58,7 +58,7 @@ const AdminLogin = () => {
 
   return (
     <div className="flex items-center justify-center w-full">
-      <div className="w-full p-8  rounded-2xl shadow-2xl max-w-96  backdrop-blur-md border-white/30 transition-transform duration-300 hover:scale-[1.02]">
+      <div className="w-full p-8  rounded-2xl shadow-2xl max-w-lg backdrop-blur-md border-white/30 transition-transform duration-300 hover:scale-[1.02]">
         <h2 className="mb-4 text-2xl font-extrabold text-center text-black drop-shadow-lg">Admin Login</h2>
         <form onSubmit={handleLogin}>
           {error && (
