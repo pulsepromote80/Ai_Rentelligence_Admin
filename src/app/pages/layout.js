@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }) {
             <div className="fixed top-0 left-0 w-full bg-white border-b border-gray-300 z-[99]">
                 <Navbar />
             </div>
-            <div className="flex pt-[60px]">
+            <div className="flex">
                 <div className="fixed left-0 h-screen top-[56px] md:top-[72px] z-[999]">
                     <Sidebar />
                 </div>

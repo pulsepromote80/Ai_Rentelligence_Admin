@@ -1,3 +1,7 @@
+
+
+import NavbarLogin from "./navbar/page";
+import Footer from "./footer/page";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
@@ -9,17 +13,30 @@ export const metadata = {
   description: "Developed By Pulse Promote",
 };
 
-export default function RootLayout({ children }) {
+  const RootLayout = ({ children}) => {
   return (
-    <html lang="en">
+     <html lang="en">
       <body>
-        <Providers>
-          <ToastContainer />
-          {children}
-        </Providers>
-      </body>
+    <div className="flex flex-col min-h-screen overflow-y-scroll" style={{ backgroundColor: "rgb(243, 244, 246)" }}>
+      <Providers>
+        <ToastContainer />
+      <NavbarLogin />
+      <div className="flex justify-center flex-grow">
+        {children}
+      </div>
+      <Footer />
+      </Providers>
+    </div>
+    </body>
     </html>
   );
 };
+
+export default RootLayout
+
+
+
+
+
 
 

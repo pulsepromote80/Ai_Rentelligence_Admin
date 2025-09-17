@@ -174,7 +174,7 @@ body {
 .heading {
     font-size: 16px;
     font-weight: 500;
-    border-bottom: 1px solid gainsboro;
+    /* border-bottom: 1px solid gainsboro; */
     padding-bottom: 15px;
 }.modal-label{
   width: 130px;
@@ -187,7 +187,7 @@ body {
     font-size: 13px;
     color: #4d2885;
     font-weight: 500;
-    font-family: '__nextjs-Geist';
+    /* font-family: '__nextjs-Geist'; */
 }
 .animate-spin-on-hover:hover {
   animation: spin 0.5s linear;

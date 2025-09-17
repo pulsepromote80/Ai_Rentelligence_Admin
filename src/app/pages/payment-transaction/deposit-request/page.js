@@ -40,10 +40,11 @@ const DepositRequest = () => {
   }
 
   const totalRelease =
-    fundRequestData?.unApproveFundRequest?.reduce(
+    hasSearched && fundRequestData?.unApproveFundRequest ? fundRequestData.unApproveFundRequest.reduce(
       (sum, txn) => sum + (Number(txn.Amount) || 0),
       0,
-    ) || 0
+    )
+      : 0
 
   useEffect(() => {
     const fetchUsername = async () => {
@@ -112,6 +113,12 @@ const DepositRequest = () => {
     setUserError('')
     setCurrentPage(1)
     setHasSearched(false)
+
+    dispatch(getAllFundRequestReportAdmin({
+      authLogin: '',
+      fromDate: '',
+      toDate: ''
+    }))
   }
 
   const unApprovedRows = fundRequestData?.unApproveFundRequest || []
@@ -227,14 +234,13 @@ const DepositRequest = () => {
             From Date
           </label>
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-500" />
+            <Calendar className="absolute w-5 h-5 text-blue-500 -translate-y-1/2 left-3 top-1/2" />
             <input
               type="date"
               id="fromDate"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 bg-white shadow-sm 
-                 focus:border-blue-500 focus:ring-2 focus:ring-blue-400 outline-none transition"
+              className="w-full py-3 pl-12 pr-4 transition bg-white border border-gray-300 rounded-lg shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
             />
           </div>
         </div>
@@ -248,14 +254,13 @@ const DepositRequest = () => {
             To Date
           </label>
           <div className="relative">
-            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-500" />
+            <Calendar className="absolute w-5 h-5 text-blue-500 -translate-y-1/2 left-3 top-1/2" />
             <input
               type="date"
               id="toDate"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 bg-white shadow-sm 
-                 focus:border-blue-500 focus:ring-2 focus:ring-blue-400 outline-none transition"
+              className="w-full py-3 pl-12 pr-4 transition bg-white border border-gray-300 rounded-lg shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
             />
           </div>
         </div>
@@ -268,18 +273,17 @@ const DepositRequest = () => {
             User ID
           </label>
           <div className="relative">
-            <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-blue-500" />
+            <User className="absolute w-5 h-5 text-blue-500 -translate-y-1/2 left-3 top-1/2" />
             <input
               type="text"
               value={userId}
               onChange={(e) => setUserId(e.target.value)}
               id="userId"
               className={`w-full pl-12 pr-4 py-3 rounded-lg border shadow-sm outline-none transition
-        ${
-          userError
-            ? 'border-red-500 focus:ring-red-400 focus:border-red-500 bg-red-50'
-            : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-400'
-        }`}
+        ${userError
+                  ? 'border-red-500 focus:ring-red-400 focus:border-red-500 bg-red-50'
+                  : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-400'
+                }`}
             />
           </div>
           {userError && (
@@ -296,48 +300,49 @@ const DepositRequest = () => {
             Username
           </label>
           <div className="relative">
-            <UserCircle2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <UserCircle2 className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
             <input
               type="text"
               value={username}
               readOnly
               id="username"
-              className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 bg-gray-100 shadow-sm cursor-not-allowed text-gray-600"
+              className="w-full py-3 pl-12 pr-4 text-gray-600 bg-gray-100 border border-gray-300 rounded-lg shadow-sm cursor-not-allowed"
             />
           </div>
         </div>
       </div>
 
       {/* Action buttons */}
-      <div className="flex items-center justify-center mt-2 space-x-4 col-span-full">
-        <button
-          onClick={handleSearch}
-          className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
-        >
-          <Search className="w-5 h-5" />
-          Search
-        </button>
+      <div className="flex items-center justify-start mt-3 space-x-4 col-span-full">
+  <button
+    onClick={handleSearch}
+    className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
+  >
+    <Search className="w-5 h-5" />
+    Search
+  </button>
 
-        <button
-          onClick={handleExport}
-          className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700"
-        >
-          <FileSpreadsheet className="w-5 h-5" />
-          Export Excel
-        </button>
+  <button
+    onClick={handleExport}
+    className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700"
+  >
+    <FileSpreadsheet className="w-5 h-5" />
+    Export Excel
+  </button>
 
-        <button
-          onClick={handleRefresh}
-          className="px-5 py-2 rounded-xl bg-gray-600 text-white shadow hover:bg-gray-700 transition flex items-center gap-2"
-        >
-          <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />  
-          Refresh
-        </button>
-      </div>
+  <button
+    onClick={handleRefresh}
+    className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+  >
+    <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
+    Refresh
+  </button>
+</div>
+
 
       {/* Table */}
       {hasSearched && (
-        <div className="mt-6 overflow-hidden border border-gray-200 rounded-2xl shadow-2xl bg-white">
+        <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
           {loading ? (
             <div className="py-10 text-center text-blue-600 animate-pulse">
               Loading...
@@ -348,36 +353,36 @@ const DepositRequest = () => {
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm text-center text-gray-700 border-collapse">
                 {/* Table Header */}
-                <thead className="bg-gradient-to-r from-blue-700 to-blue-500 text-white">
+                <thead className="text-white bg-gradient-to-r from-blue-700 to-blue-500">
                   <tr>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">
                       #
                     </th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">
                       Approve
                     </th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">
                       User ID
                     </th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">
                       Name
                     </th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">
                       Email
                     </th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">
                       Amount ($)
                     </th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">
                       Payment Method
                     </th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">
-                      Txn Hash
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">
+                      Transaction Hash
                     </th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">
                       Date
                     </th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">
                       Reject
                     </th>
                   </tr>
@@ -405,7 +410,7 @@ const DepositRequest = () => {
                         <td>
                           <button
                             onClick={() => handleApproveClick(row.AuthLogin)}
-                            className="px-3 py-1 text-xs font-semibold text-white bg-green-500 rounded-lg shadow hover:bg-green-600 hover:scale-105 transition-transform"
+                            className="px-3 py-1 text-xs font-semibold text-white transition-transform bg-green-500 rounded-lg shadow hover:bg-green-600 hover:scale-105"
                           >
                             Approve
                           </button>
@@ -419,7 +424,7 @@ const DepositRequest = () => {
                         <td className="px-2 py-2 td-wrap-text">
                           {row.Email || '-'}
                         </td>
-                        <td className="font-semibold text-green-600 px-2 py-2 td-wrap-text">
+                        <td className="px-2 py-2 font-semibold text-green-600 td-wrap-text">
                           ${row.Amount}
                         </td>
                         <td className="px-2 py-2 td-wrap-text">
@@ -435,7 +440,7 @@ const DepositRequest = () => {
                             {row.RefrenceNo && (
                               <button
                                 onClick={() => copyToClipboard(row.RefrenceNo)}
-                                className="p-1 text-blue-600 hover:text-blue-800 hover:scale-110 transition-transform"
+                                className="p-1 text-blue-600 transition-transform hover:text-blue-800 hover:scale-110"
                               >
                                 <FaCopy className="w-4 h-4" />
                               </button>
@@ -448,7 +453,7 @@ const DepositRequest = () => {
                         <td>
                           <button
                             onClick={() => handleRejectClick(row.AuthLogin)}
-                            className="px-3 py-1 text-xs font-semibold text-white bg-red-500 rounded-lg shadow hover:bg-red-600 hover:scale-105 transition-transform"
+                            className="px-3 py-1 text-xs font-semibold text-white transition-transform bg-red-500 rounded-lg shadow hover:bg-red-600 hover:scale-105"
                           >
                             Reject
                           </button>
@@ -463,7 +468,7 @@ const DepositRequest = () => {
 
           {/* Pagination */}
           {rowsToDisplay.length > 0 && (
-            <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-t">
+            <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50">
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-600">Rows per page:</span>
                 <select
@@ -510,7 +515,7 @@ const DepositRequest = () => {
       {/* Approve Modal */}
       {approvePopupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-2xl animate-fadeIn">
+          <div className="w-full max-w-md p-6 bg-white shadow-2xl rounded-2xl animate-fadeIn">
             <h2 className="mb-4 text-lg font-semibold text-gray-800">
               Approve request for{' '}
               <span className="text-blue-600">{selectedAuthLoginId}</span>?
@@ -518,7 +523,7 @@ const DepositRequest = () => {
             <div className="flex justify-end gap-3">
               <button
                 onClick={handleApprove}
-                className="px-4 py-2 text-white bg-green-600 rounded-lg hover:bg-green-700 hover:scale-105 transition-transform"
+                className="px-4 py-2 text-white transition-transform bg-green-600 rounded-lg hover:bg-green-700 hover:scale-105"
               >
                 Yes
               </button>
@@ -536,7 +541,7 @@ const DepositRequest = () => {
       {/* Reject Modal */}
       {rejectPopupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-2xl animate-fadeIn">
+          <div className="w-full max-w-md p-6 bg-white shadow-2xl rounded-2xl animate-fadeIn">
             <h2 className="mb-4 text-lg font-semibold text-gray-800">
               Reject request for{' '}
               <span className="text-blue-600">{selectedAuthLoginId}</span>?

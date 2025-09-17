@@ -92,7 +92,7 @@ const ChangePassword = () => {
   };
 
   return (
-    <div className="flex items-center justify-center mt-20">
+    <div className="flex items-center justify-center mt-2">
       <div className="w-full max-w-xl p-8 mx-auto bg-white shadow-xl rounded-2xl">
         <h2 className="mb-8 text-2xl font-bold text-center">Change Password</h2>
         <form className="space-y-6" onSubmit={handleSubmit}>

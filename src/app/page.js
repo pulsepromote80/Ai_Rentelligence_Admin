@@ -1,6 +1,10 @@
 'use client'
-import { redirect } from 'next/navigation';
+import AdminLogin from './login/page';
 
 export default function HomePage() {
-  redirect('/login');
+    return(
+      <div className='flex items-center justify-center'>
+      <AdminLogin/>
+      </div>
+    ) 
 }

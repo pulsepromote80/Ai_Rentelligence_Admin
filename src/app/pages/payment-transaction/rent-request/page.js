@@ -57,11 +57,12 @@ const RentRequest = () => {
     return `${day}-${month}-${year}`
   }
 
-  const totalRelease =
-    rentWalletData?.unApWithrentwallet?.reduce(
+  const totalRelease = hasSearched && rentWalletData?.unApWithrentwallet 
+  ? rentWalletData.unApWithrentwallet.reduce(
       (sum, txn) => sum + (Number(txn.Release) || 0),
-      0,
-    ) || 0
+      0
+    )
+  : 0
   // BSC chain configuration
   const BSC_CHAIN_ID = '0x38' // BSC Mainnet
   const BSC_CHAIN_NAME = 'BNB Smart Chain'
@@ -97,9 +98,7 @@ const RentRequest = () => {
     fetchUsername()
   }, [userId, dispatch])
 
-  // useEffect(() => {
-  //   dispatch(getRentWallet());
-  // }, [dispatch]);
+  
   const handleSearch = () => {
     const payload = {
       authLogin: userId || '',
@@ -147,14 +146,20 @@ const RentRequest = () => {
   }
 
   const handleRefresh = () => {
-    setFromDate('')
-    setToDate('')
-    setUserId('')
-    setUsername('')
-    setUserError('')
-    setCurrentPage(1)
-    setHasSearched(false)
-  }
+  setFromDate('')
+  setToDate('')
+  setUserId('')
+  setUsername('')
+  setUserError('')
+  setCurrentPage(1)
+  setHasSearched(false)
+  
+  dispatch(getRentWallet({
+    authLogin: '',
+    fromDate: '',
+    toDate: ''
+  }))
+}
   // Function to fetch BSC wallet balance
   const fetchWalletBalances = async (accountAddress) => {
     try {
@@ -651,7 +656,7 @@ const RentRequest = () => {
               {account && (
                 <div className="flex flex-col ml-2">
                   <span className="font-semibold text-green-600 text-md">
-                    Wallet Balance: ${Number(balanceInUsdt).toFixed(2)}
+                   💰 Wallet Balance: ${Number(balanceInUsdt).toFixed(2)}
                   </span>
                 </div>
               )}
@@ -706,8 +711,12 @@ const RentRequest = () => {
 
       <div className="max-w-6xl mx-auto">
         <h6 className="heading">
-          Yield Request: ${Number(totalRelease.toFixed(2))}
+          Yield Request:{' '}
+            <span className="text-green-600">
+             ${Number(totalRelease.toFixed(2))}
+          </span>
         </h6>
+         
 
         <div className="grid grid-cols-1 gap-6 mt-6 mb-6 md:grid-cols-2 lg:grid-cols-4">
           {/* From Date */}
@@ -817,49 +826,49 @@ const RentRequest = () => {
           ) : error ? (
             <div className="py-10 text-center text-red-500">{error}</div>
           ) : (
-            <div className="overflow-hidden border border-gray-200 rounded-2xl shadow-xl bg-white">
+            <div className="overflow-hidden bg-white border border-gray-200 shadow-xl rounded-2xl">
               <div className="overflow-x-auto">
                 <table className="min-w-full text-sm text-center border-collapse">
                   {/* Table Header */}
-                  <thead className="bg-blue-600 text-white">
+                  <thead className="text-white bg-blue-600">
                     <tr>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                       Sr.No.
                     </th>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                       Action
                     </th>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                       Action
                     </th>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                       UserId
                     </th>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                       Username
                     </th>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                       Email
                     </th>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                       Wallet Address
                     </th>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                       Request ($)
                     </th>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                       Charges ($)
                     </th>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                       Release ($)
                     </th>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                       Date
                     </th>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
                       Remark
                     </th>
-                    <th className="th-wrap-text px-4 py-3 font-semibold uppercase tracking-wide text-xs border-b border-blue-500 rounded-tr-lg">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 rounded-tr-lg th-wrap-text">
                       Action
                     </th>
                   </tr>
@@ -912,7 +921,7 @@ const RentRequest = () => {
                        <td className="px-4 py-3 font-medium td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
                               <button
-                                className="text-blue-500 bg-green-100 rounded-full hover:text-blue-700 px-4 py-3"
+                                className="px-4 py-3 text-blue-500 bg-green-100 rounded-full hover:text-blue-700"
                                 onClick={() =>
                                   handleApproveClick(row.AuthLogin)
                                 }
