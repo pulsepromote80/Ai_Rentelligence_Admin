@@ -147,7 +147,7 @@ const DepositHistory = () => {
     <div className="p-8 mx-auto mt-10 border border-gray-200 shadow-2xl max-w-7xl bg-gradient-to-br from-blue-50 to-white rounded-3xl">
       {/* Header */}
       <h6 className="heading">
-        Deposit History Total Released:{' '}
+        Deposit History:{' '}
         <span className="font-bold text-green-600">
           ${Number(totalRelease.toFixed(2))}
         </span>

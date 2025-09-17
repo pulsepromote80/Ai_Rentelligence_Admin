@@ -1,18 +1,19 @@
 "use client";
 import { useState, useEffect } from "react";
 import { getLeaseStatemtnt, usernameLoginId } from "@/app/redux/adminMasterSlice";
-import { getProductList } from '@/app/redux/productSlice';
+import { getProductList } from "@/app/redux/productSlice";
 import { useDispatch, useSelector } from "react-redux";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import { FaWallet } from "react-icons/fa6";
+import { Search, FileSpreadsheet } from "lucide-react";
+import { Calendar, User, UserCircle2 } from "lucide-react";
+import { FaSyncAlt } from "react-icons/fa";
 
 const OrderHistory = () => {
   const dispatch = useDispatch();
   const LeaseStatementData = useSelector(
     (state) => state.adminMaster?.LeaseStatementData?.data || []
   );
-  const { usernameData } = useSelector((state) => state.adminMaster);
   const productList = useSelector((state) => state.product?.data ?? []);
 
   const [fromDate, setFromDate] = useState("");
@@ -28,7 +29,6 @@ const OrderHistory = () => {
   const indexOfLastItem = currentPage * entriesPerPage;
   const indexOfFirstItem = indexOfLastItem - entriesPerPage;
   const currentData = LeaseStatementData?.slice(indexOfFirstItem, indexOfLastItem);
-
   const totalPages = Math.ceil(LeaseStatementData?.length / entriesPerPage);
 
   const formatDate = (dateString) => {
@@ -38,7 +38,8 @@ const OrderHistory = () => {
   };
 
   const totalPrice =
-    LeaseStatementData?.reduce((sum, txn) => sum + (txn.Rkprice || 0), 0) || 0;
+    hasSearched && LeaseStatementData? LeaseStatementData.reduce((sum, txn) => sum + (txn.Rkprice || 0), 0) :0 
+
 
   useEffect(() => {
     dispatch(getProductList());
@@ -51,9 +52,7 @@ const OrderHistory = () => {
         setUserError("");
         return;
       }
-
       const result = await dispatch(usernameLoginId(userId));
-
       if (result?.payload && result.payload.name) {
         setUsername(result.payload.name);
         setUserError("");
@@ -62,7 +61,6 @@ const OrderHistory = () => {
         setUserError("Invalid User ID");
       }
     };
-
     fetchUsername();
   }, [userId, dispatch]);
 
@@ -73,7 +71,6 @@ const OrderHistory = () => {
       fromDate: formatDate(fromDate) || "",
       toDate: formatDate(toDate) || "",
     };
-
     dispatch(getLeaseStatemtnt(payload));
     setHasSearched(true);
   };
@@ -100,15 +97,9 @@ const OrderHistory = () => {
         LastDatePay: txn.LastDatePay ? txn.LastDatePay.split("T")[0] : "",
       }))
     );
-
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
-
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
-
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
     const data = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(data, "Transactions.xlsx");
   };
@@ -121,267 +112,256 @@ const OrderHistory = () => {
     setUsername("");
     setUserError("");
     setCurrentPage(1);
-    setHasSearched(false); // hide table
+    setHasSearched(false);
+
+    const payload = {
+      authLogin: userId || "",
+      productName: selectedProductName || "",
+      fromDate: formatDate(fromDate) || "",
+      toDate: formatDate(toDate) || "",
+    };
+    dispatch(getLeaseStatemtnt(payload));
   };
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="mx-auto max-w-7xl">
-        {/* Filters Section */}
-        
-          <div className="p-6 mb-6 bg-white rounded-lg shadow">
-   <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2">
-  <div className="p-6 bg-white rounded-lg shadow">
-    <h2 className="mb-4 text-lg font-semibold text-gray-700">Order History</h2>
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-2xl font-bold text-green-600">
-          ${Number(totalPrice).toFixed(2)}
-        </p>
-        <p className="text-gray-600">Total Price</p>
+    <div className="p-8 mx-auto mt-2 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-2">
+        <h6 className="heading">Order History</h6>
+        <div className="flex items-center justify-between gap-4">
+          <p className="font-semibold text-green-600">
+            Total Price : ${Number(totalPrice).toFixed(2)}
+          </p>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
 
-          {/* Filters */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-800">
-                From Date
-              </label>
-              <input
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-800">
-                To Date
-              </label>
-              <input
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-800">
-                Select Product Name
-              </label>
-              <select
-                value={selectedProductName}
-                onChange={(e) => setSelectedProductName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-              >
-                <option value="">-Select Product-</option>
-                {productList?.map((prod, idx) => (
-                  <option key={idx} value={prod.productName}>
-                    {prod.productName}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-800">
-                User ID
-              </label>
-              <input
-                type="text"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-              />
-              {userError && (
-                <p className="mt-1 text-sm text-red-600">{userError}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-800">
-                Username
-              </label>
-              <input
-                type="text"
-                value={username}
-                readOnly
-                className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md cursor-not-allowed"
-              />
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex justify-center mt-6 space-x-4">
-            <button
-              onClick={handleSearch}
-              className="w-32 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 whitespace-nowrap"
-            >
-              Search
-            </button>
-            <button
-              onClick={handleExport}
-              className="w-32 py-2 text-white bg-green-600 rounded-md hover:bg-green-700 whitespace-nowrap"
-            >
-              Export Excel
-            </button>
-            <button
-              onClick={handleRefresh}
-              className="w-32 py-2 text-white bg-gray-600 rounded-md hover:bg-gray-700 whitespace-nowrap"
-            >
-              Refresh
-            </button>
+      {/* Filters */}
+      <div className="grid grid-cols-1 gap-6 mt-2 md:grid-cols-2 lg:grid-cols-3">
+        {/* From Date */}
+        <div className="relative">
+          <label className="block mb-1 text-sm font-semibold text-blue-700">
+            From Date
+          </label>
+          <div className="relative">
+            <Calendar className="absolute w-5 h-5 text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="w-full py-2.5 pl-12 pr-4 transition bg-white border border-gray-300 rounded-lg shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
+            />
           </div>
         </div>
 
-        {/* Transactions Table */}
-        {hasSearched && LeaseStatementData?.length > 0 && (
-          <div className="mt-6 overflow-hidden bg-white rounded-lg shadow">
-            <div className="overflow-x-auto">
-              <table className="min-w-full border border-gray-200 rounded-xl">
-                <thead className="text-blue-900 bg-gradient-to-r from-blue-200 to-blue-400">
-                  <tr>
-                    {[
-                      "Sr.No.",
-                      "Username",
-                      "Name",
-                      "Product Name",
-                      "Price ($)",
-                      "Lease Hour",
-                      "Duration Month",
-                      "Weekly ROI ($)",
-                      "Total Return ($)",
-                      "Credit ($)",
-                      "Max. Limit ($)",
-                      "Order Date",
-                      "Last Date Pay",
-                    ].map((col, idx) => (
-                      <th
-                        key={idx}
-                        className="px-4 py-2 text-sm font-semibold text-gray-700 border"
-                      >
-                        {col}
-                      </th>
-                    ))}
+        {/* To Date */}
+        <div className="relative">
+          <label className="block mb-1 text-sm font-semibold text-blue-700">
+            To Date
+          </label>
+          <div className="relative">
+            <Calendar className="absolute w-5 h-5 text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="w-full py-2.5 pl-12 pr-4 transition bg-white border border-gray-300 rounded-lg shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+        </div>
+
+        {/* Product Name */}
+        <div className="relative">
+          <label className="block mb-1 text-sm font-semibold text-blue-700">
+            Select Product
+          </label>
+          <select
+            value={selectedProductName}
+            onChange={(e) => setSelectedProductName(e.target.value)}
+            className="w-full py-2.5 pl-4 pr-4 transition bg-white border border-gray-300 rounded-lg shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">-Select Product-</option>
+            {productList?.map((prod, idx) => (
+              <option key={idx} value={prod.productName}>
+                {prod.productName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* User ID */}
+        <div className="relative">
+          <label className="block mb-1 text-sm font-semibold text-blue-700">
+            User ID
+          </label>
+          <div className="relative">
+            <User className="absolute w-5 h-5 text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="text"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className={`w-full pl-12 pr-4 py-2.5 rounded-lg border shadow-sm outline-none transition
+                ${userError
+                  ? "border-red-500 focus:ring-red-400 focus:border-red-500 bg-red-50"
+                  : "border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
+                }`}
+            />
+          </div>
+          {userError && (
+            <p className="mt-1 text-sm text-red-500">{userError}</p>
+          )}
+        </div>
+
+        {/* Username */}
+        <div className="relative">
+          <label className="block mb-1 text-sm font-semibold text-blue-700">
+            Username
+          </label>
+          <div className="relative">
+            <UserCircle2 className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="text"
+              value={username}
+              readOnly
+              className="w-full py-2.5 pl-12 pr-4 text-gray-600 bg-gray-100 border border-gray-300 rounded-lg shadow-sm cursor-not-allowed"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex items-center justify-start mt-3 space-x-4 col-span-full">
+        <button
+          onClick={handleSearch}
+          className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
+        >
+          <Search className="w-5 h-5" />
+          Search
+        </button>
+
+        <button
+          onClick={handleExport}
+          className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700"
+        >
+          <FileSpreadsheet className="w-5 h-5" />
+          Export Excel
+        </button>
+
+        <button
+          onClick={handleRefresh}
+          className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+        >
+          <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
+          Refresh
+        </button>
+      </div>
+
+      {/* Transactions Table */}
+      {hasSearched && LeaseStatementData?.length > 0 && (
+        <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-center text-gray-700 border-collapse">
+              <thead className="text-white bg-gradient-to-r from-blue-700 to-blue-500">
+                <tr>
+                  <th className="px-4 py-3">Sr.No.</th>
+                  <th className="px-4 py-3">Username</th>
+                  <th className="px-4 py-3">Name</th>
+                  <th className="px-4 py-3">Product</th>
+                  <th className="px-4 py-3">Price ($)</th>
+                  <th className="px-4 py-3">Lease Hour</th>
+                  <th className="px-4 py-3">Duration (Months)</th>
+                  <th className="px-4 py-3">Weekly ROI ($)</th>
+                  <th className="px-4 py-3">Total Return </th>
+                  <th className="px-4 py-3">Credit ($)</th>
+                  <th className="px-4 py-3">Max Limit ($)</th>
+                  <th className="px-4 py-3">Order Date</th>
+                  <th className="px-4 py-3">Last Pay Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentData.map((txn, index) => (
+                  <tr
+                    key={index}
+                    className={`transition-colors duration-200 ${index % 2 === 0
+                        ? "bg-blue-50 hover:bg-blue-100"
+                        : "bg-white hover:bg-blue-50"
+                      }`}
+                  >
+                    <td className="px-4 py-3 font-semibold">
+                      {indexOfFirstItem + index + 1}
+                    </td>
+                    <td className="px-2 py-2">{txn.AuthLogin}</td>
+                    <td className="px-2 py-2">{txn.FullName}</td>
+                    <td className="px-2 py-2">{txn.name}</td>
+                    <td className="px-2 py-2 font-semibold text-green-600">
+                      {txn.Rkprice}
+                    </td>
+                    <td className="px-2 py-2">{txn.LeaseHour}</td>
+                    <td className="px-2 py-2">{txn.DurationOnMonth}</td>
+                    <td className="px-2 py-2">{txn.WeeklyReturn}</td>
+                    <td className="px-2 py-2">{txn.TotalReturn}</td>
+                    <td className="px-2 py-2 font-semibold text-blue-600">
+                      {txn.CreditAmt}
+                    </td>
+                    <td className="px-2 py-2">{txn.MaxLimit}</td>
+                    <td className="px-2 py-2">
+                      {txn.RDate ? txn.RDate.split("T")[0] : "-"}
+                    </td>
+                    <td className="px-2 py-2">
+                      {txn.LastDatePay ? txn.LastDatePay.split("T")[0] : "-"}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {currentData.map((transaction, index) => (
-                    <tr
-                      key={index}
-                      className={index % 2 === 0 ? "bg-white" : "bg-blue-50"}
-                    >
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {indexOfFirstItem + index + 1}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {transaction.AuthLogin}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {transaction.FullName}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-green-700 border">
-                        {transaction.name}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-green-700 border">
-                        {Number(transaction.Rkprice).toFixed(2)}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {transaction.LeaseHour}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {transaction.DurationOnMonth}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {Number(transaction.WeeklyReturn).toFixed(2)}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {Number(transaction.TotalReturn).toFixed(2)}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-green-700 border">
-                        {Number(transaction.CreditAmt).toFixed(2)}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {Number(transaction.MaxLimit).toFixed(2)}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {transaction.RDate
-                          ? transaction.RDate.split("T")[0]
-                          : "-"}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {transaction.LastDatePay
-                          ? transaction.LastDatePay.split("T")[0]
-                          : "-"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Rows per page:</span>
+              <select
+                value={entriesPerPage}
+                onChange={(e) => {
+                  setEntriesPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="p-1 text-sm border rounded-lg focus:ring-2 focus:ring-blue-400"
+              >
+                <option value={500}>500</option>
+                <option value={1000}>1000</option>
+                <option value={1500}>1500</option>
+              </select>
             </div>
-
-            {/* Footer rows per page */}
-            <div className="flex items-center justify-between px-4 py-2 text-sm text-gray-600 border-t">
-              <p>
-                Rows per page:{" "}
-                <select
-                  value={entriesPerPage}
-                  onChange={(e) => {
-                    setEntriesPerPage(Number(e.target.value));
-                    setCurrentPage(1);
-                  }}
-                  className="px-2 py-1 ml-2 border rounded"
-                >
-                  <option value={500}>500</option>
-                  <option value={1000}>1000</option>
-                  <option value={1500}>1500</option>
-                </select>
-              </p>
-
-              <p>
-                {indexOfFirstItem + 1}–
-                {Math.min(indexOfLastItem, LeaseStatementData.length)} of{" "}
-                {LeaseStatementData.length}
-              </p>
-
-              {/* Pagination */}
-              <div className="flex space-x-2">
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(prev - 1, 1))
-                  }
-                  disabled={currentPage === 1}
-                  className={`px-2 py-1 rounded ${
-                    currentPage === 1
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-blue-600"
+            <div className="text-sm text-gray-600">
+              {indexOfFirstItem + 1}–
+              {Math.min(indexOfLastItem, LeaseStatementData.length)} of{" "}
+              {LeaseStatementData.length}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 rounded-lg border transition-colors ${currentPage === 1
+                    ? "text-gray-400 border-gray-200"
+                    : "text-blue-600 border-gray-300 hover:bg-blue-50"
                   }`}
-                >
-                  ◀
-                </button>
-                <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                  }
-                  disabled={currentPage === totalPages}
-                  className={`px-2 py-1 rounded ${
-                    currentPage === totalPages
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-blue-600"
+              >
+                ‹
+              </button>
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 rounded-lg border transition-colors ${currentPage === totalPages
+                    ? "text-gray-400 border-gray-200"
+                    : "text-blue-600 border-gray-300 hover:bg-blue-50"
                   }`}
-                >
-                  ▶
-                </button>
-              </div>
+              >
+                ›
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

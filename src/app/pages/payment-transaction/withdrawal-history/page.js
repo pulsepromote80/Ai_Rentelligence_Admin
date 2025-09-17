@@ -108,6 +108,7 @@ const WithdrawalHistory = () => {
   }
 
   const approvedRows = withdrawRequestData?.aprWithIncome || [];
+  console.log("test-->",approvedRows);
   const rejectedRows = withdrawRequestData?.rejectedWithIncome || [];
   const allRows = [...approvedRows, ...rejectedRows];
 
@@ -147,7 +148,7 @@ const WithdrawalHistory = () => {
   };
 
   return (
-     <div className="max-w-7xl p-8 mx-auto mt-10 mb-12 bg-gradient-to-b from-white via-blue-50 to-white border border-blue-100 shadow-2xl rounded-3xl">
+     <div className="p-8 mx-auto mt-10 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
       <h6 className="heading">
         Withdrawal History
       </h6> 
@@ -204,7 +205,7 @@ const WithdrawalHistory = () => {
             </div>
 
             {/* Buttons row */}
-             <div className="flex items-center justify-left mt-2 space-x-4 col-span-full">
+             <div className="flex items-center mt-2 space-x-4 justify-left col-span-full">
               <button
                 onClick={handleSearch}
                 className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
@@ -221,7 +222,7 @@ const WithdrawalHistory = () => {
                       </button>
                <button
                         onClick={handleRefresh}
-                       className="px-5 py-2 rounded-xl bg-gray-600 text-white shadow hover:bg-gray-700 transition flex items-center gap-2"
+                       className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
                             >
                               <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />  
                               Refresh
@@ -232,31 +233,31 @@ const WithdrawalHistory = () => {
 
       {hasSearched && (
         <>
-         <div className="mt-6 overflow-hidden border border-gray-200 rounded-2xl shadow-2xl bg-white"></div>
+         <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl"></div>
           {loading ? (
             <div className="py-10 text-center">Loading...</div>
           ) : error ? (
             <div className="py-10 text-center text-red-500">{error}</div>
           ) : (
-         <div className='mt-6 overflow-hidden border border-gray-200 rounded-2xl shadow-2xl bg-white'>
+         <div className='mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl'>
             <div className="overflow-x-auto">
               <table className="min-w-full text-sm text-center text-gray-700 border-collapse">
                 {/* Table Header */}
-                <thead className="bg-gradient-to-r from-blue-700 to-blue-500 text-white">
+                <thead className="text-white bg-gradient-to-r from-blue-700 to-blue-500">
                   <tr>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Sr.No.</th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">User ID</th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Name</th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Email</th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Amount ($)</th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Charges ($)</th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Release ($)</th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Wallet Address</th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Transaction Hash</th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Created Date</th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Approval Date</th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Remark</th>
-                    <th className="px-4 py-3 font-semibold uppercase tracking-wide th-wrap-text">Status</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Sr.No.</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">User ID</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Name</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Email</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Amount ($)</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Charges ($)</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Release ($)</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Wallet Address</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Transaction Hash</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Created Date</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Approval Date</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Remark</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -305,15 +306,15 @@ const WithdrawalHistory = () => {
                           <div className="flex items-center justify-center gap-1">
                             <div className="relative group">
                               <span className="cursor-default">
-                                {truncateRefNo(row.Transhash)}
+                                {truncateRefNo(row.TransHash)}
                               </span>
-                              {row.Transhash && row.Transhash.length > 15 && (
+                              {row.Transhash && row.TransHash.length > 15 && (
                                 <div className="absolute z-10 hidden px-2 py-1 text-xs text-white transform -translate-x-1/2 bg-gray-600 rounded-md group-hover:block whitespace-nowrap -top-8 left-1/2">
                                   {row.TransHash}
                                 </div>
                               )}
                             </div>
-                            {row.Transhash && (
+                            {row.TransHash && (
                               <button
                                 onClick={() => copyToClipboard(row.TransHash)}
                                 className="p-1 text-blue-500 hover:text-blue-700"

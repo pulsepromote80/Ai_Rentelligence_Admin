@@ -141,6 +141,12 @@ const WithdrawalRequest = () => {
     setUserError('')
     setCurrentPage(1)
     setHasSearched(false)
+
+      dispatch(getAllIncomeRequestAdmin({
+        authLogin: '',
+        fromDate: '',
+        toDate: ''
+      }))
   }
 
   const fetchWalletBalances = async (accountAddress) => {
@@ -180,10 +186,11 @@ const WithdrawalRequest = () => {
   }
 
   const totalRelease =
-    withdrawRequestData?.unApWithIncome?.reduce(
+    hasSearched && withdrawRequestData?.unApWithIncome? withdrawRequestData.unApWithIncome.reduce(
       (sum, txn) => sum + (Number(txn.Release) || 0),
-      0,
-    ) || 0
+      0
+    ) 
+    : 0
 
   // Switch to BSC network
   const switchToBSCNetwork = async () => {
@@ -620,7 +627,7 @@ const WithdrawalRequest = () => {
         {account && (
           <div className="flex flex-col ml-2">
             <span className="font-semibold text-green-600 text-md">
-              💰 Wallet Balance: ${Number(balanceInUsdt).toFixed(2)}
+            💰 Wallet Balance: ${Number(balanceInUsdt).toFixed(2)}
             </span>
           </div>
         )}
@@ -676,9 +683,9 @@ const WithdrawalRequest = () => {
 
       <div>
         <h6 className="heading">
-          Deposit History Total Released:{' '}
+          Withdrawal Requests:{' '}
           <span className="text-green-600">
-            Withdrawal Requests: ${Number(totalRelease.toFixed(2))}
+             ${Number(totalRelease.toFixed(2))}
           </span>
         </h6>
       </div>
@@ -887,7 +894,7 @@ const WithdrawalRequest = () => {
                           <td className="px-4 py-3 font-medium td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
                               <button
-                                className="py-3 px-4 text-blue-500 bg-green-100 rounded-full hover:text-blue-700"
+                                className="px-4 py-3 text-blue-500 bg-green-100 rounded-full hover:text-blue-700"
                                 onClick={() =>
                                   handleApproveClick(row.AuthLogin)
                                 }

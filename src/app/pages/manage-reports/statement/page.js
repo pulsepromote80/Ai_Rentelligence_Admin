@@ -4,6 +4,9 @@ import { getAccStatemtnt, usernameLoginId } from "@/app/redux/adminMasterSlice";
 import { useDispatch, useSelector } from "react-redux";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import { Search, FileSpreadsheet, RefreshCcw } from 'lucide-react'
+import { Calendar, User, UserCircle2 } from 'lucide-react'
+import { FaSearch, FaFileExcel, FaSyncAlt } from 'react-icons/fa'
 import { toast } from "react-toastify";
 
 const Statement = () => {
@@ -22,7 +25,7 @@ const Statement = () => {
   const [entriesPerPage, setEntriesPerPage] = useState(500);
   const [currentPage, setCurrentPage] = useState(1);
   const [userError, setUserError] = useState("");
-   const [hasSearched, setHasSearched] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
 
 
   const indexOfLastItem = currentPage * entriesPerPage;
@@ -39,20 +42,19 @@ const Statement = () => {
   };
 
   // credit aur debit ka total nikalne ke liye reduce use karo
-  const totalCredit = accStatementData?.reduce(
+  const totalCredit = hasSearched && accStatementData ? accStatementData.reduce(
     (sum, txn) => sum + (txn.Credit || 0),
-    0
-  ) || 0;
+    0,
+  ) : 0
 
-  const totalDebit = accStatementData?.reduce(
+
+  const totalDebit = hasSearched && accStatementData ? accStatementData.reduce(
     (sum, txn) => sum + (txn.Debit || 0),
+    0,
+  ) :
     0
-  ) || 0;
 
 
-
-
-  // Wallet type ko backend ke hisaab se map karna hoga
   const getWalletType = (wallet) => {
     switch (wallet) {
       case "Income":
@@ -137,284 +139,277 @@ const Statement = () => {
     saveAs(data, "Transactions.xlsx");
   };
 
-   const handleRefresh = () => {
+  const handleRefresh = () => {
     setFromDate("");
     setToDate("");
     setUserId("");
     setUsername("");
     setUserError("");
     setCurrentPage(1);
-    setHasSearched(false); 
+    setHasSearched(false);
+    const payload = {
+      authLogin: userId || "",
+      transtype: transactionType || "",
+      fromDate: formatDate(fromDate) || "",
+      toDate: formatDate(toDate) || "",
+      wtype: getWalletType(selectedWallet),
+    };
+
+    dispatch(getAccStatemtnt(payload));
   };
 
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="mx-auto max-w-7xl">
-        {/* Filters Section */}
-        <div className="p-6 mb-6 bg-white rounded-lg shadow">
-          <div className="grid grid-cols-1 gap-6 mb-8 md:grid-cols-2">
-            <div className="p-6 bg-white rounded-lg shadow">
-              <h2 className="mb-4 text-lg font-semibold text-gray-700">Wallet Statement</h2>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-2xl font-bold text-green-600">
-                    ${Number(totalCredit).toFixed(2)}
-                  </p>
-                  <p className="text-gray-600">Total Credit</p>
-                </div>
-                <div className="w-px h-12 bg-gray-300"></div>
-                <div>
-                  <p className="text-2xl font-bold text-red-600">
-                    ${Number(totalDebit).toFixed(2)}
-                  </p>
-                  <p className="text-gray-600">Total Debit</p>
-                </div>
-              </div>
-            </div>
-          </div>
+    <div className="p-8 mx-auto mt-2 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-2">
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-800">
-                From Date
-              </label>
-              <input
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-              />
-            </div>
+        <h6 className="heading">Wallet Statement</h6>
+        <div className="flex items-center justify-between gap-4">
+          <p className="font-semibold text-green-600">
+            Total Credit : ${Number(totalCredit).toFixed(2)}
+          </p>
+          <p className="font-semibold text-red-600">
+            Total Debit : ${Number(totalDebit).toFixed(2)}
+          </p>
+        </div>
+      </div>
 
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-800">
-                To Date
-              </label>
-              <input
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-              />
-            </div>
-
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-800">
-                Select Wallet
-              </label>
-              <select
-                value={selectedWallet}
-                onChange={(e) => setSelectedWallet(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-              >
-                <option value="">-Select Wallet-</option>
-                <option value="Income">Income Wallet</option>
-                <option value="DepositWallet">Deposit Wallet</option>
-                <option value="RentWallet">Rent Wallet</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-800">
-                Transaction Type
-              </label>
-              <select
-                value={transactionType}
-                onChange={(e) => setTransactionType(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-              >
-                <option value="">Select Transaction</option>
-                <option value="PayoutEarnings">Payout Earnings</option>
-                <option value="FundTransfer">Fund Transfer</option>
-                <option value="FundDepositByAdmin">Fund Deposit By Admin</option>
-                <option value="Charges">Charges</option>
-                <option value="Withdrawal">Withdrawal</option>
-                <option value="Recharge">Recharge</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-800">
-                User ID
-              </label>
-              <input
-                type="text"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-              />
-              {userError && <p className="mt-1 text-sm text-red-600">{userError}</p>}
-            </div>
-
-            <div>
-              <label className="block mb-1 text-sm font-medium text-blue-800 cursor-not-allowed">
-                Username
-              </label>
-              <input
-                type="text"
-                value={username}
-                readOnly
-                onChange={(e) => setUsername(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
-              />
-            </div>
-          </div>
-
-          {/* Buttons center aligned */}
-          <div className="flex justify-center mt-6 space-x-4">
-            <button
-              onClick={handleSearch}
-              className="px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700"
-            >
-              Search
-            </button>
-            <button
-              onClick={handleExport}
-              className="px-6 py-2 text-white bg-green-600 rounded-md hover:bg-green-700"
-            >
-              Export Excel
-            </button>
-            <button
-              onClick={handleRefresh}
-              className="w-32 py-2 text-white bg-gray-600 rounded-md hover:bg-gray-700 whitespace-nowrap"
-            >
-              Refresh
-            </button>
+      {/* Filters */}
+      <div className="grid grid-cols-1 gap-6 mt-2 md:grid-cols-2 lg:grid-cols-3">
+        {/* From Date */}
+        <div className="relative">
+          <label
+            htmlFor="fromDate"
+            className="block mb-1 text-sm font-semibold text-blue-700"
+          >
+            From Date
+          </label>
+          <div className="relative">
+            <Calendar className="absolute w-5 h-5 text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="date"
+              id="fromDate"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="w-full py-2.5 pl-12 pr-4 transition bg-white border border-gray-300 rounded-lg shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
+            />
           </div>
         </div>
 
-
-        {/* Transactions Table */}
-        {hasSearched  && accStatementData?.length > 0 && (
-          <div className="mt-6 overflow-hidden bg-white rounded-lg shadow">
-            <div className="overflow-x-auto">
-              <table className="min-w-full border border-gray-200 rounded-xl">
-                <thead className="text-blue-900 bg-gradient-to-r from-blue-200 to-blue-400">
-                  <tr>
-                    <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
-                      Sr.No.
-                    </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
-                      Username
-                    </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
-                      Name
-                    </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
-                      Credit
-                    </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
-                      Debit
-                    </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
-                      Requested Date
-                    </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
-                      Approval Date
-                    </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
-                      TransType
-                    </th>
-                    <th className="px-4 py-2 text-sm font-semibold text-gray-700 border">
-                      Remark
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {currentData.map((transaction, index) => (
-                    <tr key={index} className={index % 2 === 0 ? "bg-white" : "bg-blue-50"}>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {indexOfFirstItem + index + 1}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {transaction.AuthLogin}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {transaction.FullName}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-green-700 border">
-                        ${transaction.Credit}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-red-700 border">
-                        ${transaction.Debit}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {transaction.CreatedDate ? transaction.CreatedDate.split("T")[0] : "-"}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {transaction.ApprovalDate ? transaction.ApprovalDate.split("T")[0] : "-"}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {transaction.TransType}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-center text-gray-700 border">
-                        {transaction.Remark}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-
-              </table>
-            </div>
-
-            {/* Footer rows per page */}
-            <div className="flex items-center justify-between px-4 py-2 text-sm text-gray-600 border-t">
-              <p>
-                Rows per page:{" "}
-                <select
-                  value={entriesPerPage}
-                  onChange={(e) => {
-                    setEntriesPerPage(Number(e.target.value));
-                    setCurrentPage(1); // reset to first page
-                  }}
-                  className="px-2 py-1 ml-2 border rounded"
-                >
-                  <option value={10}>500</option>
-                  <option value={25}>1000</option>
-                  <option value={50}>1500</option>
-                </select>
-              </p>
-
-              <p>
-                {indexOfFirstItem + 1}–
-                {Math.min(indexOfLastItem, accStatementData.length)} of{" "}
-                {accStatementData.length}
-              </p>
-
-              {/* Pagination arrows */}
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className={`px-2 py-1 rounded ${currentPage === 1 ? "text-gray-400 cursor-not-allowed" : "text-blue-600"
-                    }`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  className={`px-2 py-1 rounded ${currentPage === totalPages
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "text-blue-600"
-                    }`}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
+        {/* To Date */}
+        <div className="relative">
+          <label
+            htmlFor="toDate"
+            className="block mb-1 text-sm font-semibold text-blue-700"
+          >
+            To Date
+          </label>
+          <div className="relative">
+            <Calendar className="absolute w-5 h-5 text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="date"
+              id="toDate"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="w-full py-2.5 pl-12 pr-4 transition bg-white border border-gray-300 rounded-lg shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
+            />
           </div>
-        )}
+        </div>
 
+        {/* Wallet Select */}
+        <div className="relative">
+          <label className="block mb-1 text-sm font-semibold text-blue-700">
+            Select Wallet
+          </label>
+          <select
+            value={selectedWallet}
+            onChange={(e) => setSelectedWallet(e.target.value)}
+            className="w-full py-2.5 pl-4 pr-4 transition bg-white border border-gray-300 rounded-lg shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">-Select Wallet-</option>
+            <option value="Income">Income Wallet</option>
+            <option value="DepositWallet">Deposit Wallet</option>
+            <option value="RentWallet">Rent Wallet</option>
+          </select>
+        </div>
 
+        {/* Transaction Type */}
+        <div className="relative">
+          <label className="block mb-1 text-sm font-semibold text-blue-700">
+            Transaction Type
+          </label>
+          <select
+            value={transactionType}
+            onChange={(e) => setTransactionType(e.target.value)}
+            className="w-full py-2.5 pl-4 pr-4 transition bg-white border border-gray-300 rounded-lg shadow-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="">Select Transaction</option>
+            <option value="PayoutEarnings">Payout Earnings</option>
+            <option value="FundTransfer">Fund Transfer</option>
+            <option value="FundDepositByAdmin">Fund Deposit By Admin</option>
+            <option value="Charges">Charges</option>
+            <option value="Withdrawal">Withdrawal</option>
+            <option value="Recharge">Recharge</option>
+          </select>
+        </div>
+
+        {/* User ID */}
+        <div className="relative">
+          <label
+            htmlFor="userId"
+            className="block mb-1 text-sm font-semibold text-blue-700"
+          >
+            User ID
+          </label>
+          <div className="relative">
+            <User className="absolute w-5 h-5 text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="text"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              id="userId"
+              className={`w-full pl-12 pr-4 py-2.5 rounded-lg border shadow-sm outline-none transition
+        ${userError
+                  ? 'border-red-500 focus:ring-red-400 focus:border-red-500 bg-red-50'
+                  : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-400'
+                }`}
+            />
+          </div>
+          {userError && (
+            <p className="mt-1 text-sm text-red-500">{userError}</p>
+          )}
+        </div>
+
+        {/* Username */}
+        <div className="relative">
+          <label
+            htmlFor="username"
+            className="block mb-1 text-sm font-semibold text-blue-700"
+          >
+            Username
+          </label>
+          <div className="relative">
+            <UserCircle2 className="absolute w-5 h-5 text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="text"
+              value={username}
+              readOnly
+              id="username"
+              className="w-full py-2.5 pl-12 pr-4 text-gray-600 bg-gray-100 border border-gray-300 rounded-lg shadow-sm cursor-not-allowed"
+            />
+          </div>
+        </div>
       </div>
+
+      {/* Action buttons */}
+      <div className="flex items-center justify-start mt-3 space-x-4 col-span-full">
+        <button
+          onClick={handleSearch}
+          className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
+        >
+          <Search className="w-5 h-5" />
+          Search
+        </button>
+
+        <button
+          onClick={handleExport}
+          className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700"
+        >
+          <FileSpreadsheet className="w-5 h-5" />
+          Export Excel
+        </button>
+
+        <button
+          onClick={handleRefresh}
+          className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+        >
+          <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
+          Refresh
+        </button>
+      </div>
+
+      {/* Transactions Table */}
+      {hasSearched && accStatementData?.length > 0 && (
+        <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-center text-gray-700 border-collapse">
+              <thead className="text-white bg-gradient-to-r from-blue-700 to-blue-500">
+                <tr>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Sr.No.</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Username</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Name</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Credit</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Debit</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Requested Date</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Approval Date</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">TransType</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Remark</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentData.map((transaction, index) => (
+                  <tr
+                    key={index}
+                    className={`transition-colors duration-200 ${index % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100' : 'bg-white hover:bg-blue-50'}`}
+                  >
+                    <td className="px-4 py-3 font-semibold">{indexOfFirstItem + index + 1}</td>
+                    <td className="px-2 py-2">{transaction.AuthLogin}</td>
+                    <td className="px-2 py-2">{transaction.FullName}</td>
+                    <td className="px-2 py-2 font-semibold text-green-600">${transaction.Credit}</td>
+                    <td className="px-2 py-2 font-semibold text-red-600">${transaction.Debit}</td>
+                    <td className="px-2 py-2">{transaction.CreatedDate ? transaction.CreatedDate.split("T")[0] : "-"}</td>
+                    <td className="px-2 py-2">{transaction.ApprovalDate ? transaction.ApprovalDate.split("T")[0] : "-"}</td>
+                    <td className="px-2 py-2">{transaction.TransType}</td>
+                    <td className="px-2 py-2">{transaction.Remark}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex items-center justify-between px-6 py-4 border-t bg-gray-50">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Rows per page:</span>
+              <select
+                value={entriesPerPage}
+                onChange={(e) => {
+                  setEntriesPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="p-1 text-sm border rounded-lg focus:ring-2 focus:ring-blue-400"
+              >
+                <option value={10}>500</option>
+                <option value={25}>1000</option>
+                <option value={50}>1500</option>
+              </select>
+            </div>
+            <div className="text-sm text-gray-600">
+              {indexOfFirstItem + 1}–
+              {Math.min(indexOfLastItem, accStatementData.length)} of {accStatementData.length}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`px-3 py-1 rounded-lg border transition-colors ${currentPage === 1 ? 'text-gray-400 border-gray-200' : 'text-blue-600 border-gray-300 hover:bg-blue-50'}`}
+              >
+                ‹
+              </button>
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 rounded-lg border transition-colors ${currentPage === totalPages ? 'text-gray-400 border-gray-200' : 'text-blue-600 border-gray-300 hover:bg-blue-50'}`}
+              >
+                ›
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
+
   );
 };
 

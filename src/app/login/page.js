@@ -114,7 +114,7 @@ const AdminLogin = () => {
             {loading ? "Login..." : "Login"}
           </button>
           <p className="mt-4 text-base text-center text-blue-500 cursor-pointer hover:underline">
-            <Link href="/login/register">Don&rsquo;t have an Account? Register</Link>
+            <Link href="/register">Don&rsquo;t have an Account? Register</Link>
           </p>
           {/* <div className="flex justify-center mt-2">
             <Link href="/login/forgot-password" className="text-blue-500 hover:underline" passHref>

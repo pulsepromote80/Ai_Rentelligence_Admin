@@ -338,7 +338,7 @@ const RentWallet = () => {
                   <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">
                     {row.CreatedDate ? row.CreatedDate.split('T')[0] : '-'}
                   </td>
-                  <td className="px-4 py-2 text-sm text-center text-gray-700 bordertd-wrap-text">
+                  <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">
                     {row.ApprovalDate ? row.ApprovalDate.split('T')[0] : '-'}
                   </td>
                   <td className="px-4 py-2 text-sm text-center text-red-600 border td-wrap-text">{row.Remark}</td>
