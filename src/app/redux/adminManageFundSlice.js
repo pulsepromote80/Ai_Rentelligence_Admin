@@ -2,7 +2,6 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { getRequestLoginId, postRequest } from '@/app/pages/api/auth';
 import { API_ENDPOINTS } from '@/app/constants/userWalletDetails-constant';
 
-// Fetch User Wallet Details (GET Request)
 export const getUserWalletDetails = createAsyncThunk(
     'adminManageFund',
     async (loginId, { rejectWithValue }) => {
