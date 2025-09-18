@@ -171,14 +171,14 @@ const handleSubmit = async (e) => {
   }
 };
   return (
-    <div className="flex items-center justify-center min-h-[80vh]">
+    <div className="flex items-center justify-center min-h-[50vh]">
   <form
     onSubmit={handleSubmit}
-    className="w-full max-w-xl p-8 bg-white shadow-2xl border border-gray-100 rounded-2xl"
+    className="w-full max-w-xl p-8 bg-white border border-gray-100 shadow-2xl rounded-2xl"
   >
     {/* Icon and Title */}
     <div className="flex flex-col items-center mb-8">
-      <div className="flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-blue-50 border border-blue-200">
+      <div className="flex items-center justify-center w-20 h-20 mb-4 border border-blue-200 rounded-full bg-blue-50">
         <svg
           className="w-10 h-10 text-blue-500"
           fill="none"
@@ -245,7 +245,7 @@ const handleSubmit = async (e) => {
               Wallet Balances
             </label>
             {walletData?.walletDetails && (
-              <div className="flex flex-col gap-2 px-4 py-3 text-sm border rounded-xl bg-blue-50 border-blue-200 shadow-sm md:flex-row md:justify-between">
+              <div className="flex flex-col gap-2 px-4 py-3 text-sm border border-blue-200 shadow-sm rounded-xl bg-blue-50 md:flex-row md:justify-between">
                 <span>
                   Income Wallet:{" "}
                   <span className="font-semibold text-blue-800">
@@ -278,7 +278,7 @@ const handleSubmit = async (e) => {
               name="wallet"
               value={form.wallet}
               onChange={handleChange}
-              className="w-full px-4 py-3 text-base bg-gray-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-3 text-base border bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
               disabled={!walletData?.walletDetails?.urid}
             >
               <option value="">-Select Wallet-</option>
@@ -301,7 +301,7 @@ const handleSubmit = async (e) => {
               name="type"
               value={form.type}
               onChange={handleChange}
-              className="w-full px-4 py-3 text-base bg-gray-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-3 text-base border bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
               disabled={!form.wallet}
             >
               <option value="">-Select Type-</option>
@@ -316,7 +316,7 @@ const handleSubmit = async (e) => {
 
           {/* Amount */}
           <div className='md:col-span-2'>
-            <label className="block mb-1 text-sm font-semibold text-gray-700  w-100" htmlFor="amount">
+            <label className="block mb-1 text-sm font-semibold text-gray-700 w-100" htmlFor="amount">
               Enter Amount
             </label>
             <input
@@ -326,7 +326,7 @@ const handleSubmit = async (e) => {
               value={form.amount}
               onChange={handleChange}
               min="1"
-              className="w-full px-4 py-3 text-base bg-gray-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-3 text-base border bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Enter Amount"
             />
             {errors.amount && <div className="mt-1 text-sm text-red-500">{errors.amount}</div>}
@@ -343,7 +343,7 @@ const handleSubmit = async (e) => {
               value={form.remark}
               onChange={handleChange}
               rows={3}
-              className="w-full px-4 py-3 text-base bg-gray-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="w-full px-4 py-3 text-base border bg-gray-50 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
               placeholder="Enter Remark"
             />
             {errors.remark && <div className="mt-1 text-sm text-red-500">{errors.remark}</div>}
@@ -360,7 +360,7 @@ const handleSubmit = async (e) => {
     <button
       type="submit"
       disabled={!!errors.authLogin}
-      className="w-full mt-6 py-3 text-lg font-bold text-white rounded-xl shadow bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      className="w-full py-3 mt-6 text-lg font-bold text-white shadow rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
     >
       Submit
     </button>
