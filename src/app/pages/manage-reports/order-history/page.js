@@ -127,16 +127,24 @@ const OrderHistory = () => {
     <div className="p-8 mx-auto mt-2 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <h6 className="heading">Order History</h6>
+        <div className="flex items-center justify-between gap-4">
+        <h6 className="heading" style={{paddingBottom:"0px"}}>Order History</h6>
         <div className="flex items-center justify-between gap-4">
           <p className="font-semibold text-green-600">
             Total Price : ${Number(totalPrice).toFixed(2)}
           </p>
         </div>
       </div>
-
+          <button
+          onClick={handleExport}
+          className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700"
+        >
+          <FileSpreadsheet className="w-5 h-5" />
+          Export Excel
+        </button>
+ </div>
       {/* Filters */}
-      <div className="grid grid-cols-1 gap-6 mt-2 md:grid-cols-2 lg:grid-cols-3">
+       <div className="grid grid-cols-1 gap-6 mt-4 md:grid-cols-2 lg:grid-cols-4">
         {/* From Date */}
         <div className="relative">
           <label className="block mb-1 text-sm font-semibold text-blue-700">
@@ -226,10 +234,7 @@ const OrderHistory = () => {
             />
           </div>
         </div>
-      </div>
-
-      {/* Action Buttons */}
-      <div className="flex items-center justify-start mt-3 space-x-4 col-span-full">
+         <div className="flex items-end gap-4 justify-space-between">
         <button
           onClick={handleSearch}
           className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
@@ -237,24 +242,18 @@ const OrderHistory = () => {
           <Search className="w-5 h-5" />
           Search
         </button>
-
-        <button
-          onClick={handleExport}
-          className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700"
-        >
-          <FileSpreadsheet className="w-5 h-5" />
-          Export Excel
-        </button>
-
-        <button
+         <button
           onClick={handleRefresh}
-          className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+          className=" flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
         >
           <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
           Refresh
         </button>
+      </div> 
       </div>
 
+      {/* Action Buttons */}
+   
       {/* Transactions Table */}
       {hasSearched && LeaseStatementData?.length > 0 && (
            <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
