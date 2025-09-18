@@ -61,7 +61,7 @@ const ManageAdmin = () => {
   )
 
   return (
-    <div className="max-w-6xl p-5 mx-auto mt-0mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
+    <div className="max-w-6xl p-5 mx-auto bg-white border border-blue-100 shadow-2xl mt-0mb-10 rounded-2xl">
       <h6 class="heading">Manage Admins</h6>
 
       {loading ? (
@@ -71,37 +71,37 @@ const ManageAdmin = () => {
       ) : error ? (
         <div className="py-10 text-center text-red-500">{error}</div>
       ) : (
-        <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
+        <div className="overflow-hidden bg-white border border-gray-200 shadow-2xl  rounded-2xl">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-center text-gray-700 border-collapse">
               {/* Table Header */}
               <thead className="text-white bg-gradient-to-r from-blue-700 to-blue-500">
                 <tr>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Sr.No.
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Username
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Password
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     First Name
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Last Name
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Email
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Phone
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Created Date
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Status
                   </th>
                 </tr>
@@ -128,13 +128,13 @@ const ManageAdmin = () => {
                             : 'bg-white hover:bg-blue-50 transition'
                         }
                       >
-                        <td className="px-2 py-2 td-wrap-text border">
+                        <td className="px-2 py-2 border td-wrap-text">
                           {startItem + idx}
                         </td>
-                        <td className="px-2 py-2 td-wrap-text border">
+                        <td className="px-2 py-2 border td-wrap-text">
                           {row.username || '-'}
                         </td>
-                        <td className="px-2 py-2 td-wrap-text border relative group">
+                        <td className="relative px-2 py-2 border td-wrap-text group">
                           <span className="password-mask group-hover:hidden">
                             {row.password
                               ? '*'.repeat(row.password.length)
@@ -144,24 +144,24 @@ const ManageAdmin = () => {
                             {row.password}
                           </span>
                         </td>
-                        <td className="px-2 py-2 td-wrap-text border">
+                        <td className="px-2 py-2 border td-wrap-text">
                           {row.firstName || '-'}
                         </td>
-                        <td className="px-2 py-2 td-wrap-text border">
+                        <td className="px-2 py-2 border td-wrap-text">
                           {row.lastName || '-'}
                         </td>
-                        <td className="px-2 py-2 td-wrap-text border">
+                        <td className="px-2 py-2 border td-wrap-text">
                           {row.email || '-'}
                         </td>
-                        <td className="px-2 py-2 td-wrap-text border">
+                        <td className="px-2 py-2 border td-wrap-text">
                           {row.phoneNumber || '-'}
                         </td>
-                        <td className="px-2 py-2 td-wrap-text border">
+                        <td className="px-2 py-2 border td-wrap-text">
                           {row.createdDate
                             ? row.createdDate.split('T')[0]
                             : '-'}
                         </td>
-                        <td className="px-2 py-2 td-wrap-text border">
+                        <td className="px-2 py-2 border td-wrap-text">
                           {isActive ? (
                             <span className="px-3 py-1 font-medium text-green-500 ">
                               Activated
