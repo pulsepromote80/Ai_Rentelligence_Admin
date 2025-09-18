@@ -14,7 +14,7 @@ export default function DashboardLayout({ children }) {
                 <div className="fixed left-0 h-screen top-[56px] md:top-[72px] z-[999]">
                     <Sidebar />
                 </div>
-                <div className="flex-1 p-4 md:p-6 lg:ml-64 md:ml-30 overflow-auto h-[calc(100vh-60px)] bg-white">
+                <div className=" flex-1 p-4 md:p-6 lg:ml-64 md:ml-30 overflow-auto h-[calc(100vh-60px)] bg-white">
                     {children}
                 </div>
             </div>

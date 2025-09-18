@@ -6,7 +6,19 @@ import { addAdminManageUser } from '@/app/redux/adminMangeUserSlice';
 import { toast } from 'react-toastify';
 import { Search, FileSpreadsheet } from "lucide-react";
 import { Calendar, User, UserCircle2 } from "lucide-react";
-import { FaSyncAlt } from "react-icons/fa";
+import * as XLSX from 'xlsx'
+import { saveAs } from 'file-saver';
+import { FaCopy } from 'react-icons/fa'
+import {
+  FaCalendarAlt,
+  FaUser,
+  FaIdBadge,
+  FaEnvelope,
+  FaPhoneAlt,
+  FaWallet,
+  FaFileExcel,
+  FaSyncAlt,
+} from "react-icons/fa";
 
 const AllUsers = () => {
   const dispatch = useDispatch();
@@ -14,57 +26,146 @@ const AllUsers = () => {
   const [form, setForm] = useState({
     authLogin: '',
     fname: '',
+    active: '',
     mobile: '',
     email: '',
     walletid: '',
-    status: ''
+    kid: '',
+    fromDate: '',
+    toDate: ''
   });
   const [hasSearched, setHasSearched] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(500);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-const handleSearch = async (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
     setHasSearched(true);
+
+    // format dates
+    const formatInputDate = (dateStr) => {
+      if (!dateStr) return "";
+      const [year, month, day] = dateStr.split("-");
+      return `${day}-${month}-${year}`;
+    };
+
+    const formattedForm = {
+      ...form,
+      fromDate: formatInputDate(form.fromDate),
+      toDate: formatInputDate(form.toDate),
+    };
+
     try {
-      await dispatch(addAdminManageUser(form));
+      await dispatch(addAdminManageUser(formattedForm));
     } catch (err) {
-      
+      console.error("Search error:", err);
     }
   };
+
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
     try {
       const date = new Date(dateString);
       if (isNaN(date.getTime())) return dateString;
-      
+
       const day = date.getDate().toString().padStart(2, '0');
       const month = (date.getMonth() + 1).toString().padStart(2, '0');
       const year = date.getFullYear();
       const hours = date.getHours().toString().padStart(2, '0');
       const minutes = date.getMinutes().toString().padStart(2, '0');
       const seconds = date.getSeconds().toString().padStart(2, '0');
-      
+
       return `${day}-${month}-${year} ${hours}:${minutes}:${seconds}`;
     } catch (error) {
       return dateString;
     }
   };
 
-  
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text)
+    toast.success('Copied to Clipboard!', {
+      position: 'top-right',
+      autoClose: 2000,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    })
+  }
+
+
   const filteredData = Array.isArray(searchData?.data)
     ? searchData.data.filter(item => {
-        if (form.status === '') return true; 
-        if (form.status === '1') return item.Active === true; 
-        if (form.status === '0') return item.Active === false; 
-        return true;
-      })
+      if (form.active === '') return true;
+
+      // normalize status value
+      const status =
+        typeof item.Active === 'boolean'
+          ? (item.Active ? 'Active' : 'InActive')
+          : (item.Status || '');
+
+      if (form.active === '1') return status === 'Active';
+      if (form.active === '0') return status === 'InActive';
+
+      return true;
+    })
     : [];
+
+  const handleRefresh = () => {
+    setForm({
+      authLogin: "",
+      fname: "",
+      active: "",
+      mobile: "",
+      email: "",
+      walletid: "",
+      kid: "",
+      fromDate: "",
+      toDate: "",
+    });
+    setHasSearched(false);
+    setCurrentPage(1);
+  };
+
+  const handleExport = () => {
+    if (!searchData?.data || searchData?.data?.length === 0) {
+      alert("No data available to export");
+      return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(
+      searchData.data.map((item, index) => ({
+        "Sr.No.": index + 1,
+        "User ID": item.AuthLogin || "-",
+        Name: item.Name || "-",
+        Email: item.Email || "-",
+        Mobile: item.Mobile || "-",
+        "Wallet Address": item.WalletAddress || "-",
+        Package: item.Package || "-",
+        PacakgateStatus:item.PacakgateStatus || "-",
+        "Reg Date": item.RegDate || "-",
+        Status:
+          item.Status || (item.Active ? "Active" : "InActive") || "-",
+      }))
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Users");
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, "AllUsers.xlsx");
+  };
+
+
+
 
   const tableData = filteredData.map((item, idx) => ({
     srNo: idx + 1,
@@ -73,10 +174,10 @@ const handleSearch = async (e) => {
     Mobile: item.Mobile || '',
     Email: item.Email || '',
     WalletAddress: item.WalletAddress || '',
-    WalletBep20: item.WalletBep20 || '',
     Package: item.Package || '',
     RegDate: formatDate(item.RegDate),
-    status: item.Status || (item.Active ? 'Active' : 'Inactive'),
+    PacakgateStatus: item.PacakgateStatus,
+    active: item.Status || (item.Active ? 'Active' : 'InActive'),
   }));
 
   const paginatedData = tableData.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
@@ -85,138 +186,236 @@ const handleSearch = async (e) => {
   const endItem = Math.min(currentPage * rowsPerPage, tableData.length);
 
   return (
-    <div className="p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl max-w-7xl rounded-2xl">
-      <h2 className="mb-8 text-2xl font-bold tracking-wide text-center text-black drop-shadow">Search Users</h2>
-      <form className="grid grid-cols-1 gap-6 p-6 border border-blue-100 shadow-md md:grid-cols-4 bg-white/80 rounded-xl" onSubmit={handleSearch}>
-        <div>
-          <label className="block mb-2 font-semibold text-blue-800">User Name</label>
-          <input 
-            name="authLogin" 
-            value={form.authLogin} 
-            onChange={handleChange} 
-            className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" 
-            placeholder="Enter UserName" 
-          />
-        </div>
-        <div>
-          <label className="block mb-2 font-semibold text-blue-800">Name</label>
-          <input 
-            name="fname" 
-            value={form.fname} 
-            onChange={handleChange} 
-            className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" 
-            placeholder="Enter Name" 
-          />
-        </div>
-        <div>
-          <label className="block mb-2 font-semibold text-blue-800">Email Address</label>
-          <input 
-            name="email" 
-            value={form.email} 
-            onChange={handleChange} 
-            className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" 
-            placeholder="Enter EmailId" 
-          />
-        </div>
-        <div>
-          <label className="block mb-2 font-semibold text-blue-800">Contact Number</label>
-          <input 
-            name="mobile" 
-            value={form.mobile} 
-            onChange={handleChange} 
-            className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" 
-            placeholder="Enter Mobile Number" 
-          />
-        </div>
-        <div>
-          <label className="block mb-2 font-semibold text-blue-800">Status</label>
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-            className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
-          >
-            <option value="">Select Type</option>
-            <option value="1">Active</option>
-            <option value="0">Inactive</option>
-          </select>
-        </div>
-        <div>
-          <label className="block mb-2 font-semibold text-blue-800">Wallet Address</label>
-          <input 
-            name="walletid" 
-            value={form.walletid} 
-            onChange={handleChange} 
-            className="w-full p-2 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" 
-            placeholder="Enter Wallet Address" 
-          />
-        </div>
-        <div className="flex items-end justify-center mt-2 md:col-span-4">
-          <button 
-            type="submit" 
-            className="px-8 py-2 font-semibold text-white transition-all duration-200 rounded-lg shadow bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
-          >
-            Search
-          </button>
-        </div>
-      </form>
-      
+    <div className="p-8 mx-auto mt-0 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
+      <h6 className="heading">Search Users</h6>
+    
+<form className="grid grid-cols-1 gap-6" onSubmit={handleSearch}>
+  {/* User Name */}
+  <div>
+    <label className="block mb-1 text-sm font-semibold text-blue-700">User Name</label>
+    <div className="relative">
+      <FaUser className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+      <input
+        name="authLogin"
+        value={form.authLogin}
+        onChange={handleChange}
+        className="w-full py-2 pl-10 pr-3 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        placeholder="Enter UserName"
+      />
+    </div>
+  </div>
+
+  {/* Name */}
+  <div>
+    <label className="block mb-1 text-sm font-semibold text-blue-700">Name</label>
+    <div className="relative">
+      <FaIdBadge className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+      <input
+        name="fname"
+        value={form.fname}
+        onChange={handleChange}
+        className="w-full py-2 pl-10 pr-3 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        placeholder="Enter Name"
+      />
+    </div>
+  </div>
+
+  {/* Email */}
+  <div>
+    <label className="block mb-1 text-sm font-semibold text-blue-700">Email Address</label>
+    <div className="relative">
+      <FaEnvelope className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+      <input
+        name="email"
+        value={form.email}
+        onChange={handleChange}
+        className="w-full py-2 pl-10 pr-3 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        placeholder="Enter EmailId"
+      />
+    </div>
+  </div>
+
+  {/* Contact Number */}
+  <div>
+    <label className="block mb-1 text-sm font-semibold text-blue-700">Contact Number</label>
+    <div className="relative">
+      <FaPhoneAlt className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+      <input
+        name="mobile"
+        value={form.mobile}
+        onChange={handleChange}
+        className="w-full py-2 pl-10 pr-3 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        placeholder="Enter Mobile Number"
+      />
+    </div>
+  </div>
+
+  {/* Status */}
+  <div>
+    <label className="block mb-1 text-sm font-semibold text-blue-700">Status</label>
+    <div className="relative">
+      <FaIdBadge className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+      <select
+        name="active"
+        value={form.active}
+        onChange={handleChange}
+        className="w-full py-2 pl-10 pr-3 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+      >
+        <option value="">Select Type</option>
+        <option value="1">Active</option>
+        <option value="0">InActive</option>
+      </select>
+    </div>
+  </div>
+
+  {/* Wallet Address */}
+  <div>
+    <label className="block mb-1 text-sm font-semibold text-blue-700">Wallet Address</label>
+    <div className="relative">
+      <FaWallet className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+      <input
+        name="walletid"
+        value={form.walletid}
+        onChange={handleChange}
+        className="w-full py-2 pl-10 pr-3 transition border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none"
+        placeholder="Enter Wallet Address"
+      />
+    </div>
+  </div>
+
+  {/* From Date */}
+  <div>
+    <label className="block mb-1 text-sm font-semibold text-blue-700">From Date</label>
+    <div className="relative">
+      <FaCalendarAlt className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+      <input
+        type="date"
+        name="fromDate"
+        value={form.fromDate}
+        onChange={handleChange}
+        className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+      />
+    </div>
+  </div>
+
+  {/* To Date */}
+  <div>
+    <label className="block mb-1 text-sm font-semibold text-blue-700">To Date</label>
+    <div className="relative">
+      <FaCalendarAlt className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+      <input
+        type="date"
+        name="toDate"
+        value={form.toDate}
+        onChange={handleChange}
+        className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+      />
+    </div>
+  </div>
+
+  {/* Buttons */}
+  <div className="flex items-end justify-left gap-2 mt-2 md:col-span-4">
+    <button
+      type="submit"
+      className="px-8 py-2 font-semibold text-white transition-all duration-200 rounded-lg shadow bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
+    >
+      Search
+    </button>
+    <button
+      onClick={handleExport}
+      className="flex items-center gap-2 px-5 py-2 text-white transition bg-green-600 shadow rounded-xl hover:bg-green-700"
+    >
+      <FaFileExcel className="w-4 h-4" /> Export
+    </button>
+    <button
+      onClick={handleRefresh}
+      className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+    >
+      <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" /> Refresh
+    </button>
+  </div>
+</form>
+
       <div className="mt-10">
         {hasSearched && (
           loading ? (
-            <div className="py-8 font-semibold text-center text-blue-700 animate-pulse">Loading...</div>
+             <div className="py-10 mt-10 font-semibold text-center text-blue-600 bg-white border border-gray-200 shadow-xl rounded-2xl">Loading...</div>
           ) : (
-            <div className="mt-2 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
-              <table className="min-w-full border border-gray-200 rounded-xl">
-                <thead className="sticky top-0 z-10 text-blue-900 bg-gradient-to-r from-blue-200 to-blue-400">
+                  <div className="overflow-hidden bg-white border border-gray-200 shadow-xl rounded-2xl"> 
+           <div className="overflow-x-auto">
+          <table className="min-w-full text-sm text-center border-collapse">
+            {/* Table Header */}
+            <thead className="text-white bg-blue-600">
                   <tr>
-                    <th className="px-4 py-3 text-center border">Sr.No.</th>
-                    <th className="px-4 py-3 text-center border">User Login</th>
-                    <th className="px-4 py-3 text-center border">Name</th>
-                    <th className="px-4 py-3 text-center border">Mobile</th>
-                    <th className="px-4 py-3 text-center border">Email</th>
-                    <th className="px-4 py-3 text-center border">Wallet Address</th>
-                    <th className="px-4 py-3 text-center border">Wallet BEP</th>
-                    <th className="px-4 py-3 text-center border">Package</th>
-                    <th className="px-4 py-3 text-center border">RegDate</th>
-                    <th className="px-4 py-3 text-center border">Status</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Sr.No.</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">User Login</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Name</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Mobile</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Email</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Wallet Address</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Package ($)</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Package Status</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">RegDate</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedData.length === 0 ? (
                     <tr>
-                      <td colSpan={10} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
+                      <td colSpan={10} className="px-4 py-3 td-wrap-text border">No Data Found</td>
                     </tr>
                   ) : (
                     paginatedData.map((row, idx) => (
-                      <tr 
-                        key={idx} 
+                      <tr
+                        key={idx}
                         className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}
                       >
-                        <td className="px-4 py-2 font-medium text-center border">{row.srNo}</td>
-                        <td className="px-4 py-2 text-center border">{row.AuthLogin}</td>
-                        <td className="px-4 py-2 text-center border">{row.Name}</td>
-                        <td className="px-4 py-2 text-center border">{row.Mobile}</td>
-                        <td className="px-4 py-2 text-center border">{row.Email}</td>
-                        <td className="px-4 py-2 text-center border">{row.WalletAddress}</td>
-                        <td className="px-4 py-2 text-center border">{row.WalletBep20}</td>
-                        <td className="px-4 py-2 text-center border">{row.Package}</td>
-                        <td className="px-4 py-2 text-center border">{row.RegDate}</td>
-                        <td className="px-4 py-2 text-center border">
-                          <span className={`px-2 py-1 text-md font-semibold  ${
-                            row.status === 'Active' 
-                              ? 'text-green-800' 
+                        <td className="px-4 py-3 td-wrap-text border">{row.srNo}</td>
+                        <td className="px-4 py-3 td-wrap-text border">{row.AuthLogin}</td>
+                        <td className="px-4 py-3 td-wrap-text border">{row.Name}</td>
+                        <td className="px-4 py-3 td-wrap-text border">{row.Mobile}</td>
+                        <td className="px-4 py-3 td-wrap-text border">{row.Email}</td>
+                        <td className="px-4 py-3 td-wrap-text border">
+
+                          <span
+                            className="cursor-pointer"
+                            title={row.WalletAddress || '-'}
+                          >
+                            {row.WalletAddress
+                              ? `${row.WalletAddress.substring(0, 15)}...`
+                              : '-'}
+                          </span>
+                          {row.WalletAddress && (
+                            <button
+                              onClick={() => copyToClipboard(row.Wallet)}
+                              className="p-1 text-blue-500 hover:text-blue-700"
+                              title="Copy to Clipboard"
+                            >
+                              <FaCopy className="w-3 h-3" />
+                            </button>
+                          )}
+
+                        </td>
+                        <td className="px-4 py-3 td-wrap-text border">{row.Package}</td>
+                        <td className="px-4 py-3 td-wrap-text border">{row.PacakgateStatus}</td>
+                        <td className="px-4 py-3 td-wrap-text border">{row.RegDate}</td>
+                        <td className="px-4 py-3 td-wrap-text border">
+                          <span
+                            className={`px-2 py-1 text-md font-semibold ${row.active === 'Active'
+                              ? 'text-green-800'
                               : 'text-red-800'
-                          }`}>
-                            {row.status}
+                              }`}
+                          >
+                            {row.active}
                           </span>
                         </td>
+
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
-              
+
               {tableData.length > 0 && (
                 <div className="flex items-center justify-between px-4 py-3">
                   <div className="flex items-center gap-2">
@@ -229,9 +428,9 @@ const handleSearch = async (e) => {
                       }}
                       className="p-1 mr-4 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                     >
-                      <option value="10">10</option>
-                      <option value="25">25</option>
-                      <option value="50">50</option>
+                      <option value="500">500</option>
+                      <option value="1000">1000</option>
+                      <option value="1500">1500</option>
                     </select>
                   </div>
                   <div className="text-sm text-gray-600">
@@ -259,7 +458,7 @@ const handleSearch = async (e) => {
                   </div>
                 </div>
               )}
-            </div>
+            </div></div>
           )
         )}
       </div>

@@ -155,7 +155,7 @@ const DepositHistory = () => {
 
 
 {/* Filters Section */}
-<div className="grid grid-cols-1 gap-6 mt-4 md:grid-cols-2 lg:grid-cols-4">
+<div className="grid grid-cols-1 gap-6 mt-0 md:grid-cols-2 lg:grid-cols-4">
   {/* From Date */}
   <div>
     <label className="block mb-1 text-sm font-semibold text-blue-700">
@@ -285,7 +285,7 @@ const DepositHistory = () => {
                 ].map((heading, i) => (
                   <th
                     key={i}
-                    className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text"
+                    className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border"
                   >
                     {heading}
                   </th>
@@ -311,14 +311,14 @@ const DepositHistory = () => {
                     className="transition-colors border-b hover:bg-blue-50 last:border-none td-wrap-text"
                   >
                     <td className="px-4 py-3 font-medium td-wrap-text">{startItem + idx}</td>
-                    <td className="px-4 py-3 td-wrap-text">{row.AuthLogin || '-'}</td>
-                    <td className="px-4 py-3 td-wrap-text">{row.Name || '-'}</td>
-                    <td className="px-4 py-3 td-wrap-text">{row.Email || '-'}</td>
+                    <td className="px-4 py-3 td-wrap-text border">{row.AuthLogin || '-'}</td>
+                    <td className="px-4 py-3 td-wrap-text border">{row.Name || '-'}</td>
+                    <td className="px-4 py-3 td-wrap-text border">{row.Email || '-'}</td>
                     <td className="px-4 py-3 font-semibold text-blue-700 td-wrap-text">
                       {row.Amount}
                     </td>
-                    <td className="px-4 py-3 td-wrap-text">{row.PaymentMode}</td>
-                    <td className="px-4 py-3 td-wrap-text">
+                    <td className="px-4 py-3 td-wrap-text border">{row.PaymentMode}</td>
+                    <td className="px-4 py-3 td-wrap-text border">
                       <div className="flex items-center justify-center gap-1">
                         <span
                           className="truncate max-w-[100px]"
@@ -336,9 +336,9 @@ const DepositHistory = () => {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 td-wrap-text">{row.PaymentDate}</td>
-                    <td className="px-4 py-3 td-wrap-text">{row.Remark}</td>
-                    <td className="px-4 py-3 td-wrap-text">
+                    <td className="px-4 py-3 td-wrap-text border">{row.PaymentDate}</td>
+                    <td className="px-4 py-3 td-wrap-text border">{row.Remark}</td>
+                    <td className="px-4 py-3 td-wrap-text border">
                       <span
                         className={`px-3 py-1 rounded-full text-xs font-semibold ${
                           row.Rf_Status === 'Approved'

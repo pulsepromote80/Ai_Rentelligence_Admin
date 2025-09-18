@@ -12,19 +12,17 @@ const BlockUser = () => {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    const timeoutId = setTimeout(async() => {
+    const timeoutId = setTimeout(async () => {
       if (authLogin && authLogin.trim()) {
-       const result = await  dispatch(usernameLoginId(authLogin));
-       if (!result.payload) {
+        const result = await dispatch(usernameLoginId(authLogin));
+        if (!result.payload) {
           setErrors({ authLogin: "User not found" });
         } else {
           setErrors({});
         }
-       
         setTouched(true);
       }
-    }, 100); 
-
+    }, 100);
     return () => clearTimeout(timeoutId);
   }, [authLogin, dispatch]);
 
@@ -51,63 +49,111 @@ const BlockUser = () => {
 
     try {
       const result = await dispatch(blockUserByAdmin(authLogin));
-      console.log(result)
-      
       if (result.payload) {
         toast.success(result.payload.message || 'User blocked successfully!');
         setAuthLogin('');
         setTouched(false);
-      } 
+      }
     } catch (error) {
       toast.error('Error blocking user: ' + (error.message || 'Unknown error'));
     }
   };
 
   return (
-    <div className="flex items-center justify-center mt-20">
-      <div className="w-full max-w-4xl p-8 bg-white shadow-2xl rounded-2xl">
-        <h2 className="mb-8 text-2xl font-bold text-center text-black">Block User</h2>
+    <div className="flex items-center justify-center p-0 mx-auto mt-0">
+      <div className="w-full max-w-lg p-8 bg-white shadow-2xl rounded-3xl border">
+        {/* Header */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="w-20 h-20 mb-4 rounded-full border-4 border-blue-200 flex items-center justify-center bg-gray-100">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-10 h-10 text-blue-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 15c-3.866 0-7 1.79-7 4v1h14v-1c0-2.21-3.134-4-7-4z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 12a5 5 0 100-10 5 5 0 000 10z"
+              />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-gray-800">Block User</h2>
+          <p className="text-sm text-gray-500">Enter User ID to block access</p>
+        </div>
+
+        {/* Form */}
         <form className="space-y-6" onSubmit={handleSubmit}>
-          <div className="flex flex-col gap-4 md:flex-row">
-            <div className="flex-1">
-              <label className="block mb-1 text-sm font-semibold text-gray-700">Enter User ID :</label>
+          {/* User ID + User Name */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-600">
+                User ID
+              </label>
               <input
                 type="text"
-                className="w-full px-4 py-3 text-base bg-gray-100 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-300"
+                className={`w-full px-4 py-3 text-sm border rounded-xl bg-gray-50 focus:outline-none focus:ring-2 ${
+                  errors.authLogin || errors.title
+                    ? 'border-red-400 focus:ring-red-300'
+                    : 'border-gray-200 focus:ring-blue-300'
+                }`}
                 value={authLogin}
                 onChange={handleUserIdChange}
                 onBlur={handleBlurOrFetch}
-                placeholder="Enter User Id"
-                
+                placeholder="Enter User ID"
               />
               {errors.authLogin && (
-                <div className="mt-1 text-sm text-red-500">
+                <div className="mt-1 text-xs text-red-500">
                   {errors.authLogin}
                 </div>
               )}
-              {errors.title && <div className="mt-1 text-sm text-red-500">{errors.title}</div>}
+              {errors.title && (
+                <div className="mt-1 text-xs text-red-500">
+                  {errors.title}
+                </div>
+              )}
             </div>
-            <div className="flex-1">
-              <label className="block mb-1 text-sm font-semibold text-gray-700">User Name :</label>
+
+            <div>
+              <label className="block mb-1 text-sm font-medium text-gray-600">
+                User Name
+              </label>
               <input
                 type="text"
-                className="w-full px-4 py-3 text-base bg-gray-100 border border-gray-200 rounded-lg"
-                value={touched && usernameData ? usernameData.name || usernameData.userName || '' : ''}
+                className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl bg-gray-100"
+                value={
+                  touched && usernameData
+                    ? usernameData.name || usernameData.userName || ''
+                    : ''
+                }
                 readOnly
                 placeholder="User Name"
               />
             </div>
           </div>
+
+          {/* Submit */}
           <button
             type="submit"
-            className="w-full py-3 mt-2 text-lg font-semibold text-white transition-colors rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="w-full py-3 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all"
             disabled={loading || !!errors.authLogin}
           >
-            {loading ? 'Blocking...' : 'Submit'}
+            {loading ? 'Blocking...' : 'Block User'}
           </button>
         </form>
-        {loading && <div className="mt-2 text-blue-500">Loading...</div>}
-        {error && <div className="mt-2 text-red-500">{error}</div>}
+
+        {/* Messages */}
+        {loading && (
+          <div className="mt-3 text-sm text-blue-500">Processing...</div>
+        )}
+        {error && <div className="mt-3 text-sm text-red-500">{error}</div>}
       </div>
     </div>
   );

@@ -249,7 +249,7 @@ const SellerPage = () => {
   return (
     <div className="max-w-full mx-auto bg-white rounded-lg">
     
-        <div className="flex justify-center w-full sm:justify-start p-4 pb-0">
+        <div className="flex justify-center w-full sm:justify-start">
           {!showForm && (
             <button
               onClick={() => {

@@ -165,7 +165,7 @@ const SubCategory = () => {
     <div className="max-w-full mx-auto bg-white rounded-lg">
       {/*  Add Subcategory Button */}
       <div className='flex'>
-        <div className="flex justify-center w-full p-4 pb-0 sm:justify-start">
+        <div className="flex justify-center w-full sm:justify-start">
           {!showForm && (
             <button
               onClick={() => {

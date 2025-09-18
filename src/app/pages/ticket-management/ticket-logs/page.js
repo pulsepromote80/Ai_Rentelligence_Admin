@@ -39,7 +39,7 @@ const TicketLogs = () => {
   const replies = ticketDetails?.ticketReplies || [];
 
   return (
-    <div className="p-4">
+ <div className="p-5 mx-auto mt-0 border border-gray-200 shadow-2xl max-w-7xl bg-gradient-to-br from-blue-50 to-white rounded-3xl">
       <Table
         columns={tableColumns}
         data={tickets?.filter(ticket => ticket.active === false)}

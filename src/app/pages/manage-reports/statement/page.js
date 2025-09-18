@@ -331,20 +331,21 @@ const Statement = () => {
 
       {/* Transactions Table */}
       {hasSearched && accStatementData?.length > 0 && (
-        <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
+             <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-center text-gray-700 border-collapse">
+              {/* Table Header */}
               <thead className="text-white bg-gradient-to-r from-blue-700 to-blue-500">
                 <tr>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Sr.No.</th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Username</th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Name</th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Credit</th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Debit</th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Requested Date</th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Approval Date</th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">TransType</th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase">Remark</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Sr.No.</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Username</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Name</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Credit</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Debit</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Requested Date</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Approval Date</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">TransType</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Remark</th>
                 </tr>
               </thead>
               <tbody>
@@ -353,15 +354,15 @@ const Statement = () => {
                     key={index}
                     className={`transition-colors duration-200 ${index % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100' : 'bg-white hover:bg-blue-50'}`}
                   >
-                    <td className="px-4 py-3 font-semibold">{indexOfFirstItem + index + 1}</td>
-                    <td className="px-2 py-2">{transaction.AuthLogin}</td>
-                    <td className="px-2 py-2">{transaction.FullName}</td>
-                    <td className="px-2 py-2 font-semibold text-green-600">${transaction.Credit}</td>
-                    <td className="px-2 py-2 font-semibold text-red-600">${transaction.Debit}</td>
-                    <td className="px-2 py-2">{transaction.CreatedDate ? transaction.CreatedDate.split("T")[0] : "-"}</td>
-                    <td className="px-2 py-2">{transaction.ApprovalDate ? transaction.ApprovalDate.split("T")[0] : "-"}</td>
-                    <td className="px-2 py-2">{transaction.TransType}</td>
-                    <td className="px-2 py-2">{transaction.Remark}</td>
+                    <td className="px-2 py-2 td-wrap-text border">{indexOfFirstItem + index + 1}</td>
+                    <td className="px-2 py-2 td-wrap-text border">{transaction.AuthLogin}</td>
+                    <td className="px-2 py-2 td-wrap-text border">{transaction.FullName}</td>
+                    <td className="px-2 py-2 td-wrap-text border">${transaction.Credit}</td>
+                    <td className="px-2 py-2 td-wrap-text border">${transaction.Debit}</td>
+                    <td className="px-2 py-2 td-wrap-text border">{transaction.CreatedDate ? transaction.CreatedDate.split("T")[0] : "-"}</td>
+                    <td className="px-2 py-2 td-wrap-text border">{transaction.ApprovalDate ? transaction.ApprovalDate.split("T")[0] : "-"}</td>
+                    <td className="px-2 py-2 td-wrap-text border">{transaction.TransType}</td>
+                    <td className="px-2 py-2 td-wrap-text border">{transaction.Remark}</td>
                   </tr>
                 ))}
               </tbody>

@@ -2,68 +2,307 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getdirectMember } from "@/app/redux/communitySlice";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+import { FaSearch, FaFileExcel, FaSyncAlt } from "react-icons/fa";
 
 export default function Affiliate() {
   const dispatch = useDispatch();
-  const { directMemberData, loading, error } = useSelector((state) => state.community);
-  const [loginId, setLoginId] = useState("");
+  const { directMemberData, loading, error } = useSelector(
+    (state) => state.community
+  );
 
-  // Auto-fetch on input
-  useEffect(() => {
-    if (loginId) {
-      dispatch(getdirectMember({ loginid: loginId }));
+  const [loginId, setLoginId] = useState("");
+  const [searched, setSearched] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(500);
+
+  // Fetch direct members when search button clicked
+  const handleSearch = () => {
+    const newErrors = {};
+    if (!loginId.trim()) {
+      newErrors.title = "UserID is required";
+      setErrors(newErrors);
+      return;
     }
-  }, [loginId, dispatch]);
+    dispatch(getdirectMember({ loginid: loginId }));
+    setSearched(true);
+    setCurrentPage(1); // reset page
+  };
+
+  // Export Excel
+  const handleExport = () => {
+    if (!directMemberData || directMemberData.length === 0) {
+      alert("No data available to export");
+      return;
+    }
+
+    const worksheet = XLSX.utils.json_to_sheet(
+      directMemberData.map((member, idx) => ({
+        "Sr.No.": idx + 1,
+        "Login ID": member.loginid,
+        Name: member.name,
+        Email: member.email,
+        Mobile: member.mobile,
+        "Team Business": `$${member.teamBusiness}`,
+        "Lease Amount": `$${member.leaseAmount}`,
+        Rank: member.urank,
+        "Register Date": member.regDate,
+        "Self Topup": `$${member.selfTopup}`,
+        "DRY Percentage": member.dyrPercentage,
+        "Topup Status": member.topupDate,
+      }))
+    );
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Direct Members");
+
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const data = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+    saveAs(data, "DirectMembers.xlsx");
+  };
+
+  // Refresh
+  const handleRefresh = () => {
+    setLoginId("");
+    setSearched(false);
+    setCurrentPage(1);
+  };
+
+  // Pagination calculation
+  const totalPages = Math.ceil(directMemberData?.length / rowsPerPage);
+  const startIndex = (currentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const paginatedData = directMemberData?.slice(startIndex, endIndex);
 
   return (
-    <div className="flex items-center justify-center mt-20">
-      <div className="w-full max-w-6xl p-12 bg-white shadow-2xl rounded-3xl">
-        <h2 className="mb-10 text-3xl font-bold text-center">Direct Affiliates</h2>
-        <div className="mb-10">
-          <label className="block mb-3 text-lg font-medium text-gray-700" htmlFor="loginId">
-            Enter User ID :
+    <div className="p-8 mx-auto mt-0 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
+      <h6 className="heading"> Direct Affiliates</h6>
+
+      {/* Input */}
+      <div className="grid items-end grid-cols-1 gap-4 mb-6 md:grid-cols-4">
+        {/* User ID Input */}
+        <div>
+          <label className="block mb-1 text-sm font-semibold text-blue-700">
+            User ID
           </label>
           <input
-            id="loginId"
             type="text"
-            placeholder="Enter User Id"
             value={loginId}
             onChange={(e) => setLoginId(e.target.value)}
-            className="w-full px-6 py-4 text-lg placeholder-gray-400 border-2 border-blue-300 rounded-lg focus:outline-none focus:border-blue-500 bg-gray-50"
-            autoComplete="off"
+            className="w-full px-4 py-2 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+            placeholder="Enter User ID"
           />
+           {errors.title && (
+            <div className="mt-1 text-sm text-red-500">{errors.title}</div>
+          )}
         </div>
 
-        {loading && <div className="text-center">Loading...</div>}
-        
-        {error && (
-          <div className="p-4 mb-6 text-center text-red-600 bg-red-100 rounded-lg">
-            {error.message || "Data Not Found"}
-          </div>
-        )}
+        {/* Search Button */}
+        <div className="flex">
+          <button
+            onClick={handleSearch}
+            className="flex items-center justify-center w-full gap-2 px-5 py-2 text-white bg-blue-600 shadow rounded-xl hover:bg-blue-700"
+          >
+            <FaSearch className="w-4 h-4" /> Search
+          </button>
+        </div>
 
-        {loginId && directMemberData && directMemberData.length > 0 && (
-          <section className="w-full mt-8">
-            <h3 className="mb-6 text-2xl font-semibold text-center text-blue-600">Direct Members</h3>
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              {directMemberData.map((member, idx) => (
-                <div key={idx} className="flex flex-col gap-2 p-6 transition-shadow bg-white border border-gray-100 shadow-lg rounded-xl hover:shadow-2xl">
-                  <div className="text-lg font-semibold text-gray-800">{member.name}</div>
-                  <div className="text-sm text-gray-500">{member.email}</div>
-                  <div className="text-xs text-gray-400">Joined: {member.regDate}</div>
-                  <span className={`inline-block mt-2 px-3 py-1 rounded-full text-xs font-medium ${member.status === 'Active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>{member.topupDate}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+        {/* Export Button */}
+        <div className="flex">
+          <button
+            onClick={handleExport}
+            className="flex items-center justify-center w-full gap-2 px-5 py-2 text-white bg-green-600 shadow rounded-xl hover:bg-green-700"
+          >
+            <FaFileExcel className="w-4 h-4" /> Export Excel
+          </button>
+        </div>
 
-        {loginId && directMemberData && directMemberData.length === 0 && !error && !loading && (
-          <div className="p-4 text-center text-gray-600 bg-gray-100 rounded-lg">
-            No members found for this User ID
-          </div>
-        )}
+        {/* Refresh Button */}
+        <div className="flex">
+          <button
+            onClick={handleRefresh}
+            className="flex items-center justify-center w-full gap-2 px-5 py-2 text-white bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+          >
+            <FaSyncAlt className="w-4 h-4" /> Refresh
+          </button>
+        </div>
       </div>
+
+      {/* Table Section */}
+      {searched && (
+        <>
+          {loading ? (
+            <div className="py-10 mt-10 font-semibold text-center text-blue-600 bg-white border border-gray-200 shadow-xl rounded-2xl">
+              Loading...
+            </div>
+          ) : error ? (
+            <div className="py-10 font-semibold text-center text-red-500">
+              {error.message || "Something went wrong"}
+            </div>
+          ) : (
+                  <div className="overflow-hidden bg-white border border-gray-200 shadow-xl rounded-2xl">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm text-center border-collapse">
+            {/* Table Header */}
+            <thead className="text-white bg-blue-600">
+                    <tr>
+                      {[
+                        "Sr.No.",
+                        "Username",
+                        "Name",
+                        "Email",
+                        "Mobile",
+                        "Team Business ($)",
+                        "Lease Amount ($)",
+                        "Rank",
+                        "Register Date",
+                        "Self Topup ($)",
+                        "DYR Percentage",
+                        "Status",
+                      ].map((heading, i) => (
+                        <th
+                          key={i}
+                          className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border"
+                        >
+                          {heading}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+
+                  {/* Table Body */}
+                  <tbody>
+                    {paginatedData?.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={12}
+                          className="py-10 text-lg text-center text-gray-400"
+                        >
+                          No Data Found
+                        </td>
+                      </tr>
+                    ) : (
+                      paginatedData?.map((member, idx) => (
+                        <tr
+                          key={idx}
+                          className="transition-colors border-b hover:bg-blue-50 last:border-none"
+                        >
+                          <td className="px-4 py-3 td-wrap-text border">
+                            {startIndex + idx + 1}
+                          </td>
+                          <td className="px-4 py-3 td-wrap-text border">
+                            {member.loginid}
+                          </td>
+                          <td className="px-4 py-3 td-wrap-text border">
+                            {member.name}
+                          </td>
+                          <td className="px-4 py-3 td-wrap-text border">
+                            {member.email}
+                          </td>
+                          <td className="px-4 py-3 td-wrap-text border">
+                            {member.mobile}
+                          </td>
+                          <td className="px-4 py-3 td-wrap-text border">
+                            ${member.teamBusiness}
+                          </td>
+                          <td className="px-4 py-3 td-wrap-text border">
+                            ${member.leaseAmount}
+                          </td>
+                          <td className="px-4 py-3 td-wrap-text border">
+                            {member.urank}
+                          </td>
+                          <td className="px-4 py-3 td-wrap-text border">
+                            {member.regDate}
+                          </td>
+                          <td className="px-4 py-3 td-wrap-text border">
+                            ${member.selfTopup}
+                          </td>
+                          <td className="px-4 py-3 td-wrap-text border">
+                            {member.dyrPercentage}
+                          </td>
+                          <td className="px-4 py-3 td-wrap-text border">
+                            <span
+                              className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                member.topupDate === "Activated"
+                                  ? "bg-green-100 text-green-700"
+                                  : "bg-red-100 text-red-600"
+                              }`}
+                            >
+                              {member.topupDate}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination Controls */}
+              {directMemberData?.length > 0 && (
+                <div className="flex items-center justify-between px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Rows per page:</span>
+                    <select
+                      value={rowsPerPage}
+                      onChange={(e) => {
+                        setRowsPerPage(Number(e.target.value));
+                        setCurrentPage(1);
+                      }}
+                      className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                    >
+                      <option value="500">500</option>
+                      <option value="1000">1000</option>
+                      <option value="1500">1500</option>
+                    </select>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {startIndex + 1}-{Math.min(endIndex, directMemberData?.length)}{" "}
+                    of {directMemberData?.length}
+                  </div>
+                  <div className="flex items-center gap-2 ml-2">
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className={`p-1 rounded ${
+                        currentPage === 1
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "text-blue-600 hover:text-blue-800"
+                      }`}
+                    >
+                      ◀
+                    </button>
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prev) =>
+                          Math.min(prev + 1, totalPages)
+                        )
+                      }
+                      disabled={currentPage === totalPages}
+                      className={`p-1 rounded ${
+                        currentPage === totalPages
+                          ? "text-gray-400 cursor-not-allowed"
+                          : "text-blue-600 hover:text-blue-800"
+                      }`}
+                    >
+                      ▶
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

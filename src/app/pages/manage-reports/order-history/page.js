@@ -257,24 +257,25 @@ const OrderHistory = () => {
 
       {/* Transactions Table */}
       {hasSearched && LeaseStatementData?.length > 0 && (
-        <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
+           <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-center text-gray-700 border-collapse">
+              {/* Table Header */}
               <thead className="text-white bg-gradient-to-r from-blue-700 to-blue-500">
                 <tr>
-                  <th className="px-4 py-3">Sr.No.</th>
-                  <th className="px-4 py-3">Username</th>
-                  <th className="px-4 py-3">Name</th>
-                  <th className="px-4 py-3">Product</th>
-                  <th className="px-4 py-3">Price ($)</th>
-                  <th className="px-4 py-3">Lease Hour</th>
-                  <th className="px-4 py-3">Duration (Months)</th>
-                  <th className="px-4 py-3">Weekly ROI ($)</th>
-                  <th className="px-4 py-3">Total Return </th>
-                  <th className="px-4 py-3">Credit ($)</th>
-                  <th className="px-4 py-3">Max Limit ($)</th>
-                  <th className="px-4 py-3">Order Date</th>
-                  <th className="px-4 py-3">Last Pay Date</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Sr.No.</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Username</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Name</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Product</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Price ($)</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Lease Hour</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Duration (Months)</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Weekly ROI ($)</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Total Return </th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Credit ($)</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Max Limit ($)</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Order Date</th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Last Pay Date</th>
                 </tr>
               </thead>
               <tbody>
@@ -286,27 +287,27 @@ const OrderHistory = () => {
                         : "bg-white hover:bg-blue-50"
                       }`}
                   >
-                    <td className="px-4 py-3 font-semibold">
+                    <td className="px-2 py-2 td-wrap-text border">
                       {indexOfFirstItem + index + 1}
                     </td>
-                    <td className="px-2 py-2">{txn.AuthLogin}</td>
-                    <td className="px-2 py-2">{txn.FullName}</td>
-                    <td className="px-2 py-2">{txn.name}</td>
-                    <td className="px-2 py-2 font-semibold text-green-600">
+                    <td className="px-2 py-2 td-wrap-text border">{txn.AuthLogin}</td>
+                    <td className="px-2 py-2 td-wrap-text border">{txn.FullName}</td>
+                    <td className="px-2 py-2 td-wrap-text border">{txn.name}</td>
+                    <td className="px-2 py-2 td-wrap-text border">
                       {txn.Rkprice}
                     </td>
-                    <td className="px-2 py-2">{txn.LeaseHour}</td>
-                    <td className="px-2 py-2">{txn.DurationOnMonth}</td>
-                    <td className="px-2 py-2">{txn.WeeklyReturn}</td>
-                    <td className="px-2 py-2">{txn.TotalReturn}</td>
-                    <td className="px-2 py-2 font-semibold text-blue-600">
+                    <td className="px-2 py-2 td-wrap-text border">{txn.LeaseHour}</td>
+                    <td className="px-2 py-2 td-wrap-text border">{txn.DurationOnMonth}</td>
+                    <td className="px-2 py-2 td-wrap-text border">{txn.WeeklyReturn}</td>
+                    <td className="px-2 py-2 td-wrap-text border">{txn.TotalReturn}</td>
+                    <td className="px-2 py-2 td-wrap-text border">
                       {txn.CreditAmt}
                     </td>
-                    <td className="px-2 py-2">{txn.MaxLimit}</td>
-                    <td className="px-2 py-2">
+                    <td className="px-2 py-2 td-wrap-text border">{txn.MaxLimit}</td>
+                    <td className="px-2 py-2 td-wrap-text border">
                       {txn.RDate ? txn.RDate.split("T")[0] : "-"}
                     </td>
-                    <td className="px-2 py-2">
+                    <td className="px-2 py-2 td-wrap-text border">
                       {txn.LastDatePay ? txn.LastDatePay.split("T")[0] : "-"}
                     </td>
                   </tr>
