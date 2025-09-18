@@ -152,10 +152,10 @@ const RentWallet = () => {
   }
 
   return (
-    <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
+    <div className="max-w-6xl p-5 mx-auto mt-0mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
       <h6 className="heading">Yield Wallet History</h6>
 
-      <div className="grid grid-cols-1 gap-6 mt-6 mb-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 mt-0 mb-6 md:grid-cols-2 lg:grid-cols-4">
         {/* From Date */}
         <div>
           <label className="block mb-1 text-sm font-medium text-blue-800">

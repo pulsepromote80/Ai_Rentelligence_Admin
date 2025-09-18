@@ -620,7 +620,7 @@ const RentRequest = () => {
   }
 
   return (
-    <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
+    <div className="max-w-6xl p-5 mx-auto mt-0mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
       <div className="flex flex-col gap-4 p-4 mb-6 border border-orange-200 shadow-sm md:flex-row md:items-center md:justify-between rounded-2xl bg-gradient-to-r from-orange-50 via-orange-100 to-orange-50">
         <div className="flex flex-col text-sm md:flex-row md:items-center md:gap-4">
           {!isMetamaskInstalled ? (
@@ -718,7 +718,7 @@ const RentRequest = () => {
         </h6>
          
 
-        <div className="grid grid-cols-1 gap-6 mt-6 mb-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 mt-0 mb-6 md:grid-cols-2 lg:grid-cols-4">
           {/* From Date */}
           <div className="relative">
             <label className="block mb-1 text-sm font-medium text-blue-800">
@@ -832,40 +832,40 @@ const RentRequest = () => {
                   {/* Table Header */}
                   <thead className="text-white bg-blue-600">
                     <tr>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                       Sr.No.
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                       Action
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                       Action
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                       UserId
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                       Username
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                       Email
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                       Wallet Address
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                       Request ($)
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                       Charges ($)
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                       Release ($)
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                       Date
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                       Remark
                     </th>
                     <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 rounded-tr-lg th-wrap-text">

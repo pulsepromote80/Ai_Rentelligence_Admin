@@ -171,136 +171,202 @@ const handleSubmit = async (e) => {
   }
 };
   return (
-    <div className="flex items-center justify-center min-h-[80vh] ">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-2xl p-8 bg-white border border-gray-100 shadow-2xl rounded-2xl"
-      >
-        <h2 className="mb-8 text-xl font-bold tracking-tight text-center text-black-600 drop-shadow-sm">Credit/Debit Fund</h2>
-        <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
-          <div>
-            <label className="block mb-2 font-semibold text-gray-700" htmlFor="userId">Enter User ID :</label>
-            <input
-              type="text"
-              id="loginId"
-              name="loginId"
-              value={form.loginId}
-              onChange={handleChange}
-              className="w-full px-4 py-3 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
-              placeholder="Enter User Id"
-              autoComplete="off"
-            />
-            {errors.authLogin && (
-                <div className="mt-1 text-sm text-red-500">
-                  {errors.authLogin}
-                </div>
-              )}
-            {errors.loginId && <div className="mt-1 text-sm text-red-500">{errors.loginId}</div>}
-          </div>
-          <div>
-            <label className="block mb-2 font-semibold text-gray-700" htmlFor="user">User Name :</label>
-            <input
-              type="text"
-              id="user"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              readOnly
-              className="w-full px-4 py-3 text-lg bg-gray-100 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="User Name"
-            />
-          </div>
-          {form.name && (
-            <>
-              <div>
-                <label className="block mb-2 font-semibold text-gray-700" htmlFor="wallet">Wallet Balances:</label>
-                {walletData?.walletDetails && (
-                  <div className="flex flex-col w-full gap-1 px-4 py-2 mb-2 text-sm text-blue-800 border border-blue-200 rounded-lg shadow-sm bg-blue-50 md:flex-row md:items-center md:gap-8">
-                    <span>Income Wallet: <span className="font-semibold">₹{walletData.walletDetails.incomeWallet}</span></span>
-                    <span>Deposit Wallet: <span className="font-semibold">₹{walletData.walletDetails.depositWallet}</span></span>
-                    <span>Rent Wallet: <span className="font-semibold">₹{walletData.walletDetails.rentWallet}</span></span>
-                    {/* <div>
-                      <span>Rent Wallet: <span className="font-semibold">₹{walletData.walletDetails.rentWallet}</span></span>
-                      </div> */}
-                  </div>
-                )}
-              </div>
-              <div>
-                <label className="block mb-2 font-semibold text-gray-700" htmlFor="wallet">Select Wallet:</label>
-                <select
-                  id="wallet"
-                  name="wallet"
-                  value={form.wallet}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 text-lg rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
-                  disabled={!walletData?.walletDetails?.urid}
-                >
-                  <option value="">-Select Wallet-</option>
-                  {walletData?.fundTypes?.map((w) => (
-                    <option key={w.id} value={w.id}>{w.type}</option>
-                  ))}
-                </select>
-                {errors.wallet && <div className="mt-1 text-sm text-red-500">{errors.wallet}</div>}
-              </div>
-              <div>
-                <label className="block mb-2 font-semibold text-gray-700" htmlFor="type">Select Type :</label>
-                <select
-                  id="type"
-                  name="type"
-                  value={form.type}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
-                  disabled={!form.wallet}
-                >
-                  <option value="">-Select Type-</option>
-                  {filteredTypes.map((t) => (
-                    <option key={t.id} value={t.id}>{t.type}</option>
-                  ))}
-                </select>
-                {errors.type && <div className="mt-1 text-sm text-red-500">{errors.type}</div>}
-              </div>
-              
-              <div>
-                <label className="block mb-2 font-semibold text-gray-700" htmlFor="amount">Enter Amount :</label>
-                <input
-                  type="number"
-                  id="amount"
-                  name="amount"
-                  value={form.amount}
-                  onChange={handleChange}
-                  min="1"
-                  className="w-full px-4 py-3 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
-                  placeholder="Enter Amount"
-                />
-                {errors.amount && <div className="mt-1 text-sm text-red-500">{errors.amount}</div>}
-              </div>
-              <div className="col-span-1 md:col-span-2">
-                <label className="block mb-2 font-semibold text-gray-700" htmlFor="remark">Enter Description</label>
-                <textarea
-                  id="remark"
-                  name="remark"
-                  value={form.remark}
-                  onChange={handleChange}
-                  rows={3}
-                  className="w-full h-24 px-4 py-5 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-50"
-                  placeholder="Enter Remark"
-                />
-                {errors.remark && <div className="mt-1 text-sm text-red-500">{errors.remark}</div>}
-              </div>
-            </>
-          )}
-        </div>
-        {loading && <div className="mb-4 text-center text-blue-600 animate-pulse">Loading wallet details...</div>}
-        {error && <div className="mb-4 text-center text-red-600">{typeof error === 'string' ? error : 'Failed to fetch wallet details.'}</div>}
-        <button
-          type="submit"
-           disabled={!!errors.authLogin}
-          className="w-full py-3 text-lg font-bold text-white transition rounded-lg shadow bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+    <div className="flex items-center justify-center min-h-[80vh]">
+  <form
+    onSubmit={handleSubmit}
+    className="w-full max-w-xl p-8 bg-white shadow-2xl border border-gray-100 rounded-2xl"
+  >
+    {/* Icon and Title */}
+    <div className="flex flex-col items-center mb-8">
+      <div className="flex items-center justify-center w-20 h-20 mb-4 rounded-full bg-blue-50 border border-blue-200">
+        <svg
+          className="w-10 h-10 text-blue-500"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          viewBox="0 0 24 24"
         >
-          Submit
-        </button>
-      </form>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 
+            1.79-4 4 1.79 4 4 4zm0 0c-4.418 0-8 2.239-8 
+            5v1a1 1 0 001 1h14a1 1 0 001-1v-1c0-2.761-3.582-5-8-5z"
+          />
+        </svg>
+      </div>
+      <h2 className="text-2xl font-bold text-gray-800">Credit / Debit Fund</h2>
+      <p className="text-sm text-gray-500">Fill details to credit or debit funds</p>
     </div>
+
+    {/* Form Grid */}
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      {/* User ID */}
+      <div>
+        <label className="block mb-1 text-sm font-semibold text-gray-700" htmlFor="userId">
+          Enter User ID
+        </label>
+        <input
+          type="text"
+          id="loginId"
+          name="loginId"
+          value={form.loginId}
+          onChange={handleChange}
+          className="w-full px-4 py-3 text-base border rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Enter User Id"
+          autoComplete="off"
+        />
+        {errors.authLogin && <div className="mt-1 text-sm text-red-500">{errors.authLogin}</div>}
+        {errors.loginId && <div className="mt-1 text-sm text-red-500">{errors.loginId}</div>}
+      </div>
+
+      {/* User Name */}
+      <div>
+        <label className="block mb-1 text-sm font-semibold text-gray-700" htmlFor="user">
+          User Name
+        </label>
+        <input
+          type="text"
+          id="user"
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          readOnly
+          className="w-full px-4 py-3 text-base bg-gray-100 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="User Name"
+        />
+      </div>
+
+      {/* Wallet Data (only if user exists) */}
+      {form.name && (
+        <>
+          <div className="md:col-span-2">
+            <label className="block mb-1 text-sm font-semibold text-gray-700">
+              Wallet Balances
+            </label>
+            {walletData?.walletDetails && (
+              <div className="flex flex-col gap-2 px-4 py-3 text-sm border rounded-xl bg-blue-50 border-blue-200 shadow-sm md:flex-row md:justify-between">
+                <span>
+                  Income Wallet:{" "}
+                  <span className="font-semibold text-blue-800">
+                    ₹{walletData.walletDetails.incomeWallet}
+                  </span>
+                </span>
+                <span>
+                  Deposit Wallet:{" "}
+                  <span className="font-semibold text-blue-800">
+                    ₹{walletData.walletDetails.depositWallet}
+                  </span>
+                </span>
+                <span>
+                  Rent Wallet:{" "}
+                  <span className="font-semibold text-blue-800">
+                    ₹{walletData.walletDetails.rentWallet}
+                  </span>
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Wallet Select */}
+          <div>
+            <label className="block mb-1 text-sm font-semibold text-gray-700" htmlFor="wallet">
+              Select Wallet 
+            </label>
+            <select
+              id="wallet"
+              name="wallet"
+              value={form.wallet}
+              onChange={handleChange}
+              className="w-full px-4 py-3 text-base bg-gray-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              disabled={!walletData?.walletDetails?.urid}
+            >
+              <option value="">-Select Wallet-</option>
+              {walletData?.fundTypes?.map((w) => (
+                <option key={w.id} value={w.id}>
+                  {w.type}
+                </option>
+              ))}
+            </select>
+            {errors.wallet && <div className="mt-1 text-sm text-red-500">{errors.wallet}</div>}
+          </div>
+
+          {/* Type Select */}
+          <div>
+            <label className="block mb-1 text-sm font-semibold text-gray-700" htmlFor="type">
+              Select Type
+            </label>
+            <select
+              id="type"
+              name="type"
+              value={form.type}
+              onChange={handleChange}
+              className="w-full px-4 py-3 text-base bg-gray-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              disabled={!form.wallet}
+            >
+              <option value="">-Select Type-</option>
+              {filteredTypes.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.type}
+                </option>
+              ))}
+            </select>
+            {errors.type && <div className="mt-1 text-sm text-red-500">{errors.type}</div>}
+          </div>
+
+          {/* Amount */}
+          <div className='md:col-span-2'>
+            <label className="block mb-1 text-sm font-semibold text-gray-700  w-100" htmlFor="amount">
+              Enter Amount
+            </label>
+            <input
+              type="number"
+              id="amount"
+              name="amount"
+              value={form.amount}
+              onChange={handleChange}
+              min="1"
+              className="w-full px-4 py-3 text-base bg-gray-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter Amount"
+            />
+            {errors.amount && <div className="mt-1 text-sm text-red-500">{errors.amount}</div>}
+          </div>
+
+          {/* Remark */}
+          <div className="md:col-span-2">
+            <label className="block mb-1 text-sm font-semibold text-gray-700" htmlFor="remark">
+              Enter Description
+            </label>
+            <textarea
+              id="remark"
+              name="remark"
+              value={form.remark}
+              onChange={handleChange}
+              rows={3}
+              className="w-full px-4 py-3 text-base bg-gray-50 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              placeholder="Enter Remark"
+            />
+            {errors.remark && <div className="mt-1 text-sm text-red-500">{errors.remark}</div>}
+          </div>
+        </>
+      )}
+    </div>
+
+    {/* Status Messages */}
+    {loading && <div className="mt-4 text-center text-blue-600 animate-pulse">Loading wallet details...</div>}
+    {error && <div className="mt-4 text-center text-red-600">{typeof error === 'string' ? error : 'Failed to fetch wallet details.'}</div>}
+
+    {/* Submit Button */}
+    <button
+      type="submit"
+      disabled={!!errors.authLogin}
+      className="w-full mt-6 py-3 text-lg font-bold text-white rounded-xl shadow bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+    >
+      Submit
+    </button>
+  </form>
+</div>
+
   );
 };
 

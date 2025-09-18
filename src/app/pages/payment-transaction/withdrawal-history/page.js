@@ -148,12 +148,12 @@ const WithdrawalHistory = () => {
   };
 
   return (
-     <div className="p-8 mx-auto mt-10 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
+     <div className="p-8 mx-auto mt-0 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
       <h6 className="heading">
         Withdrawal History
       </h6> 
        
-        <div className="grid grid-cols-1 gap-6 mt-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid grid-cols-1 gap-6 mt-0 md:grid-cols-2 lg:grid-cols-4">
             <div>
               <label className="block mb-1 text-sm font-medium text-blue-800">
                 From Date
@@ -245,19 +245,19 @@ const WithdrawalHistory = () => {
                 {/* Table Header */}
                 <thead className="text-white bg-gradient-to-r from-blue-700 to-blue-500">
                   <tr>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Sr.No.</th>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">User ID</th>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Name</th>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Email</th>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Amount ($)</th>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Charges ($)</th>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Release ($)</th>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Wallet Address</th>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Transaction Hash</th>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Created Date</th>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Approval Date</th>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Remark</th>
-                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text">Status</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Sr.No.</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">User ID</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Name</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Email</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Amount ($)</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Charges ($)</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Release ($)</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Wallet Address</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Transaction Hash</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Created Date</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Approval Date</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Remark</th>
+                    <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -271,15 +271,15 @@ const WithdrawalHistory = () => {
                         key={idx}
                         className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}
                       >
-                        <td className="px-2 py-2 td-wrap-text">{startItem + idx}</td>
-                        <td className="px-2 py-2 td-wrap-text">{row.AuthLogin || '-'}</td>
-                        <td className="px-2 py-2 td-wrap-text">{row.FullName || '-'}</td>
-                        <td className="px-2 py-2 td-wrap-text">{row.Email}</td>
-                        <td className="px-2 py-2 td-wrap-text">{row.TotWithdl}</td>
+                        <td className="px-2 py-2 td-wrap-text border">{startItem + idx}</td>
+                        <td className="px-2 py-2 td-wrap-text border">{row.AuthLogin || '-'}</td>
+                        <td className="px-2 py-2 td-wrap-text border">{row.FullName || '-'}</td>
+                        <td className="px-2 py-2 td-wrap-text border">{row.Email}</td>
+                        <td className="px-2 py-2 td-wrap-text border">{row.TotWithdl}</td>
 
-                        <td className="px-2 py-2 td-wrap-text">{row.AdminCharges}</td>
-                        <td className="px-2 py-2 td-wrap-text">{row.Release}</td>
-                        <td className="px-2 py-2 td-wrap-text">
+                        <td className="px-2 py-2 td-wrap-text border">{row.AdminCharges}</td>
+                        <td className="px-2 py-2 td-wrap-text border">{row.Release}</td>
+                        <td className="px-2 py-2 td-wrap-text border">
                           <div className="flex items-center justify-center gap-1">
                             <div className="relative group">
                               <span className="cursor-default">
@@ -302,7 +302,7 @@ const WithdrawalHistory = () => {
                             )}
                           </div>
                         </td>
-                        <td className="px-2 py-2 td-wrap-text">
+                        <td className="px-2 py-2 td-wrap-text border">
                           <div className="flex items-center justify-center gap-1">
                             <div className="relative group">
                               <span className="cursor-default">
@@ -325,15 +325,15 @@ const WithdrawalHistory = () => {
                             )}
                           </div>
                         </td>
-                        <td className="px-2 py-2 td-wrap-text">
+                        <td className="px-2 py-2 td-wrap-text border">
                           {row.CreatedDate ? row.CreatedDate.split("T")[0] : "-"}
                         </td>
-                        <td className="px-2 py-2 td-wrap-text">
+                        <td className="px-2 py-2 td-wrap-text border">
                           {row.ApprovalDate ? row.ApprovalDate.split("T")[0] : "-"}
                         </td>
 
 
-                        <td className="px-2 py-2 td-wrap-text">{row.Remark}</td>
+                        <td className="px-2 py-2 td-wrap-text border">{row.Remark}</td>
 
                         <td className="px-4 py-2 text-sm text-center">
                           <span className={`${row.status === 'Approved' ? 'text-green-600' : 'text-red-600'}`}>

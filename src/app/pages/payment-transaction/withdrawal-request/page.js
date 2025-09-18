@@ -592,7 +592,7 @@ const WithdrawalRequest = () => {
   }
 
   return (
-    <div className="max-w-6xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
+    <div className="max-w-6xl p-5 mx-auto mt-0mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
       {/* MetaMask Wallet Connection Section */}
     <div className="flex flex-col gap-4 p-4 mb-6 border border-orange-200 shadow-lg md:flex-row md:items-center md:justify-between rounded-2xl bg-gradient-to-br from-orange-50 to-white">
   {/* Left Section */}
@@ -689,7 +689,7 @@ const WithdrawalRequest = () => {
           </span>
         </h6>
       </div>
-      <div className="grid grid-cols-1 gap-6 mt-6 mb-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 mt-0 mb-6 md:grid-cols-2 lg:grid-cols-4">
         {/* From Date */}
         <div>
           <label className="flex items-center block gap-2 mb-1 text-sm font-medium text-blue-800">
@@ -799,48 +799,48 @@ const WithdrawalRequest = () => {
                   {/* Table Header */}
                   <thead className="text-white bg-blue-600">
                     <tr>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         Sr.No.
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         Action
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         Action
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         User ID
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         Name
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         Date
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         Request ($)
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         Charges ($)
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         Release ($)
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         Email
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         {' '}
                         Wallet Address
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         {' '}
                         Status
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         Remark
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
                         Action
                       </th>
                     </tr>
@@ -957,7 +957,7 @@ const WithdrawalRequest = () => {
                           <td className="px-4 py-3 font-medium td-wrap-text">
                             {row.Remark || '-'}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text">
+                          <td className="px-4 py-3 td-wrap-text border">
                             <button
                               className="px-3 py-1 text-xs font-semibold bg-red-100 rounded-full"
                               onClick={() => handleRejectClick(row.AuthLogin)}

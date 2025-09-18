@@ -63,16 +63,15 @@ const DownloadExcel = () => {
   const startItem = (currentPage - 1) * rowsPerPage + 1;
   const endItem = Math.min(currentPage * rowsPerPage, tableData.length);
 
-  return (
-    <div className="flex items-center justify-center mt-5">
-      <div className="w-full max-w-6xl p-8 bg-white border border-gray-100 shadow-2xl rounded-2xl item-center">
-        <h1 className="mb-8 text-2xl font-bold tracking-tight text-center text-black-600 drop-shadow-sm">Download Excel Reports</h1>
-        
-        <div className='flex items-center justify-center'>
+  return ( 
+     
+  <div className="max-w-6xl p-5 mx-auto mt-0mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
+      <h6 class="heading">Download Excel Reports</h6>
+
           <form onSubmit={handleSubmit} className="w-full max-w-md space-y-4">
             <div className="flex flex-col space-y-2">
-              <label htmlFor="reportType" className="text-xl font-medium text-center text-gray-700">
-                Select Report Type
+              <label htmlFor="reportType" className="block mb-1 text-sm font-semibold text-blue-700">
+                Select Report Type 
               </label>
               <select
                 id="reportType"
@@ -105,18 +104,18 @@ const DownloadExcel = () => {
             {error && (
               <p className="mt-2 text-sm text-red-500">{error}</p>
             )}
-          </form>
-        </div>
+          </form> 
      
         {showTable && excelData && Array.isArray(excelData.data) && (
-          <div className="w-full max-w-6xl mt-8 border border-blue-100 shadow-lg rounded-xl bg-white/90">
-            <div className="overflow-x-auto">
-              <table className="w-full mr-20 border border-gray-200 table-fixed min-w-max rounded-xl">
-                <thead className="sticky top-0 z-10 text-blue-900 bg-gradient-to-r from-blue-200 to-blue-400">
+          <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-center text-gray-700 border-collapse">
+              {/* Table Header */}
+              <thead className="text-white bg-gradient-to-r from-blue-700 to-blue-500">
                   <tr>
                     <th className="px-4 py-3 text-center break-words whitespace-normal border">Sr.No.</th>
                     {tableData[0] && Object.keys(tableData[0]).filter(key => key !== 'srNo' && key !== 'WalletAddress').map((key) => (
-                      <th key={key} className="px-4 py-3 text-center break-words whitespace-normal border">{key}</th>
+                      <th key={key} className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">{key}</th>
                     ))}
                   </tr>
                 </thead>
@@ -128,7 +127,7 @@ const DownloadExcel = () => {
                   ) : (
                     paginatedData.map((row, idx) => (
                       <tr key={idx} className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}>
-                        <td className="px-4 py-2 font-medium text-center break-words whitespace-normal border">{startItem + idx}</td>
+                        <td className="px-2 py-2 td-wrap-text border">{startItem + idx}</td>
                         {Object.keys(row).filter(key => key !== 'srNo' && key !== 'WalletAddress').map((key, i) => (
                           <td key={i} className="px-4 py-2 text-center break-words whitespace-normal border">{row[key]}</td>
                         ))}
@@ -182,8 +181,7 @@ const DownloadExcel = () => {
             )}
           </div>
         )}
-      </div>
-    </div>
+      </div> 
   );
 };
 

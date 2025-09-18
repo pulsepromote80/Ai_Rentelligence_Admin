@@ -53,9 +53,9 @@ const ManageNew = () => {
 
   return (
     <>
-      <div className="max-w-5xl mx-auto mt-5 overflow-x-auto shadow-lg rounded-xl bg-white/90">
-        <h1 className="mb-8 text-2xl font-bold tracking-wide text-center text-black drop-shadow">Manage News</h1>
-
+  <div className="max-w-6xl p-5 mx-auto mt-0mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
+            <h6 class="heading">Manage News</h6> 
+ 
         {loading && (
           <div className="py-8 font-semibold text-center text-blue-700 animate-pulse">Loading...</div>
         )}
@@ -64,8 +64,10 @@ const ManageNew = () => {
           <div className="mb-4 text-center text-red-500">{error.message || error}</div>
         )}
 
-        <table className="min-w-full border border-gray-200 rounded-xl">
-          <thead className="sticky top-0 z-10 text-blue-900 bg-gradient-to-r from-blue-200 to-blue-400">
+       <div className="overflow-hidden bg-white border border-gray-200 shadow-xl rounded-2xl">
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm text-center border-collapse"> 
+                  <thead className="text-white bg-blue-600">
             <tr>
               <th className="px-4 py-3 text-center border">Action</th>
               <th className="px-4 py-3 text-center border">Sr. No.</th>
@@ -99,7 +101,8 @@ const ManageNew = () => {
             )}
           </tbody>
         </table>
-
+      </div>  
+         </div> 
         {(newsData?.data?.length || 0) > 0 && (
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-2">
@@ -145,7 +148,7 @@ const ManageNew = () => {
       </div>
 
       {editingNews && (
-        <div className="relative max-w-3xl p-6 mx-auto mt-8 mb-10 bg-white border border-blue-200 shadow-lg rounded-xl">
+        <div className="relative max-w-3xl p-0 mx-auto mt-0mb-10 bg-white border border-blue-200 shadow-lg rounded-xl">
           {/* Close button */}
           <button
             type="button"

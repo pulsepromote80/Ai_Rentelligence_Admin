@@ -45,97 +45,153 @@ const LeaseAgentPage = () => {
   const endItem = Math.min(currentPage * rowsPerPage, tableData.length);
 
   return (
-    <div className="p-6 mx-auto mt-8 mb-10 bg-white border border-blue-100 shadow-2xl max-w-7xl rounded-2xl">
-      <h2 className="mb-8 text-2xl font-bold tracking-wide text-center text-black drop-shadow">Lease Agent Management</h2>
-      <div className="mt-2 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
-        <table className="min-w-full border border-gray-200 rounded-xl">
-          <thead className="sticky top-0 z-10 text-blue-900 bg-gradient-to-r from-blue-200 to-blue-400">
-            <tr>
-              <th className="px-4 py-3 text-center border">Sr.No.</th>
-              <th className="px-4 py-3 text-center border">Image</th>
-              <th className="px-4 py-3 text-center border">Login</th>
-              <th className="px-4 py-3 text-center border">Name</th>
-              <th className="px-4 py-3 text-center border">Product</th>
-              <th className="px-4 py-3 text-center border">Price</th>
-              <th className="px-4 py-3 text-center border">Total Return</th>
-              <th className="px-4 py-3 text-center border">Weekly Return</th>
-              <th className="px-4 py-3 text-center border">Date</th>
-              <th className="px-4 py-3 text-center border">Duration (Months)</th>
+   <div className="p-8 mx-auto mt-0 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
+ 
+<h6
+  className="heading"
+  style={{
+    borderBottom: "1px solid #daebed",
+    marginBottom: "15px",
+  }}
+>
+  Your Heading Text
+</h6>
+
+ 
+  <div className="mt-2 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
+    <table className="min-w-full border border-gray-200 rounded-xl">
+      {/* Table Head */}
+      <thead className="sticky top-0 z-10 text-white bg-gradient-to-r from-blue-600 to-blue-800">
+        <tr>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">#</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Image</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Login</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Name</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Product</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Price</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Total Return</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Weekly Return</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Date</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Duration (Months)</th>
+        </tr>
+      </thead>
+
+      {/* Table Body */}
+      <tbody>
+        {paginatedData.length === 0 ? (
+          <tr className='transition-colors duration-200 bg-blue-50 hover:bg-blue-100'>
+            <td colSpan={10} className="px-2 py-2 td-wrap-text border">
+              No Data Found
+            </td>
+          </tr>
+        ) : (
+          paginatedData.map((row, idx) => (
+            <tr
+              key={idx}
+              className={`${
+                idx % 2 === 0 ? "transition-colors duration-200 bg-white hover:bg-blue-50" : "bg-white"
+              } hover:bg-blue-100 transition`}
+            >
+              <td className="px-2 py-2 td-wrap-text border text-center border">{row.srNo}</td>
+              <td className="px-2 py-2 td-wrap-text border text-center border">
+                {row.imageUrl ? (
+                  <ImagePopup src={row.imageUrl} alt="Agent" />
+                ) : (
+                  <span className="text-gray-400">No Image</span>
+                )}
+              </td>
+              <td className="px-2 py-2 td-wrap-text border text-center border">{row.AuthLogin}</td>
+              <td className="px-2 py-2 td-wrap-text border text-center border">{row.Name}</td>
+              <td className="px-2 py-2 td-wrap-text border text-center border">{row.productName}</td>
+              <td className="px-2 py-2 td-wrap-text border text-center border">${row.price}</td>
+              <td className="px-2 py-2 td-wrap-text border text-center border">{row.totalReturn}</td>
+              <td className="px-2 py-2 td-wrap-text border text-center border">{row.weeklyReturn}</td>
+              <td className="px-2 py-2 td-wrap-text border text-center border">{formatDate(row.RDate)}</td>
+              <td className="px-2 py-2 td-wrap-text border text-center border">{row.DurationOnMonth}</td>
             </tr>
-          </thead>
-          <tbody>
-            {paginatedData.length === 0 ? (
-              <tr>
-                <td colSpan={10} className="py-10 text-lg text-center text-gray-400">No Data Found</td>
-              </tr>
-            ) : (
-              paginatedData.map((row, idx) => (
-                <tr key={idx} className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}>
-                  <td className="px-4 py-2 font-medium text-center border">{row.srNo}</td>
-                  <td className="px-4 py-2 text-center border">
-                    {row.imageUrl ? (
-                      <ImagePopup src={row.imageUrl} alt="Agent" />
-                    ) : (
-                      <span className="text-gray-400">No Image</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-2 text-center border">{row.AuthLogin}</td>
-                  <td className="px-4 py-2 text-center border">{row.Name}</td>
-                  <td className="px-4 py-2 text-center border">{row.productName}</td>
-                  <td className="px-4 py-2 text-center border">{row.price}</td>
-                  <td className="px-4 py-2 text-center border">{row.totalReturn}</td>
-                  <td className="px-4 py-2 text-center border">{row.weeklyReturn}</td>
-                  <td className="px-4 py-2 text-center border">{formatDate(row.RDate)}</td>
-                  <td className="px-4 py-2 text-center border">{row.DurationOnMonth}</td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-        {tableData.length > 0 && (
-          <div className="flex items-center justify-between px-4 py-3">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Rows per page:</span>
-              <select
-                value={rowsPerPage}
-                onChange={(e) => {
-                  setRowsPerPage(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-                className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="10">10</option>
-                <option value="25">25</option>
-                <option value="50">50</option>
-              </select>
-            </div>
-            <div className="text-sm text-gray-600">
-              {startItem}-{endItem} of {tableData.length}
-            </div>
-            <div className="flex items-center gap-2 ml-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className={`p-1 rounded ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              </button>
-              <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className={`p-1 rounded ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          </div>
+          ))
         )}
+      </tbody>
+    </table>
+
+    {/* Pagination */}
+    {tableData.length > 0 && (
+      <div className="flex items-center justify-between px-4 py-3">
+        {/* Rows per page */}
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-gray-600">Rows per page:</span>
+          <select
+            value={rowsPerPage}
+            onChange={(e) => {
+              setRowsPerPage(Number(e.target.value));
+              setCurrentPage(1);
+            }}
+            className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+          >
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </div>
+
+        {/* Showing items */}
+        <div className="text-sm text-gray-600">
+          {startItem}-{endItem} of {tableData.length}
+        </div>
+
+        {/* Pagination buttons */}
+        <div className="flex items-center gap-2 ml-2">
+          <button
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className={`p-1 rounded ${
+              currentPage === 1
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-blue-600 hover:text-blue-800"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+
+          <button
+            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className={`p-1 rounded ${
+              currentPage === totalPages
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-blue-600 hover:text-blue-800"
+            }`}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-5 h-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
-    </div>
+    )}
+  </div>
+</div>
+
   );
 };
 

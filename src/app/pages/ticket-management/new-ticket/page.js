@@ -119,7 +119,7 @@ const NewTicket = () => {
   };
 
   return (
-    <div className="p-4">
+   <div className="p-5 mx-auto mt-0 border border-gray-200 shadow-2xl max-w-7xl bg-gradient-to-br from-blue-50 to-white rounded-3xl">
       {/* <h1 className="mb-4 text-3xl font-semibold text-gray-700">All Tickets</h1> */}
       <Table
         columns={tableColumns}
