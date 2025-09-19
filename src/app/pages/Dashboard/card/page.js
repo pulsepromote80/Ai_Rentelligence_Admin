@@ -59,7 +59,7 @@ const Card = ({ loading, error = null }) => {
               <img
                 src="https://gxon.layoutdrop.com/demo/assets/images/media/svg/media1.svg"
                 alt=""
-                class="position-absolute bottom-0 end-0 z-n1"></img>
+                className="bottom-0 position-absolute end-0 z-n1"></img>
             </div>
 
             <div className="p-6 mb-8 text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl big-card-flexing-div">
@@ -71,7 +71,7 @@ const Card = ({ loading, error = null }) => {
               <img
                 src="https://gxon.layoutdrop.com/demo/assets/images/media/svg/media1.svg"
                 alt=""
-                class="position-absolute bottom-0 end-0 z-n1"
+                className="bottom-0 position-absolute end-0 z-n1"
               ></img>
             </div>
           </div>

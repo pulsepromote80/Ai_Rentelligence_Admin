@@ -291,7 +291,7 @@ const adminMasterSlice = createSlice({
             })
             .addCase(getLeaseAgent.fulfilled, (state, action) => {
                 state.loading = false;
-                state.leaseAgentData = action.payload;
+                state.leaseAgentData = action.payload.data;
             })
             .addCase(getLeaseAgent.rejected, (state, action) => {
                 state.loading = false;
