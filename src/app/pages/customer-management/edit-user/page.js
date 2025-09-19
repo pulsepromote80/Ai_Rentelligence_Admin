@@ -131,6 +131,36 @@ const EditUser = () => {
       return
     }
 
+    if (!fields.fName.trim()) {
+    toast.error('Please enter First Name')
+    return
+  }
+  if (!fields.lName.trim()) {
+    toast.error('Please enter Last Name')
+    return
+  }
+  if (!fields.email.trim()) {
+    toast.error('Please enter Email')
+    return
+  }
+  if (!fields.mobile.trim()) {
+    toast.error('Please enter Mobile Number')
+    return
+  }
+
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(fields.email)) {
+    toast.error('Please enter a valid Email')
+    return
+  }
+
+  const mobileRegex = /^[0-9]{10}$/
+  if (!mobileRegex.test(fields.mobile)) {
+    toast.error('Please enter a valid 10-digit Mobile Number')
+    return
+  }
+
     const payload = {
       loginID: authLogin,
       fName: fields.fName,
@@ -148,11 +178,11 @@ const EditUser = () => {
   return (  
     <div className="p-0 mx-auto mt-0">
     <div className="flex items-center justify-center">
-  <div className="w-full max-w-2xl p-8 bg-white rounded-3xl shadow-xl border">
+  <div className="w-full max-w-2xl p-8 bg-white border shadow-xl rounded-3xl">
     {/* Profile Header */}
     <div className="flex flex-col items-center mb-4"> 
-       <div class="w-20 h-20 mb-4 rounded-full border-4 border-blue-200 flex items-center justify-center bg-gray-100"><svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-       <path stroke-linecap="round" stroke-linejoin="round" d="M12 15c-3.866 0-7 1.79-7 4v1h14v-1c0-2.21-3.134-4-7-4z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M12 12a5 5 0 100-10 5 5 0 000 10z"></path></svg></div>
+       <div className="flex items-center justify-center w-20 h-20 mb-4 bg-gray-100 border-4 border-blue-200 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" className="w-10 h-10 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+       <path strokeLinecap="round" strokeLinejoin="round" d="M12 15c-3.866 0-7 1.79-7 4v1h14v-1c0-2.21-3.134-4-7-4z"></path><path strokeLinecap="round" strokeLinejoin="round" d="M12 12a5 5 0 100-10 5 5 0 000 10z"></path></svg></div>
    
       <h2 className="text-lg font-bold text-gray-800">
         {usernameData?.name || "Edit User"}
@@ -197,7 +227,7 @@ const EditUser = () => {
       </label>
       <input
         type="text"
-        className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl bg-gray-100"
+        className="w-full px-4 py-3 text-sm bg-gray-100 border border-gray-200 rounded-xl"
         name="name"
         value={fields.name}
         readOnly
@@ -304,7 +334,7 @@ const EditUser = () => {
         <div className="pt-2">
           <button
             type="submit"
-            className="w-full py-3 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 transition-all"
+            className="w-full py-3 text-sm font-semibold text-white transition-all rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
             disabled={loading}
           >
             {loading ? "Updating..." : "Update Profile"}

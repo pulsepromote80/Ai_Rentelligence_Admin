@@ -80,7 +80,7 @@ const LeaseAgentPage = () => {
       <tbody>
         {paginatedData.length === 0 ? (
           <tr className='transition-colors duration-200 bg-blue-50 hover:bg-blue-100'>
-            <td colSpan={10} className="px-2 py-2 td-wrap-text border">
+            <td colSpan={10} className="px-2 py-2 border td-wrap-text">
               No Data Found
             </td>
           </tr>
@@ -92,22 +92,22 @@ const LeaseAgentPage = () => {
                 idx % 2 === 0 ? "transition-colors duration-200 bg-white hover:bg-blue-50" : "bg-white"
               } hover:bg-blue-100 transition`}
             >
-              <td className="px-2 py-2 td-wrap-text border text-center border">{row.srNo}</td>
-              <td className="px-2 py-2 td-wrap-text border text-center border">
+              <td className="px-2 py-2 text-center border td-wrap-text">{row.srNo}</td>
+              <td className="px-2 py-2 text-center border td-wrap-text">
                 {row.imageUrl ? (
                   <ImagePopup src={row.imageUrl} alt="Agent" />
                 ) : (
                   <span className="text-gray-400">No Image</span>
                 )}
               </td>
-              <td className="px-2 py-2 td-wrap-text border text-center border">{row.AuthLogin}</td>
-              <td className="px-2 py-2 td-wrap-text border text-center border">{row.Name}</td>
-              <td className="px-2 py-2 td-wrap-text border text-center border">{row.productName}</td>
-              <td className="px-2 py-2 td-wrap-text border text-center border">${row.price}</td>
-              <td className="px-2 py-2 td-wrap-text border text-center border">{row.totalReturn}</td>
-              <td className="px-2 py-2 td-wrap-text border text-center border">{row.weeklyReturn}</td>
-              <td className="px-2 py-2 td-wrap-text border text-center border">{formatDate(row.RDate)}</td>
-              <td className="px-2 py-2 td-wrap-text border text-center border">{row.DurationOnMonth}</td>
+              <td className="px-2 py-2 text-center border td-wrap-text">{row.AuthLogin}</td>
+              <td className="px-2 py-2 text-center border td-wrap-text">{row.Name}</td>
+              <td className="px-2 py-2 text-center border td-wrap-text">{row.productName}</td>
+              <td className="px-2 py-2 text-center border td-wrap-text">${row.price}</td>
+              <td className="px-2 py-2 text-center border td-wrap-text">{row.totalReturn}</td>
+              <td className="px-2 py-2 text-center border td-wrap-text">{row.weeklyReturn}</td>
+              <td className="px-2 py-2 text-center border td-wrap-text">{formatDate(row.RDate)}</td>
+              <td className="px-2 py-2 text-center border td-wrap-text">{row.DurationOnMonth}</td>
             </tr>
           ))
         )}
