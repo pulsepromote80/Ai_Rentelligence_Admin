@@ -41,7 +41,7 @@ const Dashboard = () => {
           <h5 className="flex items-center gap-2 mb-5 text-2xl font-bold">
             Orders Overview
           </h5>
-          <div className="h-[300px]">
+          <div className="h-[170px]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={chartData}>
                 <XAxis dataKey="month" stroke="#6b7280" />
