@@ -592,7 +592,7 @@ const WithdrawalRequest = () => {
   }
 
   return (
-    <div className="max-w-6xl p-5 mx-auto mt-0mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
+    <div className="max-w-6xl p-5 mx-auto bg-white border border-blue-100 shadow-2xl mt-0mb-10 rounded-2xl">
       {/* MetaMask Wallet Connection Section */}
     <div className="flex flex-col gap-4 p-4 mb-6 border border-orange-200 shadow-lg md:flex-row md:items-center md:justify-between rounded-2xl bg-gradient-to-br from-orange-50 to-white">
   {/* Left Section */}
@@ -799,48 +799,48 @@ const WithdrawalRequest = () => {
                   {/* Table Header */}
                   <thead className="text-white bg-blue-600">
                     <tr>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         Sr.No.
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         Action
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         Action
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         User ID
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         Name
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         Date
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         Request ($)
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         Charges ($)
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         Release ($)
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         Email
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         {' '}
                         Wallet Address
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         {' '}
                         Status
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         Remark
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                      <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                         Action
                       </th>
                     </tr>
@@ -866,11 +866,11 @@ const WithdrawalRequest = () => {
                               : 'bg-white hover:bg-blue-50 transition'
                           }
                         >
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             {startItem + idx}
                           </td>
 
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             <button
                               className="px-4 py-3 font-medium bg-green-100 rounded-full td-wrap-text"
                               onClick={() => handleApproveUSDTClick(row)}
@@ -891,7 +891,7 @@ const WithdrawalRequest = () => {
                             </button>
                           </td>
 
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
                               <button
                                 className="px-4 py-3 text-blue-500 bg-green-100 rounded-full hover:text-blue-700"
@@ -904,33 +904,33 @@ const WithdrawalRequest = () => {
                             </div>
                           </td>
 
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             {row.AuthLogin || '-'}
                           </td>
 
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             {row.FullName || '-'}
                           </td>
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             {row.CreatedDate
                               ? row.CreatedDate.split('T')[0]
                               : '-'}
                           </td>
 
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             {row.TotWithdl}
                           </td>
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             {row.AdminCharge}
                           </td>
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             {row.Release}
                           </td>
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             {row.Email || '-'}
                           </td>
 
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
                               <span
                                 className="cursor-pointer"
@@ -951,13 +951,13 @@ const WithdrawalRequest = () => {
                               )}
                             </div>
                           </td>
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             {row.status || '-'}
                           </td>
-                          <td className="px-4 py-3 font-medium td-wrap-text">
+                          <td className="px-4 py-3 font-medium border td-wrap-text">
                             {row.Remark || '-'}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text border">
+                          <td className="px-4 py-3 border td-wrap-text">
                             <button
                               className="px-3 py-1 text-xs font-semibold bg-red-100 rounded-full"
                               onClick={() => handleRejectClick(row.AuthLogin)}

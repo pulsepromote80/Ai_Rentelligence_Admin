@@ -620,7 +620,7 @@ const RentRequest = () => {
   }
 
   return (
-    <div className="max-w-6xl p-5 mx-auto mt-0mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
+    <div className="max-w-6xl p-5 mx-auto bg-white border border-blue-100 shadow-2xl mt-0mb-10 rounded-2xl">
       <div className="flex flex-col gap-4 p-4 mb-6 border border-orange-200 shadow-sm md:flex-row md:items-center md:justify-between rounded-2xl bg-gradient-to-r from-orange-50 via-orange-100 to-orange-50">
         <div className="flex flex-col text-sm md:flex-row md:items-center md:gap-4">
           {!isMetamaskInstalled ? (
@@ -832,40 +832,40 @@ const RentRequest = () => {
                   {/* Table Header */}
                   <thead className="text-white bg-blue-600">
                     <tr>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                       Sr.No.
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                       Action
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                       Action
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                       UserId
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                       Username
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                       Email
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                       Wallet Address
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                       Request ($)
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                       Charges ($)
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                       Release ($)
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                       Date
                     </th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">
                       Remark
                     </th>
                     <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 rounded-tr-lg th-wrap-text">
@@ -895,10 +895,10 @@ const RentRequest = () => {
                             : 'bg-white hover:bg-blue-50 transition'
                         }
                       >
-                        <td className="px-4 py-3 font-medium td-wrap-text">
+                        <td className="px-4 py-3 font-medium border td-wrap-text">
                           {startItem + idx}
                         </td>
-                        <td className="px-4 py-3 font-medium td-wrap-text">
+                        <td className="px-4 py-3 font-medium border td-wrap-text">
                             <button
                               className="px-4 py-3 font-medium bg-green-100 rounded-full td-wrap-text"
                               onClick={() => handleApproveUSDTClick(row)}
@@ -918,7 +918,7 @@ const RentRequest = () => {
                               Approve USDT
                             </button>
                           </td>
-                       <td className="px-4 py-3 font-medium td-wrap-text">
+                       <td className="px-4 py-3 font-medium border td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
                               <button
                                 className="px-4 py-3 text-blue-500 bg-green-100 rounded-full hover:text-blue-700"
@@ -930,16 +930,16 @@ const RentRequest = () => {
                               </button>
                             </div>
                           </td>
-                        <td className="px-4 py-3 font-medium td-wrap-text">
+                        <td className="px-4 py-3 font-medium border td-wrap-text">
                           {row.AuthLogin || '-'}
                         </td>
-                        <td className="px-4 py-3 font-medium td-wrap-text">
+                        <td className="px-4 py-3 font-medium border td-wrap-text">
                           {row.FullName || '-'}
                         </td>
-                        <td className="px-4 py-3 font-medium td-wrap-text ">
+                        <td className="px-4 py-3 font-medium border td-wrap-text">
                           {row.Email || '-'}
                         </td>
-                        <td className="px-4 py-3 font-medium td-wrap-text">
+                        <td className="px-4 py-3 font-medium border td-wrap-text">
                           <div className="flex items-center justify-center gap-1 group">
                             <span
                               className="cursor-pointer"
@@ -960,25 +960,25 @@ const RentRequest = () => {
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-3 font-medium td-wrap-text">
+                        <td className="px-4 py-3 font-medium border td-wrap-text">
                           {row.Request}
                         </td>
-                        <td className="px-4 py-3 font-medium td-wrap-text">
+                        <td className="px-4 py-3 font-medium border td-wrap-text">
                           {row.Charges || '-'}
                         </td>
-                        <td className="px-4 py-3 font-medium td-wrap-text">
+                        <td className="px-4 py-3 font-medium border td-wrap-text">
                           {row.Release || '-'}
                         </td>
-                        <td className="px-4 py-3 font-medium td-wrap-text">
+                        <td className="px-4 py-3 font-medium border td-wrap-text">
                           {row.CreatedDate
                             ? row.CreatedDate.split('T')[0]
                             : '-'}
                         </td>
-                        <td className="px-4 py-3 font-medium td-wrap-text">
+                        <td className="px-4 py-3 font-medium border td-wrap-text">
                           {row.Remark || '-'}
                         </td>
 
-                        <td className="px-4 py-3 font-medium td-wrap-text">
+                        <td className="px-4 py-3 font-medium border td-wrap-text">
                           <button
                             className="px-3 py-1 font-semibold text-white bg-red-500 rounded hover:bg-red-600"
                             onClick={() => handleRejectClick(row.AuthLogin)}

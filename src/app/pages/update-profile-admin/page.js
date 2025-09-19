@@ -8,6 +8,7 @@ import {
 import Loading from "@/app/common/loading";
 import { getAdminUserId, getUsername } from "@/app/pages/api/auth";
 import { toast } from "react-toastify";
+import { User, Mail, Phone } from "lucide-react";
 
 const UpdateProfileAdmin = () => {
   const dispatch = useDispatch();
@@ -104,147 +105,94 @@ const UpdateProfileAdmin = () => {
   };
 
   return (
-<div className="flex items-center justify-center from-blue-50 to-indigo-100">
-  <div className="w-full max-w-lg p-8 bg-white shadow-2xl rounded-2xl border border-gray-100">
-    <h6 className="mb-2 text-1xl font-bold text-center text-gray-800">
-      Update Profile
-    </h6>
-    <p className="mb-3 text-sm text-center text-gray-500">
-      Keep your information up-to-date
-    </p>
+    <div className="flex items-center justify-center from-blue-50 to-indigo-100">
+      <div className="w-full max-w-lg p-8 bg-white border border-gray-100 shadow-2xl rounded-2xl">
+        <h6 className="mb-2 font-bold text-center text-gray-800 text-1xl">
+          Update Profile
+        </h6>
+        <p className="mb-3 text-sm text-center text-gray-500">
+          Keep Your Information Update
+        </p>
 
-    <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Username */}
-      <div>
-        <label className="block text-sm font-medium text-gray-600">
-          Username
-        </label>
-        <div className="relative">
-          <svg
-            className="absolute left-3 top-3 w-5 h-5 text-gray-400"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Username */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              Username
+            </label>
+            <div className="relative">
+              <User className="absolute w-5 h-5 text-gray-400 left-3 top-3" />
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                readOnly
+                className="w-full py-2 pl-10 pr-3 mt-1 bg-gray-100 border rounded-lg cursor-not-allowed focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* First Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              First Name
+            </label>
+            <div className="relative">
+              <User className="absolute w-5 h-5 text-gray-400 left-3 top-3" />
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="w-full py-2 pl-10 pr-3 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+          </div>
+
+          {/* Phone Number */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              Phone Number
+            </label>
+            <div className="relative">
+              <Phone className="absolute w-5 h-5 text-gray-400 left-3 top-3" />
+              <input
+                type="text"
+                name="phoneNumber"
+                value={formData.phoneNumber}
+                onChange={handleChange}
+                className="w-full py-2 pl-10 pr-3 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm font-medium text-gray-600">
+              Email
+            </label>
+            <div className="relative">
+              <Mail className="absolute w-5 h-5 text-gray-400 left-3 top-3" />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full py-2 pl-10 pr-3 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            className="w-full py-3 mt-6 font-semibold text-white transition-all duration-200 rounded-lg shadow-md bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M5.121 17.804A7 7 0 1117.804 5.121M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-            />
-          </svg>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            readOnly
-            className="w-full pl-10 pr-3 py-2 mt-1 bg-gray-100 border rounded-lg cursor-not-allowed focus:outline-none"
-          />
-        </div>
+            Update Profile
+          </button>
+        </form>
       </div>
-
-      {/* First Name */}
-      <div>
-        <label className="block text-sm font-medium text-gray-600">
-          First Name
-        </label>
-        <div className="relative">
-          <svg
-            className="absolute left-3 top-3 w-5 h-5 text-gray-400"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 20h9M12 4h9M4 9h16M4 15h16"
-            />
-          </svg>
-          <input
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            className="w-full pl-10 pr-3 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-      </div>
-
-      {/* Phone Number */}
-      <div>
-        <label className="block text-sm font-medium text-gray-600">
-          Phone Number
-        </label>
-        <div className="relative">
-          <svg
-            className="absolute left-3 top-3 w-5 h-5 text-gray-400"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M3 5h2l3.6 7.59-1.35 2.44A2 2 0 007 18h10a2 2 0 001.75-1.03l3.58-6.49a1 1 0 00-.89-1.48H6.21"
-            />
-          </svg>
-          <input
-            type="text"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            className="w-full pl-10 pr-3 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-      </div>
-
-      {/* Email */}
-      <div>
-        <label className="block text-sm font-medium text-gray-600">
-          Email
-        </label>
-        <div className="relative">
-          <svg
-            className="absolute left-3 top-3 w-5 h-5 text-gray-400"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M16 12H8m0 0l4-4m-4 4l4 4m8-8H4a2 2 0 00-2 2v8a2 2 0 002 2h16a2 2 0 002-2v-8a2 2 0 00-2-2z"
-            />
-          </svg>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className="w-full pl-10 pr-3 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-        </div>
-      </div>
-
-      {/* Submit Button */}
-      <button
-        type="submit"
-        className="w-full py-3 mt-6 text-white font-semibold bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg shadow-md hover:from-blue-700 hover:to-indigo-700 transition-all duration-200"
-      >
-        Update Profile
-      </button>
-    </form>
-  </div>
-</div>
-
+    </div>
   );
 };
 
