@@ -208,7 +208,7 @@ const AdminLogin = () => {
 
             <div className="text-center pt-4">
               <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
                 <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-800 transition-colors duration-200">
                   Create
                 </Link>
