@@ -94,9 +94,9 @@ const Sidebar = () => {
       <div className="fixed z-20 lg:hidden md:top-20 sm:top-20 xs:top-20 left-4">
         <button
           onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
-          className="mt-5 bg-white rounded-md"
+          className="bg-white rounded-md mobile-menu-btn"
         >
-          {mobileSidebarOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+          {mobileSidebarOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
         </button>
       </div>
 

@@ -202,3 +202,18 @@ body {
     transform: rotate(360deg);
   }
 }
+
+@media (max-width: 640px) {
+ .mobile-logo {
+    margin-left: 30px !important;
+}
+.mobile-menu-btn {
+    left: -3px;
+    position: relative;
+    top: -42px;
+    background: #f9fafb;
+    padding: 5px;
+    border: 1px solid #80808059;
+}
+
+}

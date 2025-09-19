@@ -71,7 +71,7 @@ const Navbar = () => {
   return (
     <nav className="flex items-center justify-between w-[95%] mx-auto p-3 bg-white sm:p-4 md:p-3">
       <div className="flex items-center">
-        <h1 className="flex items-center text-lg font-bold text-black sm:text-xl md:text-2xl">
+        <h1 className="flex items-center text-lg font-bold text-black sm:text-xl md:text-2xl mobile-logo">
           <Image
             src="/Logo.png"
             alt="RentIntelligence Logo"
