@@ -16,7 +16,7 @@ import {
 import { User, Mail, Phone, Lock } from "lucide-react";
 import { toast } from "react-toastify";
 
-const Register = () => {
+const AdminRegistration = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const { loading, error } = useSelector((state) => state.auth);
@@ -109,34 +109,34 @@ const Register = () => {
   if (loading) return <Loading />;
 
   return (
-    <div className="flex justify-center items-center">
+    <div className="flex items-center justify-center">
       {/* Left Side */}
-            <div className="w-full md:w-2/5 bg-gradient-to-br from-indigo-600 to-purple-700 p-8 text-white flex flex-col justify-center relative overflow-hidden">
+            <div className="relative flex flex-col justify-center w-full p-8 overflow-hidden text-white md:w-2/5 bg-gradient-to-br from-indigo-600 to-purple-700">
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
-            <div className="absolute top-10 left-10 w-64 h-64 bg-white rounded-full"></div>
-            <div className="absolute bottom-10 right-10 w-32 h-32 bg-white rounded-full"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-white rounded-full"></div>
+            <div className="absolute w-64 h-64 bg-white rounded-full top-10 left-10"></div>
+            <div className="absolute w-32 h-32 bg-white rounded-full bottom-10 right-10"></div>
+            <div className="absolute w-40 h-40 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-full top-1/2 left-1/2"></div>
           </div>
           
           <div className="relative z-10">
             <div className="mb-8">
-              <h1 className="text-4xl font-bold mb-2">Welcome Back!</h1>
+              <h1 className="mb-2 text-4xl font-bold">Welcome Back!</h1>
               <p className="text-indigo-200">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed pharetra magna nisi, at posuere sem dapibus sed.
               </p>
             </div>
             
-            <div className="relative h-56 flex items-center justify-center">
-              <div className="w-40 h-40 bg-white/20 rounded-3xl flex items-center justify-center backdrop-blur-sm transform rotate-12">
+            <div className="relative flex items-center justify-center h-56">
+              <div className="flex items-center justify-center w-40 h-40 transform bg-white/20 rounded-3xl backdrop-blur-sm rotate-12">
                 <svg className="w-20 h-20 text-white transform -rotate-12" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                   <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"></path>
                 </svg>
               </div>
             </div>
             
-            <div className="mt-8 flex items-center">
-              <div className="w-10 h-1 bg-purple-300 mr-2"></div>
-              <div className="w-5 h-1 bg-purple-400 mr-2"></div>
+            <div className="flex items-center mt-8">
+              <div className="w-10 h-1 mr-2 bg-purple-300"></div>
+              <div className="w-5 h-1 mr-2 bg-purple-400"></div>
               <div className="w-3 h-1 bg-purple-500"></div>
             </div>
           </div>
@@ -146,26 +146,26 @@ const Register = () => {
       
 
 {/* Right Side */}
-<div className="flex items-center justify-center w-full lg:w-1/2 bg-white p-8">
+<div className="flex items-center justify-center w-full p-8 bg-white lg:w-1/2">
   <div className="w-full max-w-md">
-    <h2 className="mb-2 text-3xl font-bold text-gray-800 text-center">
+    <h2 className="mb-2 text-3xl font-bold text-center text-gray-800">
       Create Account
     </h2>
-    <p className="mb-6 text-sm text-gray-500 text-center">
+    <p className="mb-6 text-sm text-center text-gray-500">
       For business, brand or celebrity
     </p>
 
     {message && (
-      <p className="mb-4 text-center text-sm font-medium text-red-500">
+      <p className="mb-4 text-sm font-medium text-center text-red-500">
         {message}
       </p>
     )}
 
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Username + Name */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="relative">
-          <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+          <span className="absolute inset-y-0 flex items-center text-gray-400 left-3">
             <User size={18} />
           </span>
           <input
@@ -183,7 +183,7 @@ const Register = () => {
           )}
         </div>
         <div className="relative">
-          <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+          <span className="absolute inset-y-0 flex items-center text-gray-400 left-3">
             <User size={18} />
           </span>
           <input
@@ -203,9 +203,9 @@ const Register = () => {
       </div>
 
       {/* Email + Phone */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="relative">
-          <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+          <span className="absolute inset-y-0 flex items-center text-gray-400 left-3">
             <Mail size={18} />
           </span>
           <input
@@ -223,7 +223,7 @@ const Register = () => {
           )}
         </div>
         <div className="relative">
-          <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+          <span className="absolute inset-y-0 flex items-center text-gray-400 left-3">
             <Phone size={18} />
           </span>
           <input
@@ -245,7 +245,7 @@ const Register = () => {
 
       {/* Password */}
       <div className="relative">
-        <span className="absolute inset-y-0 left-3 flex items-center text-gray-400">
+        <span className="absolute inset-y-0 flex items-center text-gray-400 left-3">
           <Lock size={18} />
         </span>
         <input
@@ -261,7 +261,7 @@ const Register = () => {
         />
         <span
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute inset-y-0 right-3 flex items-center text-gray-500 cursor-pointer"
+          className="absolute inset-y-0 flex items-center text-gray-500 cursor-pointer right-3"
         >
           {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
         </span>
@@ -288,21 +288,21 @@ const Register = () => {
     {registrationComplete && (
       <button
         onClick={() => router.push("/")}
-        className="w-full py-2 mt-4 font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 transition"
+        className="w-full py-2 mt-4 font-semibold text-white transition bg-green-500 rounded-lg hover:bg-green-600"
       >
         Go to Login
       </button>
     )}
 
     {/* Login link */}
-    {!registrationComplete && (
+    {/* {!registrationComplete && (
       <p
         onClick={() => router.push("/")}
-        className="mt-5 text-center text-sm font-medium text-blue-600 cursor-pointer hover:underline"
+        className="mt-5 text-sm font-medium text-center text-blue-600 cursor-pointer hover:underline"
       >
         Already have an account? Log in
       </p>
-    )}
+    )} */}
   </div>
 </div>
 
@@ -310,4 +310,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default AdminRegistration;

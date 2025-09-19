@@ -147,7 +147,7 @@ const DepositHistory = () => {
     <div className="p-8 mx-auto mt-2 border border-gray-200 shadow-2xl max-w-7xl bg-gradient-to-br from-blue-50 to-white rounded-3xl">
       {/* Header */}
       <h6 className="heading">
-        Deposit History:{' '}
+        Fund History:{' '}
         <span className="font-bold text-green-600">
           ${Number(totalRelease.toFixed(2))}
         </span>
@@ -398,60 +398,6 @@ const DepositHistory = () => {
           )}
         </div>
 
-        {/* Pagination */}
-        {rowsToDisplay.length > 0 && (
-          <div className="flex flex-col items-center justify-between gap-3 px-4 py-3 md:flex-row bg-gray-50 rounded-b-2xl">
-            {/* Rows per page selector */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Rows per page:</span>
-              <select
-                value={rowsPerPage}
-                onChange={(e) => {
-                  setRowsPerPage(Number(e.target.value));
-                  setCurrentPage(1);
-                }}
-                className="p-1 border border-gray-300 rounded-md focus:ring focus:ring-blue-300"
-              >
-                <option value="500">500</option>
-                <option value="1000">1000</option>
-                <option value="1500">1500</option>
-              </select>
-            </div>
-
-            {/* Item range display */}
-            <div className="text-sm text-gray-600">
-              {startItem}-{endItem} of {rowsToDisplay.length}
-            </div>
-
-            {/* Pagination buttons */}
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className={`px-3 py-1 rounded-md ${
-                  currentPage === 1
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-blue-600 hover:bg-blue-100'
-                }`}
-              >
-                ‹ Prev
-              </button>
-              <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
-                className={`px-3 py-1 rounded-md ${
-                  currentPage === totalPages
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-blue-600 hover:bg-blue-100'
-                }`}
-              >
-                Next ›
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     )}
   </>
