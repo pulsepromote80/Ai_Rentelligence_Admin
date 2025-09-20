@@ -15,6 +15,7 @@ import {
   FaSearch,
   FaFileExcel,
   FaSyncAlt,
+  FaFilter
 } from 'react-icons/fa'
 
 const RentWallet = () => {
@@ -31,6 +32,7 @@ const RentWallet = () => {
   const [toDate, setToDate] = useState('')
   const [userError, setUserError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
+  const [statusFilter, setStatusFilter] = useState("")
 
   const formatDate = (dateString) => {
     if (!dateString) return ''
@@ -114,22 +116,29 @@ const RentWallet = () => {
     setUserId('')
     setUsername('')
     setUserError('')
+    setStatusFilter('')
     setCurrentPage(1)
     setHasSearched(false)
   }
 
+
   const walletRows = rentWalletData?.aprWithrentwallet || []
-  const filteredRows = walletRows.filter(
-    (row) =>
-      row.AuthLogin?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.FullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.payMode?.toString().includes(searchTerm) ||
-      row.transType?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.trCode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.PaymentDate?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.ExtraRemark?.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
-  const rowsToDisplay = searchTerm ? filteredRows : walletRows
+
+  const filteredByStatus = statusFilter
+    ? walletRows.filter(row => row.Status === statusFilter)
+    : walletRows;
+
+  const filteredRows = filteredByStatus.filter(row =>
+  (row.AuthLogin?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    row.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (row.Amount?.toString().includes(searchTerm)) ||
+    (row.PaymentMode?.toString().includes(searchTerm)) ||
+    row.RefrenceNo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    row.PaymentDate?.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+  const rowsToDisplay = filteredRows
+
+
 
   const paginatedRows = rowsToDisplay.slice(
     (currentPage - 1) * rowsPerPage,
@@ -152,10 +161,11 @@ const RentWallet = () => {
   }
 
   return (
-    <div className="max-w-6xl p-5 mx-auto mt-0mb-10 bg-white border border-blue-100 shadow-2xl rounded-2xl">
+    <div className="max-w-6xl p-5 mx-auto bg-white border border-blue-100 shadow-2xl mt-0mb-10 rounded-2xl">
       <h6 className="heading">Yield Wallet History</h6>
 
-      <div className="grid grid-cols-1 gap-6 mt-0 mb-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 mt-0 mb-6 md:grid-cols-2 lg:grid-cols-5">
+
         {/* From Date */}
         <div>
           <label className="block mb-1 text-sm font-medium text-blue-800">
@@ -222,8 +232,26 @@ const RentWallet = () => {
               className="w-full py-2 pl-10 pr-3 border border-gray-300 rounded-md focus:ring focus:ring-blue-200"
             />
           </div>
-        </div>
 
+
+        </div>
+        <div>
+          <label className="block mb-1 text-sm font-semibold text-blue-700">
+            Status
+          </label>
+          <div className="relative">
+            <FaFilter className="absolute text-gray-500 -translate-y-1/2 left-3 top-1/2" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+            >
+              <option value="">All Status</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
         {/* Buttons row */}
         <div className="flex items-end space-x-4">
           <button
@@ -247,161 +275,161 @@ const RentWallet = () => {
         </div>
       </div>
 
-    {hasSearched && (
-  <>
-    {loading ? (
-      <div className="py-10 font-medium text-center text-blue-600">Loading...</div>
-    ) : error ? (
-      <div className="py-10 font-medium text-center text-red-500">{error}</div>
-    ) : (
-      <div className="mt-2 overflow-x-auto bg-white border border-gray-200 shadow-lg rounded-xl">
-        <table className="min-w-full border border-gray-200 rounded-xl">
-          {/* Header */}
-          <thead className="sticky top-0 z-10 text-white bg-blue-600">
-            <tr>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Sr.No.</th>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">User ID</th>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Username</th>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Email</th>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Wallet</th>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Txn Hash</th>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Request ($)</th>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Charges ($)</th>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Release ($)</th>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Created</th>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Approval</th>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Remark</th>
-              <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Status</th>
-            </tr>
-          </thead>
+      {hasSearched && (
+        <>
+          {loading ? (
+            <div className="py-10 font-medium text-center text-blue-600">Loading...</div>
+          ) : error ? (
+            <div className="py-10 font-medium text-center text-red-500">{error}</div>
+          ) : (
+            <div className="mt-2 overflow-x-auto bg-white border border-gray-200 shadow-lg rounded-xl">
+              <table className="min-w-full border border-gray-200 rounded-xl">
+                {/* Header */}
+                <thead className="sticky top-0 z-10 text-white bg-blue-600">
+                  <tr>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Sr.No.</th>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">User ID</th>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Username</th>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Email</th>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Wallet</th>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Txn Hash</th>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Request ($)</th>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Charges ($)</th>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Release ($)</th>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Created</th>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Approval</th>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Remark</th>
+                    <th className="px-4 py-3 text-sm tracking-wide uppercase th-wrap-text">Status</th>
+                  </tr>
+                </thead>
 
-          {/* Body */}
-          <tbody>
-            {paginatedRows.length === 0 ? (
-              <tr>
-                <td colSpan={13} className="py-10 text-lg text-center text-gray-400 td-wrap-text">
-                  No Data Found
-                </td>
-              </tr>
-            ) : (
-              paginatedRows.map((row, idx) => (
-                <tr
-                  key={row.ID || idx}
-                  className={
-                    idx % 2 === 0
-                      ? 'bg-white hover:bg-blue-50 transition'
-                      : 'bg-blue-50 hover:bg-blue-100 transition'
-                  }
-                >
-                  <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border td-wrap-text">
-                    {startItem + idx}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">{row.AuthLogin || '-'}</td>
-                  <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">{row.FullName || '-'}</td>
-                  <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">{row.Email || '-'}</td>
+                {/* Body */}
+                <tbody>
+                  {paginatedRows.length === 0 ? (
+                    <tr>
+                      <td colSpan={13} className="py-10 text-lg text-center text-gray-400 td-wrap-text">
+                        No Data Found
+                      </td>
+                    </tr>
+                  ) : (
+                    paginatedRows.map((row, idx) => (
+                      <tr
+                        key={row.ID || idx}
+                        className={
+                          idx % 2 === 0
+                            ? 'bg-white hover:bg-blue-50 transition'
+                            : 'bg-blue-50 hover:bg-blue-100 transition'
+                        }
+                      >
+                        <td className="px-4 py-2 text-sm font-medium text-center text-gray-700 border td-wrap-text">
+                          {startItem + idx}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">{row.AuthLogin || '-'}</td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">{row.FullName || '-'}</td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">{row.Email || '-'}</td>
 
-                  {/* Wallet with copy */}
-                  <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">
-                    <div className="flex items-center justify-center gap-1">
-                      <span title={row.Wallet || '-'}>{row.Wallet ? `${row.Wallet.substring(0, 12)}...` : '-'}</span>
-                      {row.Wallet && (
-                        <button
-                          onClick={() => copyToClipboard(row.Wallet)}
-                          className="p-1 text-blue-500 hover:text-blue-700"
-                          title="Copy"
-                        >
-                          <FaCopy className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                  </td>
+                        {/* Wallet with copy */}
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">
+                          <div className="flex items-center justify-center gap-1">
+                            <span title={row.Wallet || '-'}>{row.Wallet ? `${row.Wallet.substring(0, 12)}...` : '-'}</span>
+                            {row.Wallet && (
+                              <button
+                                onClick={() => copyToClipboard(row.Wallet)}
+                                className="p-1 text-blue-500 hover:text-blue-700"
+                                title="Copy"
+                              >
+                                <FaCopy className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
 
-                  {/* Txn Hash with copy */}
-                  <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">
-                    <div className="flex items-center justify-center gap-1">
-                      <span title={row.TransHash || '-'}>{row.TransHash ? `${row.TransHash.substring(0, 12)}...` : '-'}</span>
-                      {row.TransHash && (
-                        <button
-                          onClick={() => copyToClipboard(row.TransHash)}
-                          className="p-1 text-blue-500 hover:text-blue-700"
-                          title="Copy"
-                        >
-                          <FaCopy className="w-3 h-3" />
-                        </button>
-                      )}
-                    </div>
-                  </td>
+                        {/* Txn Hash with copy */}
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">
+                          <div className="flex items-center justify-center gap-1">
+                            <span title={row.TransHash || '-'}>{row.TransHash ? `${row.TransHash.substring(0, 12)}...` : '-'}</span>
+                            {row.TransHash && (
+                              <button
+                                onClick={() => copyToClipboard(row.TransHash)}
+                                className="p-1 text-blue-500 hover:text-blue-700"
+                                title="Copy"
+                              >
+                                <FaCopy className="w-3 h-3" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
 
-                  <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">${row.Request}</td>
-                  <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">{row.Charges || '-'}</td>
-                  <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">{row.Release || '-'}</td>
-                  <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">
-                    {row.CreatedDate ? row.CreatedDate.split('T')[0] : '-'}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">
-                    {row.ApprovalDate ? row.ApprovalDate.split('T')[0] : '-'}
-                  </td>
-                  <td className="px-4 py-2 text-sm text-center text-red-600 border td-wrap-text">{row.Remark}</td>
-                  <td className="px-4 py-2 text-sm font-semibold text-center border td-wrap-text">
-                    <span
-                      className={
-                        row.Status === 'Approved'
-                          ? 'text-green-600'
-                          : row.Status === 'Pending'
-                          ? 'text-yellow-600'
-                          : 'text-red-600'
-                      }
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">${row.Request}</td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">{row.Charges || '-'}</td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">{row.Release || '-'}</td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">
+                          {row.CreatedDate ? row.CreatedDate.split('T')[0] : '-'}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-center text-gray-700 border td-wrap-text">
+                          {row.ApprovalDate ? row.ApprovalDate.split('T')[0] : '-'}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-center text-red-600 border td-wrap-text">{row.Remark}</td>
+                        <td className="px-4 py-2 text-sm font-semibold text-center border td-wrap-text">
+                          <span
+                            className={
+                              row.Status === 'Approved'
+                                ? 'text-green-600'
+                                : row.Status === 'Pending'
+                                  ? 'text-yellow-600'
+                                  : 'text-red-600'
+                            }
+                          >
+                            {row.Status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+
+              {/* Pagination */}
+              {rowsToDisplay.length > 0 && (
+                <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50 rounded-b-xl">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600">Rows per page:</span>
+                    <select
+                      value={rowsPerPage}
+                      onChange={(e) => {
+                        setRowsPerPage(Number(e.target.value))
+                        setCurrentPage(1)
+                      }}
+                      className="p-1 mr-3 text-sm border rounded focus:ring-1 focus:ring-blue-500"
                     >
-                      {row.Status}
-                    </span>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-
-        {/* Pagination */}
-        {rowsToDisplay.length > 0 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50 rounded-b-xl">
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Rows per page:</span>
-              <select
-                value={rowsPerPage}
-                onChange={(e) => {
-                  setRowsPerPage(Number(e.target.value))
-                  setCurrentPage(1)
-                }}
-                className="p-1 mr-3 text-sm border rounded focus:ring-1 focus:ring-blue-500"
-              >
-                <option value="500">500</option>
-                <option value="1000">1000</option>
-                <option value="1500">1500</option>
-              </select>
+                      <option value="500">500</option>
+                      <option value="1000">1000</option>
+                      <option value="1500">1500</option>
+                    </select>
+                  </div>
+                  <div className="text-sm text-gray-600">{startItem}-{endItem} of {rowsToDisplay.length}</div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      className={`p-1 rounded ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                    >
+                      ◀
+                    </button>
+                    <button
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      className={`p-1 rounded ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
+                    >
+                      ▶
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="text-sm text-gray-600">{startItem}-{endItem} of {rowsToDisplay.length}</div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-                className={`p-1 rounded ${currentPage === 1 ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
-              >
-                ◀
-              </button>
-              <button
-                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-                disabled={currentPage === totalPages}
-                className={`p-1 rounded ${currentPage === totalPages ? 'text-gray-400 cursor-not-allowed' : 'text-blue-600 hover:text-blue-800'}`}
-              >
-                ▶
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-    )}
-  </>
-)}
+          )}
+        </>
+      )}
 
     </div>
   )
