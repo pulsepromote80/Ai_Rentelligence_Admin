@@ -61,7 +61,7 @@ const Dashboard = () => {
       </div>
 
       {/* Mini Cards Section */}
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+      {/* <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
         <MiniChartCard
           title="Total Orders Completed"
           value={stats?.totalOrder ?? 0}
@@ -91,7 +91,7 @@ const Dashboard = () => {
             </li>
           </ul>
         </div>
-      </div>
+      </div> */}
 
       {/* Recent Activity */}
       <div className="p-6 transition-shadow duration-300 bg-white border border-gray-100 shadow-xl rounded-3xl hover:shadow-2xl">
@@ -114,7 +114,7 @@ function StatCard() {
 
   return (
     <div className="bg-gradient-to-br from-indigo-500 to-indigo-300 text-white rounded-3xl shadow-xl p-6 hover:scale-[1.02] transition-transform duration-300">
-      <h2 className="mb-4 text-lg font-bold">Agent Stats</h2>
+      <h2 className="mb-4 text-lg font-bold">Agent Status</h2>
       <div className="space-y-3 text-sm">
         <p>Total Joining: <span className="font-bold">{stats.totalJoining}</span></p>
         <p>Total Income Wallet: <span className="font-bold">{stats.totalIncomeWallet}</span></p>
