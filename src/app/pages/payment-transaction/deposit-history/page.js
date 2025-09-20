@@ -8,7 +8,7 @@ import { toast } from 'react-toastify'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver';
 import { FaCalendarAlt, FaUser, FaIdBadge } from "react-icons/fa";
-import { FaSearch, FaFileExcel, FaSyncAlt } from "react-icons/fa";
+import { FaSearch, FaFileExcel, FaSyncAlt,FaFilter } from "react-icons/fa";
 
 const DepositHistory = () => {
   const dispatch = useDispatch()
@@ -24,6 +24,7 @@ const DepositHistory = () => {
   const [toDate, setToDate] = useState('')
   const [userError, setUserError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
+  const [statusFilter, setStatusFilter] = useState("")
 
   const formatDate = (dateString) => {
     if (!dateString) return ''
@@ -103,25 +104,26 @@ const DepositHistory = () => {
     setUsername('')
     setUserError('')
     setSearchTerm('')
+    setStatusFilter('')
     setCurrentPage(1)
     setHasSearched(false)
   }
+   const allRows = fundRequestData?.approvedFundRequest || [];
 
-  const approvedRows = fundRequestData?.approvedFundRequest || []
-  const rejectedRows = fundRequestData?.rejectedFundRequest || []
-  const allRows = [...approvedRows, ...rejectedRows]
+  const filteredByStatus = statusFilter
+    ? allRows.filter(row => row.Rf_Status === statusFilter)
+    : allRows;
 
-  const filteredRows = allRows.filter(
-    (row) =>
-      row.AuthLogin?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.Amount?.toString().includes(searchTerm) ||
-      row.PaymentMode?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.RefrenceNo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.PaymentDate?.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
+  const filteredRows = filteredByStatus.filter(row =>
+  (row.AuthLogin?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    row.Name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (row.Amount?.toString().includes(searchTerm)) ||
+    (row.PaymentMode?.toString().includes(searchTerm)) ||
+    row.RefrenceNo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    row.PaymentDate?.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
-  const rowsToDisplay = searchTerm ? filteredRows : allRows
+  const rowsToDisplay = filteredRows
   const paginatedRows = rowsToDisplay.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage,
@@ -155,7 +157,7 @@ const DepositHistory = () => {
 
 
 {/* Filters Section */}
-<div className="grid grid-cols-1 gap-6 mt-0 md:grid-cols-2 lg:grid-cols-4">
+<div className="grid grid-cols-1 gap-6 mt-0 md:grid-cols-2 lg:grid-cols-5">
   {/* From Date */}
   <div>
     <label className="block mb-1 text-sm font-semibold text-blue-700">
@@ -213,7 +215,7 @@ const DepositHistory = () => {
       Username
     </label>
     <div className="relative">
-      <FaUser className="absolute text-gray-400 -translate-y-1/2 left-3 top-1/2" />
+      <FaUser className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
       <input
         type="text"
         value={username}
@@ -222,6 +224,24 @@ const DepositHistory = () => {
       />
     </div>
   </div>
+
+  <div>
+            <label className="block mb-1 text-sm font-semibold text-blue-700">
+              Status
+            </label>
+            <div className="relative">
+              <FaFilter className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+              >
+                <option value="">All Status</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </div>
+          </div>
 </div>
 
 {/* Buttons */}

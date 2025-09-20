@@ -167,7 +167,13 @@ const DepositRequest = () => {
       )
       setApprovePopupOpen(false)
       setSelectedAuthLoginId(null)
-      dispatch(getAllFundRequestReportAdmin())
+      dispatch(
+          getAllFundRequestReportAdmin({
+            authLogin: userId || '',
+            fromDate: formatDate(fromDate) || '',
+            toDate: formatDate(toDate) || '',
+          }),
+        )
     }
   }
 
@@ -188,7 +194,13 @@ const DepositRequest = () => {
           position: 'top-right',
           autoClose: 3000,
         })
-        dispatch(getAllFundRequestReportAdmin())
+        dispatch(
+          getAllFundRequestReportAdmin({
+            authLogin: userId || '',
+            fromDate: formatDate(fromDate) || '',
+            toDate: formatDate(toDate) || '',
+          }),
+        )
       } catch (error) {
         toast.error('Failed to rejected request', {
           position: 'top-right',
