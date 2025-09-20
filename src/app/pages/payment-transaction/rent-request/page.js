@@ -50,6 +50,7 @@ const RentRequest = () => {
   const [toDate, setToDate] = useState('')
   const [userError, setUserError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
+  const [processedRequests, setProcessedRequests] = useState(new Set())
 
   const formatDate = (dateString) => {
     if (!dateString) return ''
@@ -493,15 +494,15 @@ const RentRequest = () => {
             transHash: txHash,
           }),
         )
-
+         setProcessedRequests(prev => new Set([...prev, row.AuthLogin]));
         toast.success('USDT Transaction Approved Successfully!')
-        dispatch(
-          getRentWallet({
-            authLogin: userId || '',
-            fromDate: formatDate(fromDate) || '',
-            toDate: formatDate(toDate) || '',
-          }),
-        )
+        // dispatch(
+        //   getRentWallet({
+        //     authLogin: userId || '',
+        //     fromDate: formatDate(fromDate) || '',
+        //     toDate: formatDate(toDate) || '',
+        //   }),
+        // )
       }
     } catch (error) {
       console.error('Error approving USDT:', error)
@@ -529,6 +530,7 @@ const RentRequest = () => {
             remark: 'Approved by admin',
           }),
         )
+        setProcessedRequests(prev => new Set([...prev, selectedAuthLoginId]));
         setApprovePopupOpen(false)
         setSelectedAuthLoginId(null)
         toast.success('Approved Successfully!', {
@@ -539,13 +541,13 @@ const RentRequest = () => {
           pauseOnHover: true,
           draggable: true,
         })
-        dispatch(
-          getRentWallet({
-            authLogin: userId || '',
-            fromDate: formatDate(fromDate) || '',
-            toDate: formatDate(toDate) || '',
-          }),
-        )
+        // dispatch(
+        //   getRentWallet({
+        //     authLogin: userId || '',
+        //     fromDate: formatDate(fromDate) || '',
+        //     toDate: formatDate(toDate) || '',
+        //   }),
+        // )
       } catch (error) {
         toast.error('Failed to approve request', {
           position: 'top-right',
@@ -569,6 +571,7 @@ const RentRequest = () => {
             remark: remark,
           }),
         )
+        setProcessedRequests(prev => new Set([...prev, selectedAuthLoginId]));
         setRejectPopupOpen(false)
         setSelectedAuthLoginId(null)
         setRemark('')
@@ -580,13 +583,13 @@ const RentRequest = () => {
           pauseOnHover: true,
           draggable: true,
         })
-        dispatch(
-          getRentWallet({
-            authLogin: userId || '',
-            fromDate: formatDate(fromDate) || '',
-            toDate: formatDate(toDate) || '',
-          }),
-        )
+        // dispatch(
+        //   getRentWallet({
+        //     authLogin: userId || '',
+        //     fromDate: formatDate(fromDate) || '',
+        //     toDate: formatDate(toDate) || '',
+        //   }),
+        // )
       } catch (error) {
         toast.error('Failed to reject request', {
           position: 'top-right',
@@ -899,7 +902,7 @@ const RentRequest = () => {
                           {startItem + idx}
                         </td>
                         <td className="px-4 py-3 font-medium border td-wrap-text">
-                            <button
+                            {/* <button
                               className="px-4 py-3 font-medium bg-green-100 rounded-full td-wrap-text"
                               onClick={() => handleApproveUSDTClick(row)}
                               disabled={
@@ -916,17 +919,61 @@ const RentRequest = () => {
                               }
                             >
                               Approve USDT
+                            </button> */}
+                            <button
+                                                            className={`px-4 py-3 font-medium rounded-full td-wrap-text ${
+                                processedRequests.has(row.AuthLogin)
+                                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                  : 'bg-green-100 hover:bg-green-200'
+                              }`}
+
+                              onClick={() => handleApproveUSDTClick(row)}
+                              disabled={
+                                processedRequests.has(row.AuthLogin) ||
+                                !account ||
+                                chainId !== BSC_CHAIN_ID ||
+                                isSending
+                              }
+                                title={
+                                processedRequests.has(row.AuthLogin)
+                                  ? 'Already processed'
+                                  : !account
+                                    ? 'Connect wallet first'
+                                    : chainId !== BSC_CHAIN_ID
+                                      ? 'Switch to BSC network'
+                                      : ''
+                              }
+                            >
+                              {/* Approve USDT */}
+                              {processedRequests.has(row.AuthLogin) 
+                                ? 'Approved USDT' 
+                                : 'Approve USDT'}
                             </button>
                           </td>
                        <td className="px-4 py-3 font-medium border td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
-                              <button
+                              {/* <button
                                 className="px-4 py-3 text-blue-500 bg-green-100 rounded-full hover:text-blue-700"
                                 onClick={() =>
                                   handleApproveClick(row.AuthLogin)
                                 }
                               >
                                 Approve
+                              </button> */}
+                                <button
+                               className={`px-4 py-3 rounded-full ${
+                                  processedRequests.has(row.AuthLogin)
+                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    : 'text-blue-500 bg-green-100 hover:text-blue-700 hover:bg-green-200'
+                                }`}
+                                onClick={() =>
+                                  handleApproveClick(row.AuthLogin)
+                                }
+                                disabled={processedRequests.has(row.AuthLogin)}
+                                title={processedRequests.has(row.AuthLogin) ? 'Already processed' : ''}
+                              >
+                                {/* Approve */}
+                                {processedRequests.has(row.AuthLogin) ? 'Approved' : 'Approve'}
                               </button>
                             </div>
                           </td>
@@ -979,12 +1026,24 @@ const RentRequest = () => {
                         </td>
 
                         <td className="px-4 py-3 font-medium border td-wrap-text">
-                          <button
+                          {/* <button
                             className="px-3 py-1 font-semibold text-white bg-red-500 rounded hover:bg-red-600"
                             onClick={() => handleRejectClick(row.AuthLogin)}
                           >
                             Reject
-                          </button>
+                          </button> */}
+                          <button
+    className={`px-3 py-1 text-xs font-semibold rounded-full ${
+      processedRequests.has(row.AuthLogin)
+        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+        : 'bg-red-100 hover:bg-red-200'
+    }`}
+    onClick={() => handleRejectClick(row.AuthLogin)}
+    disabled={processedRequests.has(row.AuthLogin)}
+    title={processedRequests.has(row.AuthLogin) ? 'Already processed' : 'Reject request'}
+  >
+    {processedRequests.has(row.AuthLogin) ? 'Rejected' : 'Reject'}
+  </button>
                         </td>
                       </tr>
                     ))

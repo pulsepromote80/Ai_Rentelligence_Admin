@@ -44,6 +44,7 @@ const WithdrawalRequest = () => {
   const [toDate, setToDate] = useState('')
   const [userError, setUserError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
+  const [processedRequests, setProcessedRequests] = useState(new Set())
 
   const formatDate = (dateString) => {
     if (!dateString) return ''
@@ -464,15 +465,15 @@ const WithdrawalRequest = () => {
             transHash: txHash,
           }),
         )
-
+        setProcessedRequests(prev => new Set([...prev, row.AuthLogin]));
         toast.success('USDT Transaction Approved Successfully!')
-        dispatch(
-          getAllIncomeRequestAdmin({
-            authLogin: userId || '',
-            fromDate: formatDate(fromDate) || '',
-            toDate: formatDate(toDate) || '',
-          }),
-        )
+        // dispatch(
+        //   getAllIncomeRequestAdmin({
+        //     authLogin: userId || '',
+        //     fromDate: formatDate(fromDate) || '',
+        //     toDate: formatDate(toDate) || '',
+        //   }),
+        // )
       }
     } catch (error) {
       console.error('Error approving USDT:', error)
@@ -501,6 +502,7 @@ const WithdrawalRequest = () => {
             remark: 'Approved by admin',
           }),
         )
+        setProcessedRequests(prev => new Set([...prev, selectedAuthLoginId]));
         setApprovePopupOpen(false)
         setSelectedAuthLoginId(null)
         toast.success('Approved Successfully!', {
@@ -511,13 +513,13 @@ const WithdrawalRequest = () => {
           pauseOnHover: true,
           draggable: true,
         })
-        dispatch(
-          getAllIncomeRequestAdmin({
-            authLogin: userId || '',
-            fromDate: formatDate(fromDate) || '',
-            toDate: formatDate(toDate) || '',
-          }),
-        )
+        // dispatch(
+        //   getAllIncomeRequestAdmin({
+        //     authLogin: userId || '',
+        //     fromDate: formatDate(fromDate) || '',
+        //     toDate: formatDate(toDate) || '',
+        //   }),
+        // )
       } catch (error) {
         toast.error('Failed to approve request', {
           position: 'top-right',
@@ -541,6 +543,7 @@ const WithdrawalRequest = () => {
             remark: remark,
           }),
         )
+        setProcessedRequests(prev => new Set([...prev, selectedAuthLoginId]));
         setRejectPopupOpen(false)
         setSelectedAuthLoginId(null)
         setRemark('')
@@ -552,13 +555,13 @@ const WithdrawalRequest = () => {
           pauseOnHover: true,
           draggable: true,
         })
-        dispatch(
-          getAllIncomeRequestAdmin({
-            authLogin: userId || '',
-            fromDate: formatDate(fromDate) || '',
-            toDate: formatDate(toDate) || '',
-          }),
-        )
+        // dispatch(
+        //   getAllIncomeRequestAdmin({
+        //     authLogin: userId || '',
+        //     fromDate: formatDate(fromDate) || '',
+        //     toDate: formatDate(toDate) || '',
+        //   }),
+        // )
       } catch (error) {
         toast.error('Failed to reject request', {
           position: 'top-right',
@@ -844,7 +847,6 @@ const WithdrawalRequest = () => {
                         Action
                       </th>
                     </tr>
-                    {/* Date,,, , , , hash,reamrk, ,email, Package, */}
                   </thead>
                   <tbody>
                     {paginatedRows.length === 0 ? (
@@ -872,34 +874,52 @@ const WithdrawalRequest = () => {
 
                           <td className="px-4 py-3 font-medium border td-wrap-text">
                             <button
-                              className="px-4 py-3 font-medium bg-green-100 rounded-full td-wrap-text"
+                                                            className={`px-4 py-3 font-medium rounded-full td-wrap-text ${
+                                processedRequests.has(row.AuthLogin)
+                                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                  : 'bg-green-100 hover:bg-green-200'
+                              }`}
+
                               onClick={() => handleApproveUSDTClick(row)}
                               disabled={
+                                processedRequests.has(row.AuthLogin) ||
                                 !account ||
                                 chainId !== BSC_CHAIN_ID ||
                                 isSending
                               }
-                              title={
-                                !account
-                                  ? 'Connect wallet first'
-                                  : chainId !== BSC_CHAIN_ID
-                                    ? 'Switch to BSC network'
-                                    : ''
+                                title={
+                                processedRequests.has(row.AuthLogin)
+                                  ? 'Already processed'
+                                  : !account
+                                    ? 'Connect wallet first'
+                                    : chainId !== BSC_CHAIN_ID
+                                      ? 'Switch to BSC network'
+                                      : ''
                               }
                             >
-                              Approve USDT
+                              {/* Approve USDT */}
+                              {processedRequests.has(row.AuthLogin) 
+                                ? 'Approved USDT' 
+                                : 'Approve USDT'}
                             </button>
                           </td>
 
                           <td className="px-4 py-3 font-medium border td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
                               <button
-                                className="px-4 py-3 text-blue-500 bg-green-100 rounded-full hover:text-blue-700"
+                               className={`px-4 py-3 rounded-full ${
+                                  processedRequests.has(row.AuthLogin)
+                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                    : 'text-blue-500 bg-green-100 hover:text-blue-700 hover:bg-green-200'
+                                }`}
                                 onClick={() =>
                                   handleApproveClick(row.AuthLogin)
                                 }
+                                disabled={processedRequests.has(row.AuthLogin)}
+                                title={processedRequests.has(row.AuthLogin) ? 'Already processed' : ''}
                               >
-                                Approve
+                                {/* Approve */}
+                                {processedRequests.has(row.AuthLogin) ? 'Approved' : 'Approve'}
                               </button>
                             </div>
                           </td>
@@ -957,14 +977,28 @@ const WithdrawalRequest = () => {
                           <td className="px-4 py-3 font-medium border td-wrap-text">
                             {row.Remark || '-'}
                           </td>
-                          <td className="px-4 py-3 border td-wrap-text">
+                          {/* <td className="px-4 py-3 border td-wrap-text">
                             <button
                               className="px-3 py-1 text-xs font-semibold bg-red-100 rounded-full"
                               onClick={() => handleRejectClick(row.AuthLogin)}
                             >
                               Reject
                             </button>
-                          </td>
+                          </td> */}
+                          <td className="px-4 py-3 border td-wrap-text">
+  <button
+    className={`px-3 py-1 text-xs font-semibold rounded-full ${
+      processedRequests.has(row.AuthLogin)
+        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+        : 'bg-red-100 hover:bg-red-200'
+    }`}
+    onClick={() => handleRejectClick(row.AuthLogin)}
+    disabled={processedRequests.has(row.AuthLogin)}
+    title={processedRequests.has(row.AuthLogin) ? 'Already processed' : 'Reject request'}
+  >
+    {processedRequests.has(row.AuthLogin) ? 'Rejected' : 'Reject'}
+  </button>
+</td>
                         </tr>
                       ))
                     )}
