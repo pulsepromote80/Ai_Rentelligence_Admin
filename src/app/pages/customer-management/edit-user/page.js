@@ -124,6 +124,7 @@ const EditUser = () => {
     setFields({ ...fields, [e.target.name]: e.target.value })
   }
 
+  const insecureNumbers = ["123456", "123456789", "123123", "password", "qwerty"];
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!usernameData) {
@@ -155,10 +156,14 @@ const EditUser = () => {
     return
   }
 
-  const mobileRegex = /^[0-9]{10}$/
+  const mobileRegex = /^[0-9]{7,12}$/
   if (!mobileRegex.test(fields.mobile)) {
-    toast.error('Please enter a valid 10-digit Mobile Number')
+    toast.error('Enter a valid phone number (7 to 12 digits)!')
     return
+  }
+   if (insecureNumbers.includes(fields.mobile.trim())) {
+    toast.error("This mobile number is too common and insecure!");
+    return false;
   }
 
     const payload = {

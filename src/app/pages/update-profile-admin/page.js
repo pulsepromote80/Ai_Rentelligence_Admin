@@ -57,6 +57,8 @@ const UpdateProfileAdmin = () => {
     }));
   };
 
+  const insecureNumbers = ["123456", "123456789", "123123", "password", "qwerty"];
+
   // ✅ Validation Function
   const validateForm = () => {
     if (!formData.username.trim()) {
@@ -71,10 +73,16 @@ const UpdateProfileAdmin = () => {
       toast.error("Phone Number cannot be empty!");
       return false;
     }
-    if (!/^[0-9]{10}$/.test(formData.phoneNumber.trim())) {
-      toast.error("Enter a valid 10-digit phone number!");
-      return false;
+    if (!/^[0-9]{7,12}$/.test(formData.phoneNumber.trim())) {
+  toast.error("Enter a valid phone number (7 to 12 digits)!");
+  return false;
+
+
     }
+    if (insecureNumbers.includes(formData.phoneNumber.trim())) {
+  toast.error("This mobile number is too common and insecure!");
+  return false;
+}
     if (!formData.email.trim()) {
       toast.error("Email cannot be empty!");
       return false;
@@ -157,7 +165,7 @@ const UpdateProfileAdmin = () => {
             <div className="relative">
               <Phone className="absolute w-5 h-5 text-gray-400 left-3 top-3" />
               <input
-                type="text"
+                type="number"
                 name="phoneNumber"
                 value={formData.phoneNumber}
                 onChange={handleChange}
