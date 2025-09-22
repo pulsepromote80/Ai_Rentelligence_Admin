@@ -91,8 +91,6 @@ const DownlineAffiliates = () => {
   return (
        <div className="p-8 mx-auto mt-0 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
       <h6 className="heading">   Downline Affiliates</h6>
- {/* Input & Buttons in One Row (Same Size) */}
-{/* Input & Buttons in One Line - Perfectly Aligned */}
 <div className="flex flex-wrap items-end gap-3 mb-6 justify-space-between">
   {/* Input Field */}
   <div className="flex flex-col">
@@ -118,21 +116,21 @@ const DownlineAffiliates = () => {
   {/* Buttons (Now perfectly aligned with input) */}
   <button
     onClick={handleSearch}
-    className="flex items-center justify-center gap-2 h-12 px-5 text-white bg-blue-600 shadow rounded-xl hover:bg-blue-700"
+    className="flex items-center justify-center h-12 gap-2 px-5 text-white bg-blue-600 shadow rounded-xl hover:bg-blue-700"
   >
     <FaSearch className="w-4 h-4" /> Search
   </button>
 
   <button
     onClick={handleExport}
-    className="flex items-center justify-center gap-2 h-12 px-5 text-white bg-green-600 shadow rounded-xl hover:bg-green-700"
+    className="flex items-center justify-center h-12 gap-2 px-5 text-white bg-green-600 shadow rounded-xl hover:bg-green-700"
   >
     <FaFileExcel className="w-4 h-4" /> Export Excel
   </button>
 
   <button
     onClick={handleRefresh}
-    className="flex items-center justify-center gap-2 h-12 px-5 text-white bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+    className="flex items-center justify-center h-12 gap-2 px-5 text-white bg-gray-600 shadow rounded-xl hover:bg-gray-700"
   >
     <FaSyncAlt className="w-4 h-4" /> Refresh
   </button>
@@ -173,14 +171,17 @@ const DownlineAffiliates = () => {
                         "Lease Amount ($)",
                         "Rank",
                         "Register Date",
-                        "Topup Value ($)",
+                        "Topup date",
+                        "Total Team",
+                        "Active Team",
+                        "Monthly Self",
+                        "Monthly Team",
                         "Level",
                         "Status",
-                        "Topup Status",
                       ].map((heading, i) => (
                         <th
                           key={i}
-                          className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border"
+                          className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text"
                         >
                           {heading}
                         </th>
@@ -196,29 +197,23 @@ const DownlineAffiliates = () => {
                         <td className="px-4 py-3 font-medium">
                           {startIndex + idx + 1}
                         </td>
-                        <td className="px-4 py-3 td-wrap-text border">{member.loginid}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{member.sponsorId}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{member.name}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{member.email}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{member.mobile}</td>
-                        <td className="px-4 py-3 td-wrap-text border">${member.teamBusiness}</td>
-                        <td className="px-4 py-3 td-wrap-text border">${member.leaseAmount}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{member.urank}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{member.regDate}</td>
-                        <td className="px-4 py-3 td-wrap-text border">${member.topupValue}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{member.uLvl}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{member.status}</td>
-                        <td className="px-4 py-3 td-wrap-text border">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                              member.topupDate === "Activated"
-                                ? "bg-green-100 text-green-700"
-                                : "bg-red-100 text-red-600"
-                            }`}
-                          >
-                            {member.topupDate}
-                          </span>
-                        </td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.loginid}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.sponsorId}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.name}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.email}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.mobile}</td>
+                        <td className="px-4 py-3 border td-wrap-text">${member.teamBusiness}</td>
+                        <td className="px-4 py-3 border td-wrap-text">${member.leaseAmount}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.urank}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.regDate}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.topupDate || '-'}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.totTeam}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.activeTeam}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.monthlySelf}</td>
+                        <td className="px-4 py-3 border td-wrap-text">  {member.monthlyTeam}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.uLvl}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{member.status}</td>
+                      
                       </tr>
                     ))}
                   </tbody>

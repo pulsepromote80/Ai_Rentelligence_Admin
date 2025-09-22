@@ -165,13 +165,17 @@ export default function Affiliate() {
                         "Lease Amount ($)",
                         "Rank",
                         "Register Date",
+                        "Topup Date",
                         "Self Topup ($)",
                         "DYR Percentage",
-                        "Status",
+                        "Total Team",
+                        "Active Team",
+                        "Monthly Self",
+                        "Monthly Team"
                       ].map((heading, i) => (
                         <th
                           key={i}
-                          className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border"
+                          className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text"
                         >
                           {heading}
                         </th>
@@ -196,49 +200,53 @@ export default function Affiliate() {
                           key={idx}
                           className="transition-colors border-b hover:bg-blue-50 last:border-none"
                         >
-                          <td className="px-4 py-3 td-wrap-text border">
+                          <td className="px-4 py-3 border td-wrap-text">
                             {startIndex + idx + 1}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text border">
+                          <td className="px-4 py-3 border td-wrap-text">
                             {member.loginid}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text border">
+                          <td className="px-4 py-3 border td-wrap-text">
                             {member.name}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text border">
+                          <td className="px-4 py-3 border td-wrap-text">
                             {member.email}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text border">
+                          <td className="px-4 py-3 border td-wrap-text">
                             {member.mobile}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text border">
+                          <td className="px-4 py-3 border td-wrap-text">
                             ${member.teamBusiness}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text border">
+                          <td className="px-4 py-3 border td-wrap-text">
                             ${member.leaseAmount}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text border">
+                          <td className="px-4 py-3 border td-wrap-text">
                             {member.urank}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text border">
+                          <td className="px-4 py-3 border td-wrap-text">
                             {member.regDate}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text border">
+                          <td className="px-4 py-3 border td-wrap-text">
+                            {member.topupDate || '-'}
+                          </td>
+                          <td className="px-4 py-3 border td-wrap-text">
                             ${member.selfTopup}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text border">
+                          <td className="px-4 py-3 border td-wrap-text">
                             {member.dyrPercentage}
                           </td>
-                          <td className="px-4 py-3 td-wrap-text border">
-                            <span
-                              className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                member.topupDate === "Activated"
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-red-100 text-red-600"
-                              }`}
-                            >
-                              {member.topupDate}
-                            </span>
+                          <td className="px-4 py-3 border td-wrap-text">
+                              {member.totTeam}
+                          </td>
+                          <td className="px-4 py-3 border td-wrap-text">
+                              {member.activeTeam}
+                          </td>
+                          <td className="px-4 py-3 border td-wrap-text">
+                              {member.monthlySelf}
+                          </td>
+                          <td className="px-4 py-3 border td-wrap-text">
+                              {member.monthlyTeam}
                           </td>
                         </tr>
                       ))
