@@ -33,14 +33,14 @@ const ManageAdmin = () => {
       if (result && result.payload && result.payload.statusCode === 200) {
         toast.success(
           result.payload.message ||
-            (isActive
-              ? 'Admin Deactivated Successfully!'
-              : 'Admin Activated Successfully!'),
+          (isActive
+            ? 'Admin Deactivated Successfully!'
+            : 'Admin Activated Successfully!'),
         )
       } else {
         toast.error(
           (result && result.payload && result.payload.message) ||
-            'Action failed',
+          'Action failed',
         )
       }
     } catch (error) {
@@ -62,7 +62,7 @@ const ManageAdmin = () => {
 
   return (
     <div className="max-w-6xl p-5 mx-auto bg-white border border-blue-100 shadow-2xl mt-0mb-10 rounded-2xl">
-      <h6 class="heading">Manage Admins</h6>
+      <h6 className="heading">Manage Admins</h6>
 
       {loading ? (
         <div className="py-10 text-center text-blue-600 animate-pulse">
@@ -71,7 +71,7 @@ const ManageAdmin = () => {
       ) : error ? (
         <div className="py-10 text-center text-red-500">{error}</div>
       ) : (
-        <div className="overflow-hidden bg-white border border-gray-200 shadow-2xl  rounded-2xl">
+        <div className="overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-center text-gray-700 border-collapse">
               {/* Table Header */}
@@ -79,6 +79,9 @@ const ManageAdmin = () => {
                 <tr>
                   <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Sr.No.
+                  </th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
+                    Action
                   </th>
                   <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Username
@@ -132,6 +135,9 @@ const ManageAdmin = () => {
                           {startItem + idx}
                         </td>
                         <td className="px-2 py-2 border td-wrap-text">
+                          <button className='p-2 bg-green-200 rounded-md'>Authorize</button>
+                        </td>
+                        <td className="px-2 py-2 border td-wrap-text">
                           {row.username || '-'}
                         </td>
                         <td className="relative px-2 py-2 border td-wrap-text group">
@@ -157,10 +163,9 @@ const ManageAdmin = () => {
                           {row.phoneNumber || '-'}
                         </td>
                         <td className="px-2 py-2 border td-wrap-text">
-                          {row.createdDate
-                            ? row.createdDate.split('T')[0]
-                            : '-'}
+                          {row.createdDate ? row.createdDate.split(' ')[0] : '-'}
                         </td>
+
                         <td className="px-2 py-2 border td-wrap-text">
                           {isActive ? (
                             <span className="px-3 py-1 font-medium text-green-500 ">

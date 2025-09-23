@@ -17,6 +17,7 @@ const ChangeSponser = () => {
   const [touched, setTouched] = useState(false)
   const [userName, setUserName] = useState('')
   const [sponsorName, setSponsorName] = useState('')
+  const [lvlopen, setLvlopen] = useState(0)
   const [errors, setErrors] = useState({})
 
   useEffect(() => {
@@ -87,7 +88,7 @@ const ChangeSponser = () => {
 
     try {
       const result = await dispatch(
-        ChangeAdminSponser({ authLogin, sponsorAuthLogin }),
+        ChangeAdminSponser({ authLogin, sponsorAuthLogin, lvlopen }),
       )
       const payload = result.payload
       const statusCode =
@@ -113,115 +114,125 @@ const ChangeSponser = () => {
 
   return (
     <div className="flex items-center justify-center p-0 mx-auto mt-0">
-      <div className="w-full max-w-2xl p-8 bg-white shadow-xl rounded-2xl relative border">
+      <div className="relative w-full max-w-2xl p-8 bg-white border shadow-xl rounded-2xl">
         {/* Avatar Circle */}
-   <div className="flex justify-center mb-6">
-  <div className="flex items-center justify-center w-20 h-20 rounded-full bg-blue-50 border-2 border-blue-200">
-    <svg
-      className="w-10 h-10 text-blue-500"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      viewBox="0 0 24 24"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M15 11a4 4 0 100-8 4 4 0 000 8zM9 11a4 4 0 100-8 4 4 0 000 8z"
-      />
-    </svg>
-  </div>
-</div>
+        <div className="flex justify-center mb-6">
+          <div className="flex items-center justify-center w-20 h-20 border-2 border-blue-200 rounded-full bg-blue-50">
+            <svg
+              className="w-10 h-10 text-blue-500"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87M15 11a4 4 0 100-8 4 4 0 000 8zM9 11a4 4 0 100-8 4 4 0 000 8z"
+              />
+            </svg>
+          </div>
+        </div>
 
-         
         {/* Title */}
         <h2 className="mt-2 mb-6 text-2xl font-bold text-center text-gray-800">
           Change Sponsor
         </h2>
-
         {/* Form */}
-      {/* Form */}
-<form className="space-y-6" onSubmit={handleSubmit}>
-  {/* User ID + User Name in 50/50 */}
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <div>
-      <label className="block mb-2 text-sm font-semibold text-gray-700">
-        User ID
-      </label>
-      <input
-        type="text"
-        className="w-full px-4 py-3 text-sm border rounded-xl bg-gray-50 focus:outline-none focus:ring-2 border-gray-200 focus:ring-purple-300"
-        value={authLogin}
-        onChange={handleUserIdChange}
-        onBlur={handleBlurOrFetch}
-        placeholder="Enter User ID"
-      />
-      {errors.authLogin && (
-        <p className="mt-1 text-sm text-red-500">{errors.authLogin}</p>
-      )}
-      {errors.title && (
-        <p className="mt-1 text-sm text-red-500">{errors.title}</p>
-      )}
-    </div>
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          {/* User ID + User Name in 50/50 */}
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                User ID
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                value={authLogin}
+                onChange={handleUserIdChange}
+                onBlur={handleBlurOrFetch}
+                placeholder="Enter User ID"
+              />
+              {errors.authLogin && (
+                <p className="mt-1 text-sm text-red-500">{errors.authLogin}</p>
+              )}
+              {errors.title && (
+                <p className="mt-1 text-sm text-red-500">{errors.title}</p>
+              )}
+            </div>
 
-    <div>
-      <label className="block mb-2 text-sm font-semibold text-gray-700">
-        User Name
-      </label>
-      <input
-        type="text"
-        className="w-full px-4 py-3 text-sm border rounded-xl bg-gray-50 focus:outline-none focus:ring-2 border-gray-200 focus:ring-purple-300"
-        value={touched && userName ? userName : ''}
-        readOnly
-        placeholder="User Name"
-      />
-    </div>
-  </div>
+            <div>
+              <label className="block mb-2 text-sm font-semibold text-gray-700">
+                User Name
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                value={touched && userName ? userName : ''}
+                readOnly
+                placeholder="User Name"
+              />
+            </div>
+          </div>
 
-  {/* Sponsor ID + Sponsor Name in 50/50 */}
-  {userName && (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <label className="block mb-2 text-sm font-semibold text-gray-700">
-          Sponsor User ID
-        </label>
-        <input
-          type="text"
-          className="w-full px-4 py-3 text-sm border rounded-xl bg-gray-50 focus:outline-none focus:ring-2 border-gray-200 focus:ring-purple-300"
-          value={sponsorAuthLogin}
-          onChange={handleSponsorIdChange}
-          placeholder="Enter Sponsor User ID"
-          required
-        />
-        {errors.sponsor && (
-          <p className="mt-1 text-sm text-red-500">{errors.sponsor}</p>
-        )}
-      </div>
+          {userName && (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-gray-700">
+                  Sponsor User ID
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  value={sponsorAuthLogin}
+                  onChange={handleSponsorIdChange}
+                  placeholder="Enter Sponsor User ID"
+                  required
+                />
+                {errors.sponsor && (
+                  <p className="mt-1 text-sm text-red-500">{errors.sponsor}</p>
+                )}
+              </div>
 
-      <div>
-        <label className="block mb-2 text-sm font-semibold text-gray-700">
-          Sponsor Name
-        </label>
-        <input
-          type="text"
-          className="w-full px-4 py-3 text-sm border rounded-xl bg-gray-50 focus:outline-none focus:ring-2 border-gray-200 focus:ring-purple-300"
-          value={sponsorName}
-          readOnly
-          placeholder="Sponsor Name"
-        />
-      </div>
-    </div>
-  )}
+              <div>
+                <label className="block mb-2 text-sm font-semibold text-gray-700">
+                  Sponsor Name
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-300"
+                  value={sponsorName}
+                  readOnly
+                  placeholder="Sponsor Name"
+                />
+              </div>
+           <div className="flex items-center gap-2">
+  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+    <input
+      type="checkbox"
+      checked={lvlopen === 1}
+      onChange={(e) => setLvlopen(e.target.checked ? 1 : 0)}
+      className="text-purple-600 focus:ring-purple-500"
+    />
+    Level Open
+  </label>
+</div>
 
-  {/* Submit */}
-  <button
-    type="submit"
-    className="w-full py-3 mt-6 text-lg font-semibold text-white rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
-    disabled={!!errors.authLogin}
-  >
-    {loading ? 'Processing...' : 'Submit'}
-  </button>
-</form>
+
+
+            </div>
+          )}
+
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full py-3 mt-6 text-lg font-semibold text-white rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            disabled={!!errors.authLogin}
+          >
+            {loading ? 'Processing...' : 'Submit'}
+          </button>
+        </form>
 
 
         {loading && <p className="mt-4 text-center text-blue-500">Loading...</p>}

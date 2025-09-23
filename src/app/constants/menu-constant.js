@@ -9,13 +9,13 @@ export const API_ENDPOINTS = {
 };
 
 export const Columns = [
-    { key: 'id', label: 'S.No' },
+    { key: 'sno', label: 'S.No' },
     { key: 'menuName', label: 'Menu Name' },
     { key: 'menuIcon', label: 'Menu Icon' },
-    { key: 'pageName', label: 'Page Name' },
-    { key: 'controllerName', label: 'Controller Name' },
-    { key: 'actionName', label: 'Action Name' },
-    { key: 'displayOrder', label: 'Display Order' },
+    // { key: 'pageName', label: 'Page Name' },
+    // { key: 'controllerName', label: 'Controller Name' },
+    // { key: 'actionName', label: 'Action Name' },
+    // { key: 'displayOrder', label: 'Display Order' },
     { key: 'status', label: 'Status' }
 ,
 ];

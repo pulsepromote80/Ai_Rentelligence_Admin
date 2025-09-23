@@ -51,6 +51,12 @@ const SubMenu = () => {
     }
   }, [dispatch, formState.selectedMenu?.value])
 
+   const tableData = subMenu?.map((row, index) => ({
+  ...row,
+  sno: index + 1, 
+}))
+
+
   const validateForm = () => {
     const newErrors = {}
 
@@ -190,7 +196,7 @@ const SubMenu = () => {
       </div>
       {showForm && (
         <div className="p-4 mb-4 rounded-md">
-          <h2 className="mb-10 text-2xl font-bold text-center text-add-label">
+          <h2 className="mb-5 text-xl font-bold text-left text-black">
             {editMode ? 'Edit Sub Menu' : 'Add Sub Menu'}
           </h2>
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
@@ -311,7 +317,7 @@ const SubMenu = () => {
         <div className="mt-4">
           <Table
             columns={Columns}
-            data={subMenu}
+            data={tableData}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />

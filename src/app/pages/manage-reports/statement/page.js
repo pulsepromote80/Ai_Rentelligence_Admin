@@ -58,6 +58,8 @@ const Statement = () => {
         return 2
       case 'RentWallet':
         return 3
+        case 'transactionwallet':
+        return 4
       default:
         return 0
     }
@@ -85,18 +87,48 @@ const Statement = () => {
     fetchUsername()
   }, [userId, dispatch])
 
-  const handleSearch = () => {
-    const payload = {
-      authLogin: userId || '',
-      transtype: transactionType || '',
-      fromDate: formatDate(fromDate) || '',
-      toDate: formatDate(toDate) || '',
-      wtype: getWalletType(selectedWallet),
-    }
+  // const handleSearch = () => {
+  //   const payload = {
+  //     authLogin: userId || '',
+  //     transtype: transactionType || '',
+  //     fromDate: formatDate(fromDate) || '',
+  //     toDate: formatDate(toDate) || '',
+  //     wtype: getWalletType(selectedWallet),
+  //   }
 
-    dispatch(getAccStatemtnt(payload))
-    setHasSearched(true)
+  //   dispatch(getAccStatemtnt(payload))
+  //   setHasSearched(true)
+  // }
+
+  const handleSearch = async () => {
+  const payload = {
+    authLogin: userId || '',
+    transtype: transactionType || '',
+    fromDate: formatDate(fromDate) || '',
+    toDate: formatDate(toDate) || '',
+    wtype: getWalletType(selectedWallet),
+  };
+
+  try {
+    const resultAction = await dispatch(getAccStatemtnt(payload));
+
+    if (getAccStatemtnt.fulfilled.match(resultAction)) {
+      const res = resultAction.payload;
+
+      if (res?.statusCode !== 200) {
+        toast.error(res?.message || "Something went wrong!");
+      } else {
+        toast.success("Data fetched successfully!");
+      }
+    } else if (getAccStatemtnt.rejected.match(resultAction)) {
+      toast.error(resultAction.payload || "API Request Failed!");
+    }
+  } catch (err) {
+    toast.error("Unexpected error occurred!");
   }
+
+  setHasSearched(true);
+};
 
   const handleExport = () => {
     if (!accStatementData || accStatementData.length === 0) {
@@ -223,6 +255,7 @@ const Statement = () => {
       <option value="Income">Income Wallet</option>
       <option value="DepositWallet">Deposit Wallet</option>
       <option value="RentWallet">Rent Wallet</option>
+      <option value="transactionwallet">Transaction Wallet</option>
     </select>
   </div>
 
@@ -287,7 +320,7 @@ const Statement = () => {
   <div className="flex items-end">
     <button
       onClick={handleSearch}
-      className="w-full flex items-center justify-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
+      className="flex items-center justify-center w-full gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
     >
       <Search className="w-5 h-5" />
       Search
@@ -298,7 +331,7 @@ const Statement = () => {
   <div className="flex items-end">
     <button
       onClick={handleRefresh}
-      className="w-full flex items-center justify-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+      className="flex items-center justify-center w-full gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
     >
       <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
       Refresh
@@ -315,31 +348,31 @@ const Statement = () => {
               {/* Table Header */}
               <thead className="text-white bg-gradient-to-r from-blue-700 to-blue-500">
                 <tr>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Sr.No.
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Username
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Name
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Credit
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Debit
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Requested Date
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Approval Date
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     TransType
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase th-wrap-text border">
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Remark
                   </th>
                 </tr>
@@ -350,35 +383,35 @@ const Statement = () => {
                     key={index}
                     className={`transition-colors duration-200 ${index % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100' : 'bg-white hover:bg-blue-50'}`}
                   >
-                    <td className="px-2 py-2 td-wrap-text border">
+                    <td className="px-2 py-2 border td-wrap-text">
                       {indexOfFirstItem + index + 1}
                     </td>
-                    <td className="px-2 py-2 td-wrap-text border">
+                    <td className="px-2 py-2 border td-wrap-text">
                       {transaction.AuthLogin}
                     </td>
-                    <td className="px-2 py-2 td-wrap-text border">
+                    <td className="px-2 py-2 border td-wrap-text">
                       {transaction.FullName}
                     </td>
-                    <td className="px-2 py-2 td-wrap-text border">
+                    <td className="px-2 py-2 border td-wrap-text">
                       ${transaction.Credit}
                     </td>
-                    <td className="px-2 py-2 td-wrap-text border">
+                    <td className="px-2 py-2 border td-wrap-text">
                       ${transaction.Debit}
                     </td>
-                    <td className="px-2 py-2 td-wrap-text border">
+                    <td className="px-2 py-2 border td-wrap-text">
                       {transaction.CreatedDate
                         ? transaction.CreatedDate.split('T')[0]
                         : '-'}
                     </td>
-                    <td className="px-2 py-2 td-wrap-text border">
+                    <td className="px-2 py-2 border td-wrap-text">
                       {transaction.ApprovalDate
                         ? transaction.ApprovalDate.split('T')[0]
                         : '-'}
                     </td>
-                    <td className="px-2 py-2 td-wrap-text border">
+                    <td className="px-2 py-2 border td-wrap-text">
                       {transaction.TransType}
                     </td>
-                    <td className="px-2 py-2 td-wrap-text border">
+                    <td className="px-2 py-2 border td-wrap-text">
                       {transaction.Remark}
                     </td>
                   </tr>

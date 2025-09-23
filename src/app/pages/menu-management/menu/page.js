@@ -147,6 +147,12 @@ const Menu = () => {
     }))
     setErrors((prev) => ({ ...prev, [name]: '' }))
   }
+ 
+   const tableData = data?.map((row, index) => ({
+  ...row,
+  sno: index + 1, 
+}))
+
 
   return (
     <div className="max-w-full mx-auto bg-white rounded-lg">
@@ -170,7 +176,7 @@ const Menu = () => {
       {showForm && (
         <div className="p-4 mb-4">
           <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-x-6 gap-y-4">
-            <h2 className="col-span-2 mb-4 text-2xl font-bold text-center text-add-label">
+            <h2 className="col-span-2 mb-4 text-xl font-bold text-left text-black">
               {editMode ? 'Edit Menu' : 'Add Menu'}
             </h2>
 
@@ -315,7 +321,7 @@ const Menu = () => {
           {error && <p className="text-red-500">Error: {error}</p>}
     <Table
     columns={Columns}
-    data={data}
+    data={tableData}
     loading={loading}
     onEdit={handleEdit}
     onDelete={handleDeleteClick}
