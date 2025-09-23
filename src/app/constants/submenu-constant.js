@@ -7,7 +7,7 @@ export const API_ENDPOINTS = {
 };
   
   export const Columns = [
-    { key: 'id', label: 'S.No' },
+    { key: 'sno', label: 'S.No' },
     { key: 'subMenuName', label: 'Sub Menu Name' },
     { key: 'subMenuPageName', label: 'Sub Menu Page Name' },
     { key: 'displayOrder', label: 'Display Order' },

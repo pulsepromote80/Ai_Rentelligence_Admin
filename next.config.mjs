@@ -4,7 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'rentelligence.live',
+        hostname: 'apis.rentelligence.online',
       },
     ],
   },
