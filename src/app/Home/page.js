@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import Link from "next/link"
 import { FaRobot } from "react-icons/fa"
 
 export default function Home() {
@@ -31,7 +32,10 @@ export default function Home() {
         <p className="text-xs font-semibold text-indigo-600 md:text-sm animate-fadeInDelay">
           Empowering the Future with AI Agents — Rent, Lease, Own, and Evolve
         </p>
+         <Link href="/login">
+        <button className="p-3 text-white bg-purple-500 rounded-md">Login Now</button></Link>
       </div>
+      
 
       {/* Extra CSS Animations */}
       <style jsx>{`
