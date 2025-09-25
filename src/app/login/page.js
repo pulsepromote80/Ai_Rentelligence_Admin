@@ -213,7 +213,7 @@ const AdminLogin = () => {
               {loading ? (
                 <>
                   <Spinner />
-                  <span className="ml-2">LOGIN IN</span>
+                  <span className="ml-2">LOG IN</span>
                 </>
               ) : (
                 <>
