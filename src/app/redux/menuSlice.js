@@ -116,6 +116,7 @@ const menuSlice = createSlice({
       // Add
       .addCase(addMenu.fulfilled, (state, action) => {
         state.data.push(action.payload)
+         sessionStorage.setItem("menus", JSON.stringify(state.data));
       })
       .addCase(addMenu.rejected, (state, action) => {
         state.error = action.payload
@@ -128,6 +129,7 @@ const menuSlice = createSlice({
         if (index !== -1) {
           state.data[index] = updated
         }
+        sessionStorage.setItem("menus", JSON.stringify(state.data));
       })
       .addCase(updateMenu.rejected, (state, action) => {
         state.error = action.payload
@@ -136,6 +138,7 @@ const menuSlice = createSlice({
       // Delete
       .addCase(deleteMenu.fulfilled, (state, action) => {
         state.data = state.data.filter((menu) => menu.menuId !== action.payload)
+        sessionStorage.setItem("menus", JSON.stringify(state.data));
       })
       .addCase(deleteMenu.rejected, (state, action) => {
         state.error = action.payload

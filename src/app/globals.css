@@ -202,7 +202,9 @@ body {
     transform: rotate(360deg);
   }
 }
-
+.select-drop-dwon span{
+  color: #000;
+}
 @media (max-width: 640px) {
  .mobile-logo {
     margin-left: 30px !important;

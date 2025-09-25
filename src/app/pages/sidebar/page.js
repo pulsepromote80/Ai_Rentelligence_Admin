@@ -33,23 +33,44 @@ const Sidebar = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
   useEffect(() => {
-    dispatch(fetchSidebarMenu())
-    dispatch(fetchMenuIcons())
-
-    const handleClickOutside = (event) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        setMobileSidebarOpen(false)
+  
+  const storedMenus = sessionStorage.getItem("menus");
+  if (storedMenus) {
+    dispatch({ type: "sidebar/setMenuFromSession", payload: JSON.parse(storedMenus) });
+  } else {
+    dispatch(fetchSidebarMenu()).then((res) => {
+      if (res.payload) {
+        sessionStorage.setItem("menus", JSON.stringify(res.payload));
       }
-    }
+    });
+  }
 
-    if (mobileSidebarOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
+  const storedIcons = sessionStorage.getItem("icons");
+  if (storedIcons) {
+    dispatch({ type: "sidebar/setIconsFromSession", payload: JSON.parse(storedIcons) });
+  } else {
+    dispatch(fetchMenuIcons()).then((res) => {
+      if (res.payload) {
+        sessionStorage.setItem("icons", JSON.stringify(res.payload));
+      }
+    });
+  }
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
+  const handleClickOutside = (event) => {
+    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+      setMobileSidebarOpen(false);
     }
-  }, [dispatch, mobileSidebarOpen])
+  };
+
+  if (mobileSidebarOpen) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [dispatch, mobileSidebarOpen]);
+
 
   const toggleSubMenu = (menuId, menuName, hasSubMenu) => {
     if (!hasSubMenu) {
@@ -110,7 +131,7 @@ const Sidebar = () => {
 
       >
         <div
-          className="flex items-center justify-between p-2  text-white rounded cursor-pointer"
+          className="flex items-center justify-between p-2 text-white rounded cursor-pointer"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
           <span>Menu</span>
@@ -134,7 +155,7 @@ const Sidebar = () => {
                         )
                       }
                     >
-                      <span className="menu-text flex items-center gap-3 text-white group-hover:text-black">
+                      <span className="flex items-center gap-3 text-white menu-text group-hover:text-black">
                         {getMenuIcon(item.menuId)}
                         {item.menuName}
                       </span>

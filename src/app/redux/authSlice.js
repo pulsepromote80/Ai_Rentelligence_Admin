@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { postRequest,setToken ,setAdminUserId,setUsername} from "../pages/api/auth";
+import { postRequest, setToken, setAdminUserId, setUsername, getRequest } from "../pages/api/auth";
 import Cookies from "js-cookie";
 import { all } from "axios";
 
@@ -11,7 +11,8 @@ const API_ENDPOINTS = {
   VERIFYOTP: "/AdminAuthentication/adminVerifyOtp",
   RESETPASSWORD: "/AdminAuthentication/adminForgotPassword",
   BULKREGISTRATION: "/AdminAuthentication/addBulkRegsitration",
-  UPDATE_USER_PROFILE:"/Authentication/updateUserProfile"
+  UPDATE_USER_PROFILE: "/Authentication/updateUserProfile",
+  GET_ALL_COUNTRY: "/Geography/getAllCountry",
 };
 
 export const adminLogin = createAsyncThunk(
@@ -26,12 +27,12 @@ export const adminLogin = createAsyncThunk(
 
       const token = response.token;
       const adminUserId = response.data?.adminUserId;
-      
+
       setToken(token);
       setAdminUserId(adminUserId);
       setUsername(username);
 
-      return { token, adminUserId, username};
+      return { token, adminUserId, username };
     } catch (error) {
       return rejectWithValue(error.message || "Login failed!");
     }
@@ -40,10 +41,10 @@ export const adminLogin = createAsyncThunk(
 
 export const sendOTP = createAsyncThunk(
   "auth/sendOTP",
-  async ({ username }, { rejectWithValue }) => {  
+  async ({ username }, { rejectWithValue }) => {
     try {
-      const response = await postRequest(API_ENDPOINTS.USERFORGET, { username }); 
-      return username; 
+      const response = await postRequest(API_ENDPOINTS.USERFORGET, { username });
+      return username;
     } catch (error) {
       console.error(" OTP API Error:", error.response?.data || "Error sending OTP");
       return rejectWithValue(error.response?.data?.message || "Error sending OTP");
@@ -86,9 +87,9 @@ export const resetPassword = createAsyncThunk(
   "auth/resetPassword",
   async ({ username, newPassword }, { rejectWithValue }) => {
     try {
-      const response = await postRequest(API_ENDPOINTS.RESETPASSWORD, { 
-        username:username, 
-        password: newPassword 
+      const response = await postRequest(API_ENDPOINTS.RESETPASSWORD, {
+        username: username,
+        password: newPassword
       });
       return response;
     } catch (error) {
@@ -124,6 +125,21 @@ export const updateUser = createAsyncThunk(
   }
 );
 
+export const getAllCountry = createAsyncThunk(
+  "auth/getAllCountry",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getRequest(API_ENDPOINTS.GET_ALL_COUNTRY);
+      return response;
+    } catch (error) {
+      console.error("API Error:", error.response?.data || error.message);
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to send OTP"
+      );
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -138,13 +154,17 @@ const authSlice = createSlice({
     success: false,
     bulkRegistrationData: null,
     allUserRegistrations: null,
-    updateUserData:null
+    updateUserData: null,
+    getAllCountryData: null
   },
   reducers: {
     logout: (state) => {
       Cookies.remove("token");
       Cookies.remove("userData");
       Cookies.remove("adminUserId");
+      sessionStorage.removeItem("menus");
+      sessionStorage.removeItem("icons");
+      sessionStorage.clear();
       //Cookies.remove("appRoleId");
       state.isAuthenticated = false;
       state.userData = null;
@@ -170,7 +190,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-  
+
       .addCase(adminLogin.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -208,9 +228,9 @@ const authSlice = createSlice({
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        
+
       })
-      
+
       .addCase(verifyOtp.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -218,7 +238,7 @@ const authSlice = createSlice({
       .addCase(verifyOtp.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.forgotPasswordUsername = action.payload.username; 
+        state.forgotPasswordUsername = action.payload.username;
       })
       .addCase(verifyOtp.rejected, (state, action) => {
         state.loading = false;
@@ -252,8 +272,8 @@ const authSlice = createSlice({
         state.success = false;
         state.error = action.payload;
       })
-      
-        .addCase(updateUser.pending, (state) => {
+
+      .addCase(updateUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
@@ -264,10 +284,23 @@ const authSlice = createSlice({
       .addCase(updateUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        
+
+      })
+      .addCase(getAllCountry.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getAllCountry.fulfilled, (state, action) => {
+        state.loading = false;
+        state.getAllCountryData = action.payload;
+        state.error = null;
+      })
+      .addCase(getAllCountry.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
   },
 });
 
-export const { logout, resetForgotPasswordState, resetVerifyOtpState,clearError } = authSlice.actions;
+export const { logout, resetForgotPasswordState, resetVerifyOtpState, clearError } = authSlice.actions;
 export default authSlice.reducer;
