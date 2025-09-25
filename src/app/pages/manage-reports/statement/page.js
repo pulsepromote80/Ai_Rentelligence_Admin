@@ -145,7 +145,7 @@ const Statement = () => {
         Debit: `$${txn.Debit}`,
         RequestedDate: txn.CreatedDate ? txn.CreatedDate.split('T')[0] : '',
         ApprovalDate: txn.ApprovalDate ? txn.ApprovalDate.split('T')[0] : '',
-        TransType: txn.TransType,
+        email: txn.email,
         Remark: txn.Remark,
       })),
     )
@@ -358,6 +358,9 @@ const Statement = () => {
                     Name
                   </th>
                   <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
+                    Email
+                  </th>
+                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Credit
                   </th>
                   <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
@@ -369,9 +372,7 @@ const Statement = () => {
                   <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Approval Date
                   </th>
-                  <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
-                    TransType
-                  </th>
+                  
                   <th className="px-4 py-3 font-semibold tracking-wide uppercase border th-wrap-text">
                     Remark
                   </th>
@@ -393,6 +394,9 @@ const Statement = () => {
                       {transaction.FullName}
                     </td>
                     <td className="px-2 py-2 border td-wrap-text">
+                      {transaction.email}
+                    </td>
+                    <td className="px-2 py-2 border td-wrap-text">
                       ${transaction.Credit}
                     </td>
                     <td className="px-2 py-2 border td-wrap-text">
@@ -408,9 +412,7 @@ const Statement = () => {
                         ? transaction.ApprovalDate.split('T')[0]
                         : '-'}
                     </td>
-                    <td className="px-2 py-2 border td-wrap-text">
-                      {transaction.TransType}
-                    </td>
+                    
                     <td className="px-2 py-2 border td-wrap-text">
                       {transaction.Remark}
                     </td>
