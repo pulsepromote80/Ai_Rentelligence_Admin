@@ -58,7 +58,7 @@ const AdminLogin = () => {
 
   return (
     <div className="items-center justify-center p-4 overflow-auto ">
-      <div className="flex flex-col md:flex-row w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl max-h-[90vh]">
+      <div className="flex flex-col md:flex-row w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl max-h-[90vh] mt-2">
         {/* Left side - Illustration and Welcome Text */}
         <div className="relative flex flex-col justify-center w-full p-8 overflow-hidden text-white md:w-2/5 bg-gradient-to-br from-indigo-600 to-purple-700">
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
