@@ -2,7 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { FaRobot } from "react-icons/fa"
+import { FaRobot,FaArrowRight } from "react-icons/fa"
 
 export default function Home() {
   return (
@@ -33,7 +33,12 @@ export default function Home() {
           Empowering the Future with AI Agents — Rent, Lease, Own, and Evolve
         </p>
          <Link href="/login">
-        <button className="p-3 text-white bg-purple-500 rounded-md">Login Now</button></Link>
+  <button className="flex items-center px-5 py-3 text-white transition-all duration-300 bg-purple-500 rounded-md hover:bg-purple-600">
+    Login Now  
+    <FaArrowRight className="w-4 h-4 ml-2" />
+  </button>
+</Link>
+
       </div>
       
 
