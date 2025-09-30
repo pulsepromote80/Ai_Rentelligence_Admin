@@ -23,7 +23,9 @@ const AdminRegistration = () => {
 
   const [formData, setFormData] = useState({
     username: "",
-    name: "",
+    fname: "",
+    lname: "",
+    type: "",
     email: "",
     phoneNumber: "",
     password: "",
@@ -40,7 +42,7 @@ const AdminRegistration = () => {
     const usernameError = isValidUsername(formData.username);
     if (usernameError) newErrors.username = usernameError;
 
-    const nameError = isValidUsername(formData.name);
+    const nameError = isValidUsername(formData.fname);
     if (nameError) newErrors.name = nameError;
 
     const emailError = isValidEmail(formData.email);
@@ -183,25 +185,68 @@ const AdminRegistration = () => {
           )}
         </div>
         <div className="relative">
+    <span className="absolute inset-y-0 flex items-center text-gray-400 left-3">
+      <User size={18} />
+    </span>
+    <select
+      name="type"
+      value={formData.type}
+      onChange={handleChange}
+      className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+        errors.type ? "border-red-500" : "border-gray-300"
+      }`}
+    >
+      <option value="">Select Type</option>
+      <option value="SuperAdmin">SuperAdmin</option>
+      <option value="Admin">Admin</option>
+    </select>
+    {errors.type && (
+      <p className="mt-1 text-xs text-red-500">{errors.type}</p>
+    )}
+  </div>
+        
+      </div>
+
+ <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+  <div className="relative">
           <span className="absolute inset-y-0 flex items-center text-gray-400 left-3">
             <User size={18} />
           </span>
           <input
             type="text"
-            name="name"
-            placeholder="Full Name"
-            value={formData.name}
+            name="fname"
+            placeholder="First Name"
+            value={formData.fname}
             onChange={handleChange}
             className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none ${
-              errors.name ? "border-red-500" : "border-gray-300"
+              errors.fname ? "border-red-500" : "border-gray-300"
             }`}
           />
-          {errors.name && (
-            <p className="mt-1 text-xs text-red-500">{errors.name}</p>
+          {errors.fname && (
+            <p className="mt-1 text-xs text-red-500">{errors.fname}</p>
           )}
         </div>
-      </div>
+        <div className="relative">
+          <span className="absolute inset-y-0 flex items-center text-gray-400 left-3">
+            <User size={18} />
+          </span>
+          <input
+            type="text"
+            name="lname"
+            placeholder="Last Name"
+            value={formData.lname}
+            onChange={handleChange}
+            className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none ${
+              errors.lname ? "border-red-500" : "border-gray-300"
+            }`}
+          />
+          {errors.lname && (
+            <p className="mt-1 text-xs text-red-500">{errors.lname}</p>
+          )}
+        </div>
+        
 
+      </div>
       {/* Email + Phone */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="relative">
