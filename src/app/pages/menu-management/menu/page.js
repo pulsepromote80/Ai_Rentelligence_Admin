@@ -8,6 +8,7 @@ import {fetchMenus,addMenu,updateMenu,deleteMenu,} from '@/app/redux/menuSlice'
 import { toast } from 'react-toastify'
 import DeletePopup from '@/app/common/utils/delete-popup'
 import { limitToCharacters, validateRequiredField } from '@/app/common/utils/validationHelpers'
+import Cookies from 'js-cookie'
 
 const Menu = () => {
   const dispatch = useDispatch()
@@ -29,8 +30,14 @@ const Menu = () => {
   const [showDeletePopup, setShowDeletePopup] = useState(false)
   const [menuToDelete, setMenuToDelete] = useState(null)
 
-  useEffect(() => {
-    dispatch(fetchMenus())
+  // useEffect(() => {
+  //   dispatch(fetchMenus())
+  // }, [dispatch])
+   useEffect(() => {
+    const adminUserId = getCookie('adminUserId')
+    if (adminUserId) {
+      dispatch(fetchMenus(adminUserId))
+    }
   }, [dispatch])
 
   const validateForm = () => {

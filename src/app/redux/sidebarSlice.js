@@ -43,14 +43,17 @@ export const fetchSidebarMenu = createAsyncThunk(
 
 export const fetchMenuIcons = createAsyncThunk(
   "menuIcons/fetchMenuIcons",
-  async (_, { rejectWithValue }) => {
+  async (adminUserId, { rejectWithValue }) => {
     try {
       const storedIcons = sessionStorage.getItem("icons");
       if (storedIcons) {
         return JSON.parse(storedIcons);
       }
-      const response = await getRequest(API_ENDPOINTS.GET_ALL_MENU);
+        const response = await getRequest(
+        `${API_ENDPOINTS.GET_ALL_MENU}?adminUserId=${adminUserId}`
+      );
 
+      console.log("Menu Icons Response:", response);
       if (!Array.isArray(response.data)) {
         throw new Error("Invalid menu icons format");
       }
@@ -116,3 +119,4 @@ const sidebarSlice = createSlice({
 
 export const { clearError ,setSelectedPage } = sidebarSlice.actions;
 export default sidebarSlice.reducer;
+

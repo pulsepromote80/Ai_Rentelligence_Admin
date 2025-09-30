@@ -17,6 +17,7 @@ import {
   selectError,
 } from './sidebar-selectors'
 
+
 const Sidebar = () => {
   const dispatch = useDispatch()
   const router = useRouter()
@@ -33,43 +34,48 @@ const Sidebar = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
   useEffect(() => {
-  
-  const storedMenus = sessionStorage.getItem("menus");
-  if (storedMenus) {
-    dispatch({ type: "sidebar/setMenuFromSession", payload: JSON.parse(storedMenus) });
-  } else {
-    dispatch(fetchSidebarMenu()).then((res) => {
-      if (res.payload) {
-        sessionStorage.setItem("menus", JSON.stringify(res.payload));
-      }
-    });
-  }
 
-  const storedIcons = sessionStorage.getItem("icons");
-  if (storedIcons) {
-    dispatch({ type: "sidebar/setIconsFromSession", payload: JSON.parse(storedIcons) });
-  } else {
-    dispatch(fetchMenuIcons()).then((res) => {
-      if (res.payload) {
-        sessionStorage.setItem("icons", JSON.stringify(res.payload));
-      }
-    });
-  }
-
-  const handleClickOutside = (event) => {
-    if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-      setMobileSidebarOpen(false);
+    const storedMenus = sessionStorage.getItem("menus");
+    if (storedMenus) {
+      dispatch({ type: "sidebar/setMenuFromSession", payload: JSON.parse(storedMenus) });
+    } else {
+      dispatch(fetchSidebarMenu()).then((res) => {
+        if (res.payload) {
+          sessionStorage.setItem("menus", JSON.stringify(res.payload));
+        }
+      });
     }
-  };
 
-  if (mobileSidebarOpen) {
-    document.addEventListener("mousedown", handleClickOutside);
-  }
+    const adminUserId = "c3eec0e2-744a-4938-909d-6be22a100feb"; 
 
-  return () => {
-    document.removeEventListener("mousedown", handleClickOutside);
-  };
-}, [dispatch, mobileSidebarOpen]);
+    const storedIcons = sessionStorage.getItem(`icons_${adminUserId}`);
+    if (storedIcons) {
+      dispatch({
+        type: "sidebar/setIconsFromSession",
+        payload: JSON.parse(storedIcons),
+      });
+    } else {
+      dispatch(fetchMenuIcons(adminUserId)).then((res) => {
+        if (res.payload) {
+          sessionStorage.setItem(`icons_${adminUserId}`, JSON.stringify(res.payload));
+        }
+      });
+    }
+
+    const handleClickOutside = (event) => {
+      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
+        setMobileSidebarOpen(false);
+      }
+    };
+
+    if (mobileSidebarOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dispatch, mobileSidebarOpen]);
 
 
   const toggleSubMenu = (menuId, menuName, hasSubMenu) => {
@@ -141,7 +147,7 @@ const Sidebar = () => {
           <div className="mt-4">
             {!loading &&
               !error &&
-              menuItems.map((item) => {
+              icons.map((item) => {
                 const isOpen = openMenuId === item.menuId
                 return (
                   <div className="mt-2" key={item.menuId}>
@@ -151,7 +157,7 @@ const Sidebar = () => {
                         toggleSubMenu(
                           item.menuId,
                           item.menuName,
-                          item.subMenu?.length > 0
+                          item.subMenus?.length > 0
                         )
                       }
                     >
@@ -159,16 +165,13 @@ const Sidebar = () => {
                         {getMenuIcon(item.menuId)}
                         {item.menuName}
                       </span>
-                      {item.subMenu?.length > 0 &&
-                        (isOpen ? (
-                          <FaAngleUp className="group-hover:fill-black" />
-                        ) : (
-                          <FaAngleDown className="group-hover:fill-black" />
-                        ))}
+                      {item.subMenus?.length > 0 &&
+                        (isOpen ? <FaAngleUp className="group-hover:fill-black" /> : <FaAngleDown className="group-hover:fill-black" />)}
                     </div>
-                    {item.subMenu?.length > 0 && isOpen && (
+
+                    {item.subMenus?.length > 0 && isOpen && (
                       <ul className="pl-4 space-y-2 ms-5 admint-submenu-ul">
-                        {item.subMenu.map((sub) => (
+                        {item.subMenus.map((sub) => (
                           <li
                             key={sub.subMenuId}
                             className={`radius-sm text-sm cursor-pointer font-normal hover:bg-white need-to-padding hover:text-black ${activeSubMenuId === sub.subMenuId
@@ -181,9 +184,10 @@ const Sidebar = () => {
                                 sub.subMenuId,
                                 sub.subMenuName,
                                 sub.subMenuPageName,
-                                sub.pageName
+                                item.pageName
                               )
-                            }>
+                            }
+                          >
                             {sub.subMenuName}
                           </li>
                         ))}
@@ -192,6 +196,7 @@ const Sidebar = () => {
                   </div>
                 )
               })}
+
           </div>
         )}
       </div>
@@ -200,3 +205,4 @@ const Sidebar = () => {
 }
 
 export default Sidebar
+

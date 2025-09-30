@@ -78,7 +78,6 @@ export const getUserDetails = () => {
   return null
 }
 
-// API Requests
 export const getRequest = async (endpoint) => {
   try {
     const token = getToken()
