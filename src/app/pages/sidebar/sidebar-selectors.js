@@ -7,6 +7,8 @@ export const selectMenuItems = createSelector(
     (sidebar) => sidebar.menuItems || []
 );
 
+export const selectSubMenuItems = (state) => state.sidebar.subMenuItems
+
 export const selectIcons = createSelector(
     [sidebarState],
     (sidebar) => sidebar.icons || []
