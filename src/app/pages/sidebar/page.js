@@ -16,6 +16,7 @@ import {
   selectLoading,
   selectError,
 } from './sidebar-selectors'
+import Cookies from 'js-cookie'
 
 
 const Sidebar = () => {
@@ -46,7 +47,7 @@ const Sidebar = () => {
       });
     }
 
-    const adminUserId = "c3eec0e2-744a-4938-909d-6be22a100feb"; 
+    const adminUserId = Cookies.get('adminUserId');
 
     const storedIcons = sessionStorage.getItem(`icons_${adminUserId}`);
     if (storedIcons) {
