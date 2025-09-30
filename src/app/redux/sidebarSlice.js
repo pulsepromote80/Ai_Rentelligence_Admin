@@ -53,7 +53,6 @@ export const fetchMenuIcons = createAsyncThunk(
         `${API_ENDPOINTS.GET_ALL_MENU}?adminUserId=${adminUserId}`
       );
 
-      console.log("Menu Icons Response:", response);
       if (!Array.isArray(response.data)) {
         throw new Error("Invalid menu icons format");
       }

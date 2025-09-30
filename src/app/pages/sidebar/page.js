@@ -35,48 +35,24 @@ const Sidebar = () => {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
   useEffect(() => {
+  const adminUserId = Cookies.get('adminUserId');
+  if (!adminUserId) return;
 
-    const storedMenus = sessionStorage.getItem("menus");
-    if (storedMenus) {
-      dispatch({ type: "sidebar/setMenuFromSession", payload: JSON.parse(storedMenus) });
-    } else {
-      dispatch(fetchSidebarMenu()).then((res) => {
-        if (res.payload) {
-          sessionStorage.setItem("menus", JSON.stringify(res.payload));
-        }
-      });
-    }
-
-    const adminUserId = Cookies.get('adminUserId');
-
-    const storedIcons = sessionStorage.getItem(`icons_${adminUserId}`);
-    if (storedIcons) {
-      dispatch({
-        type: "sidebar/setIconsFromSession",
-        payload: JSON.parse(storedIcons),
-      });
-    } else {
-      dispatch(fetchMenuIcons(adminUserId)).then((res) => {
-        if (res.payload) {
-          sessionStorage.setItem(`icons_${adminUserId}`, JSON.stringify(res.payload));
-        }
-      });
-    }
-
-    const handleClickOutside = (event) => {
-      if (sidebarRef.current && !sidebarRef.current.contains(event.target)) {
-        setMobileSidebarOpen(false);
+  const storedIcons = sessionStorage.getItem(`icons_${adminUserId}`);
+  if (storedIcons) {
+    dispatch({
+      type: "sidebar/setIconsFromSession",
+      payload: JSON.parse(storedIcons),
+    });
+  } else {
+    dispatch(fetchMenuIcons(adminUserId)).then((res) => {
+      if (res.payload) {
+        sessionStorage.setItem(`icons_${adminUserId}`, JSON.stringify(res.payload));
       }
-    };
+    });
+  }
+}, [dispatch, mobileSidebarOpen, Cookies.get('adminUserId')]);
 
-    if (mobileSidebarOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dispatch, mobileSidebarOpen]);
 
 
   const toggleSubMenu = (menuId, menuName, hasSubMenu) => {
