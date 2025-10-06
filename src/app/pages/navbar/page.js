@@ -17,6 +17,7 @@ const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const router = useRouter();
   const { user: adminDetails } = useSelector((state) => state.admin);
+  const  admin = adminDetails?.[0]
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -67,6 +68,7 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [menuOpen]);
+   const username = getUsername && getUsername();
 
   return (
     <nav className="flex items-center justify-between w-[95%] mx-auto p-3 bg-white sm:p-4 md:p-3">
@@ -95,7 +97,11 @@ const Navbar = () => {
             className="bg-profile-icon text-white px-2 py-1 sm:px-3 sm:py-1.5 md:px-4 md:py-2 rounded-full flex items-center gap-1 sm:gap-2 cursor-pointer text-sm sm:text-base"
             onClick={() => setMenuOpen(!menuOpen)}
           >
-            <span>Hi, {adminDetails?.username || "Admin"}</span>
+            <div>
+              <p className="pb-0 leading-4 text-md">Hi, {username || "Admin"}</p>
+            <p className="pt-0 text-xs text-yellow-300 text-">{admin?.type || "SuperAdmin"}</p>
+            </div>
+            
             <Image
               src="/userProfile.png"
               alt="Profile"
