@@ -798,7 +798,6 @@ const handleSavePermissions = async () => {
     toast.warning("⚠️ Please select an admin first");
     return;
   }
-
   setSaving(true);
 
   try {
