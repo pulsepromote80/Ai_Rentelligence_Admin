@@ -32,12 +32,12 @@ export default function Home() {
         <p className="text-xs font-semibold text-indigo-600 md:text-sm animate-fadeInDelay">
           Empowering the Future with AI Agents — Rent, Lease, Own, and Evolve
         </p>
-         <Link href="/login">
+         {/* <Link href="/login">
   <button className="flex items-center px-5 py-3 text-white transition-all duration-300 bg-purple-500 rounded-md hover:bg-purple-600">
     Login Now  
     <FaArrowRight className="w-4 h-4 ml-2" />
   </button>
-</Link>
+</Link> */}
 
       </div>
       

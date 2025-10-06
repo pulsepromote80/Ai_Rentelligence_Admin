@@ -5,7 +5,10 @@ export const API_ENDPOINTS = {
     ADD_MENU: "/Menu/addMenu",
     UPDATE_MENU: "/Menu/updateMenu",
     DELETE_MENU: "/Menu/deleteMenu",
-    GET_ALL_MENU_WITH_SUBMENU: "/Menu/getAllMenuOfSubMenu"
+    GET_ALL_MENU_WITH_SUBMENU: "/Menu/getAllMenuOfSubMenu",
+    GET_ALL_ADMIN_LIST_BY_PERMISSION:"/Menu/getAllAdminListbyPermission",
+    MENU_AND_SUBMENU_PERMISSION:"/Menu/menuAndSubMenuPermisiom",
+    ADD_MENU_WITH_SUBMENUBATCH:"/Menu/addMenuWithSubMenuBatch"
 };
 
 export const Columns = [
