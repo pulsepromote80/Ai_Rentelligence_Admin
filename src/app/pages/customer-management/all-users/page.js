@@ -314,7 +314,7 @@ const AllUsers = () => {
   </div>
 
   {/* Buttons */}
-  <div className="flex items-end justify-left gap-2 mt-2 md:col-span-4">
+  <div className="flex items-end gap-2 mt-2 justify-left md:col-span-4">
     <button
       type="submit"
       className="px-8 py-2 font-semibold text-white transition-all duration-200 rounded-lg shadow bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
@@ -347,22 +347,22 @@ const AllUsers = () => {
             {/* Table Header */}
             <thead className="text-white bg-blue-600">
                   <tr>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Sr.No.</th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">User Login</th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Name</th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Mobile</th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Email</th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Wallet Address</th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Package ($)</th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Package Status</th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">RegDate</th>
-                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border-b border-blue-500 th-wrap-text border">Status</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">Sr.No.</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">User Login</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">Name</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">Mobile</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">Email</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">Wallet Address</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">Package ($)</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">Package Status</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">RegDate</th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wide uppercase border border-b border-blue-500 th-wrap-text">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedData.length === 0 ? (
                     <tr>
-                      <td colSpan={10} className="px-4 py-3 td-wrap-text border">No Data Found</td>
+                      <td colSpan={10} className="px-4 py-3 border td-wrap-text">No Data Found</td>
                     </tr>
                   ) : (
                     paginatedData.map((row, idx) => (
@@ -370,21 +370,14 @@ const AllUsers = () => {
                         key={idx}
                         className={idx % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100 transition' : 'bg-white hover:bg-blue-50 transition'}
                       >
-                        <td className="px-4 py-3 td-wrap-text border">{row.srNo}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{row.AuthLogin}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{row.Name}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{row.Mobile}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{row.Email}</td>
-                        <td className="px-4 py-3 td-wrap-text border">
+                        <td className="px-4 py-3 border td-wrap-text">{row.srNo}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{row.AuthLogin}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{row.Name}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{row.Mobile}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{row.Email}</td>
+                        <td className="px-4 py-3 border td-wrap-text">
 
-                          <span
-                            className="cursor-pointer"
-                            title={row.WalletAddress || '-'}
-                          >
-                            {row.WalletAddress
-                              ? `${row.WalletAddress.substring(0, 15)}...`
-                              : '-'}
-                          </span>
+                         {row.WalletAddress || '-'}
                           {row.WalletAddress && (
                             <button
                               onClick={() => copyToClipboard(row.Wallet)}
@@ -396,10 +389,10 @@ const AllUsers = () => {
                           )}
 
                         </td>
-                        <td className="px-4 py-3 td-wrap-text border">{row.Package}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{row.PacakgateStatus}</td>
-                        <td className="px-4 py-3 td-wrap-text border">{row.RegDate}</td>
-                        <td className="px-4 py-3 td-wrap-text border">
+                        <td className="px-4 py-3 border td-wrap-text">{row.Package}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{row.PacakgateStatus}</td>
+                        <td className="px-4 py-3 border td-wrap-text">{row.RegDate}</td>
+                        <td className="px-4 py-3 border td-wrap-text">
                           <span
                             className={`px-2 py-1 text-md font-semibold ${row.active === 'Active'
                               ? 'text-green-800'

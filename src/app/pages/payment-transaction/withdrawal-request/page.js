@@ -952,14 +952,7 @@ const WithdrawalRequest = () => {
 
                           <td className="px-4 py-3 font-medium border td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
-                              <span
-                                className="cursor-pointer"
-                                title={row.Wallet || '-'}
-                              >
-                                {row.Wallet
-                                  ? `${row.Wallet.substring(0, 15)}...`
-                                  : '-'}
-                              </span>
+                             {row.Wallet || '-'}
                               {row.Wallet && (
                                 <button
                                   onClick={() => copyToClipboard(row.Wallet)}
