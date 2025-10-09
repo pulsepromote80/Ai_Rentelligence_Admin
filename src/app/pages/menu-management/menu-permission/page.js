@@ -679,6 +679,7 @@ export default function MenuPermission() {
   const [selectedAdmin, setSelectedAdmin] = useState("");
   const [permissions, setPermissions] = useState([]);
   const [saving, setSaving] = useState(false);
+  let toastShown = false;
 
   // Fetch admin list on mount
   useEffect(() => {
@@ -706,38 +707,69 @@ export default function MenuPermission() {
   }, [menuAndSubMenuPermission]);
 
   // Toggle permission state
-  const handlePermissionChange = (menuId, subMenuId = null) => {
-    setPermissions((prev) =>
-      prev.map((menu) => {
-        if (menu.menuId === menuId) {
-          if (subMenuId === null) {
-            // Toggle menu permission
-            return {
-              ...menu,
-              hasMenuPermission: !menu.hasMenuPermission,
-            };
-          } else {
-            // Toggle submenu permission
-            const updatedSubMenus = menu.subMenus.map((sub) =>
-              sub.subMenuId === subMenuId
-                ? {
-                    ...sub,
-                    hasSubMenuPermission: !sub.hasSubMenuPermission,
-                  }
-                : sub
-            );
-            return {
-              ...menu,
-              subMenus: updatedSubMenus,
-            };
-          }
-        }
-        return menu;
-      })
-    );
-  };
+  // const handlePermissionChange = (menuId, subMenuId = null) => {
+  //   setPermissions((prev) =>
+  //     prev.map((menu) => {
+  //       if (menu.menuId === menuId) {
+  //         if (subMenuId === null) {
+  //           // Toggle menu permission
+  //           return {
+  //             ...menu,
+  //             hasMenuPermission: !menu.hasMenuPermission,
+  //           };
+  //         } else {
+  //           // Toggle submenu permission
+  //           const updatedSubMenus = menu.subMenus.map((sub) =>
+  //             sub.subMenuId === subMenuId
+  //               ? {
+  //                   ...sub,
+  //                   hasSubMenuPermission: !sub.hasSubMenuPermission,
+  //                 }
+  //               : sub
+  //           );
+  //           return {
+  //             ...menu,
+  //             subMenus: updatedSubMenus,
+  //           };
+  //         }
+  //       }
+  //       return menu;
+  //     })
+  //   );
+  // };
 
- 
+ const handlePermissionChange = (menuId, subMenuId = null) => {
+  setPermissions((prev) =>
+    prev.map((menu) => {
+      if (menu.menuId === menuId) {
+        if (subMenuId === null) {
+          return {
+            ...menu,
+            hasMenuPermission: !menu.hasMenuPermission,
+          };
+        } else {
+          if (!menu.hasMenuPermission) {
+            if (!toastShown) {
+              toastShown = true;
+              toast.warning("Please select Menu first!");
+              setTimeout(() => (toastShown = false), 1000); 
+            }
+            return menu;
+          }
+
+          const updatedSubMenus = menu.subMenus.map((sub) =>
+            sub.subMenuId === subMenuId
+              ? { ...sub, hasSubMenuPermission: !sub.hasSubMenuPermission }
+              : sub
+          );
+          return { ...menu, subMenus: updatedSubMenus };
+        }
+      }
+      return menu;
+    })
+  );
+};
+
 
 
 

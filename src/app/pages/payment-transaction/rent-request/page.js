@@ -902,24 +902,6 @@ const RentRequest = () => {
                           {startItem + idx}
                         </td>
                         <td className="px-4 py-3 font-medium border td-wrap-text">
-                            {/* <button
-                              className="px-4 py-3 font-medium bg-green-100 rounded-full td-wrap-text"
-                              onClick={() => handleApproveUSDTClick(row)}
-                              disabled={
-                                !account ||
-                                chainId !== BSC_CHAIN_ID ||
-                                isSending
-                              }
-                              title={
-                                !account
-                                  ? 'Connect wallet first'
-                                  : chainId !== BSC_CHAIN_ID
-                                    ? 'Switch to BSC network'
-                                    : ''
-                              }
-                            >
-                              Approve USDT
-                            </button> */}
                             <button
                                                             className={`px-4 py-3 font-medium rounded-full td-wrap-text ${
                                 processedRequests.has(row.AuthLogin)
@@ -952,14 +934,6 @@ const RentRequest = () => {
                           </td>
                        <td className="px-4 py-3 font-medium border td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
-                              {/* <button
-                                className="px-4 py-3 text-blue-500 bg-green-100 rounded-full hover:text-blue-700"
-                                onClick={() =>
-                                  handleApproveClick(row.AuthLogin)
-                                }
-                              >
-                                Approve
-                              </button> */}
                                 <button
                                className={`px-4 py-3 rounded-full ${
                                   processedRequests.has(row.AuthLogin)
@@ -988,14 +962,7 @@ const RentRequest = () => {
                         </td>
                         <td className="px-4 py-3 font-medium border td-wrap-text">
                           <div className="flex items-center justify-center gap-1 group">
-                            <span
-                              className="cursor-pointer"
-                              title={row.Wallet || '-'}
-                            >
-                              {row.Wallet
-                                ? `${row.Wallet.substring(0, 15)}...`
-                                : '-'}
-                            </span>
+                           {row.Wallet || '-'}
                             {row.Wallet && (
                               <button
                                 onClick={() => copyToClipboard(row.Wallet)}
