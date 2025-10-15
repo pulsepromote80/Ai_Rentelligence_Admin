@@ -223,6 +223,33 @@ export const postUpdate = async (endpoint, data) => {
   return response.data
 }
 
+
+// ✅ POST (with form-data)
+export const postformRequestCloudImage = async (endpoint, data) => {
+  try {
+    const response = await axios.post(`${BASE_URL}${endpoint}`, data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("API Call Failed:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+// ✅ GET (no authorization)
+export const getRequestCloudImage = async (endpoint) => {
+  try {
+    const response = await axios.get(`${BASE_URL}${endpoint}`);
+    return response.data;
+  } catch (error) {
+    console.error("API Call Failed:", error);
+    throw error;
+  }
+};
+
 export const postImageRequest = async (endpoint, data) => {
   const token = getToken()
   if (!token) {
