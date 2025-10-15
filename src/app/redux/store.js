@@ -20,6 +20,8 @@ import adminManageUserReducer from './adminMangeUserSlice';
 import adminMasterReducer from './adminMasterSlice';
 import ticketReducer from './ticketSlice';
 import fundManagerReducer from './fundManagerSlice';
+// Import your cloudSlice
+import cloudReducer from './cloudSlice';
 
 export const store = configureStore({
     reducer: {
@@ -43,6 +45,7 @@ export const store = configureStore({
         adminManageUser: adminManageUserReducer,
         adminMaster: adminMasterReducer,
         ticket: ticketReducer,
-        fundManager: fundManagerReducer
+        fundManager: fundManagerReducer,
+        cloud: cloudReducer 
     },
 });

@@ -6,6 +6,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'apis.rentelligence.online',
       },
+      {
+        protocol: 'https',
+        hostname: 'imagedelivery.net',
+      },
     ],
   },
 };
