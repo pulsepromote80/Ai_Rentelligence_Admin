@@ -39,7 +39,6 @@ const RentRequest = () => {
   // Table state
   const [approvePopupOpen, setApprovePopupOpen] = useState(false)
   const [rejectPopupOpen, setRejectPopupOpen] = useState(false)
-  const [selectedAuthLoginId, setSelectedAuthLoginId] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(500)
   const [remark, setRemark] = useState('')
@@ -51,6 +50,7 @@ const RentRequest = () => {
   const [userError, setUserError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
   const [processedRequests, setProcessedRequests] = useState(new Set())
+  const [selectedRequest, setSelectedRequest] = useState({ authLoginId: null, id: null })
 
   const formatDate = (dateString) => {
     if (!dateString) return ''
@@ -401,6 +401,7 @@ const RentRequest = () => {
     ) || []
 
   const mappedRows = unApprovedRows.map((row) => ({
+    id: row.ID, // ✅ Corrected: Use ID from API response
     AuthLogin: row.AuthLogin,
     FullName: row.FullName,
     Email: row.Email,
@@ -446,8 +447,9 @@ const RentRequest = () => {
     setCurrentPage(1)
   }, [searchTerm])
 
-  const handleApproveClick = (authLoginId) => {
-    setSelectedAuthLoginId(authLoginId)
+  // ✅ Corrected: Properly set selected request
+  const handleApproveClick = (authLoginId, id) => {
+    setSelectedRequest({ authLoginId, id })
     setApprovePopupOpen(true)
   }
 
@@ -471,12 +473,6 @@ const RentRequest = () => {
       return
     }
 
-    // ✅ Ensure enough BNB for gas
-    // if (bnb < row.Release) { // ~small gas buffer
-    //   toast.error(`Insufficient BNB for gas fees!`);
-    //   return;
-    // }
-
     try {
       setIsSending(true)
       toast.info('Please confirm the transaction in MetaMask...', {
@@ -496,13 +492,6 @@ const RentRequest = () => {
         )
          setProcessedRequests(prev => new Set([...prev, row.AuthLogin]));
         toast.success('USDT Transaction Approved Successfully!')
-        // dispatch(
-        //   getRentWallet({
-        //     authLogin: userId || '',
-        //     fromDate: formatDate(fromDate) || '',
-        //     toDate: formatDate(toDate) || '',
-        //   }),
-        // )
       }
     } catch (error) {
       console.error('Error approving USDT:', error)
@@ -515,98 +504,98 @@ const RentRequest = () => {
       setIsSending(false)
     }
   }
-  const handleRejectClick = (authLoginId) => {
-    setSelectedAuthLoginId(authLoginId)
+
+  // ✅ Corrected: Properly set selected request
+  const handleRejectClick = (authLoginId, id) => {
+    setSelectedRequest({ authLoginId, id })
     setRejectPopupOpen(true)
   }
 
   const handleApprove = async () => {
-    if (selectedAuthLoginId) {
-      try {
-        await dispatch(
-          updateRentWithdrawRequestStatusAdmin({
-            authLoginId: selectedAuthLoginId,
-            rfstatus: 1,
-            remark: 'Approved by admin',
-          }),
-        )
-        setProcessedRequests(prev => new Set([...prev, selectedAuthLoginId]));
-        setApprovePopupOpen(false)
-        setSelectedAuthLoginId(null)
-        toast.success('Approved Successfully!', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        })
-        // dispatch(
-        //   getRentWallet({
-        //     authLogin: userId || '',
-        //     fromDate: formatDate(fromDate) || '',
-        //     toDate: formatDate(toDate) || '',
-        //   }),
-        // )
-      } catch (error) {
-        toast.error('Failed to approve request', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        })
-      }
+    if (selectedRequest.authLoginId && selectedRequest.id) {
+        try {
+            await dispatch(
+                updateRentWithdrawRequestStatusAdmin({
+                    authLoginId: selectedRequest.authLoginId,
+                    id: selectedRequest.id,
+                    rfstatus: 1,
+                    remark: 'Approved by admin',
+                }),
+            )
+            setProcessedRequests(prev => new Set([...prev, selectedRequest.authLoginId]));
+            setApprovePopupOpen(false)
+            setSelectedRequest({ authLoginId: null, id: null })
+            toast.success('Approved Successfully!', {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            })
+            
+            // Refresh data after approval
+            handleRefresh()
+        } catch (error) {
+            console.error('Approve error:', error)
+            toast.error('Failed to approve request', {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            })
+        }
     }
   }
 
   const handleReject = async () => {
-    if (selectedAuthLoginId && remark.trim()) {
-      try {
-        await dispatch(
-          updateRentWithdrawRequestStatusAdmin({
-            authLoginId: selectedAuthLoginId,
-            rfstatus: 2,
-            remark: remark,
-          }),
-        )
-        setProcessedRequests(prev => new Set([...prev, selectedAuthLoginId]));
-        setRejectPopupOpen(false)
-        setSelectedAuthLoginId(null)
-        setRemark('')
-        toast.success('Rejected Successfully!', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        })
-        // dispatch(
-        //   getRentWallet({
-        //     authLogin: userId || '',
-        //     fromDate: formatDate(fromDate) || '',
-        //     toDate: formatDate(toDate) || '',
-        //   }),
-        // )
-      } catch (error) {
-        toast.error('Failed to reject request', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        })
-      }
+    if (selectedRequest.authLoginId && selectedRequest.id && remark.trim()) {
+        try {
+            await dispatch(
+                updateRentWithdrawRequestStatusAdmin({
+                    authLoginId: selectedRequest.authLoginId,
+                    id: selectedRequest.id,
+                    rfstatus: 2,
+                    remark: remark,
+                }),
+            )
+            setProcessedRequests(prev => new Set([...prev, selectedRequest.authLoginId]));
+            setRejectPopupOpen(false)
+            setSelectedRequest({ authLoginId: null, id: null })
+            setRemark('')
+            toast.success('Rejected Successfully!', {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            })
+            
+            // Refresh data after rejection
+            handleRefresh()
+        } catch (error) {
+            console.error('Reject error:', error)
+            toast.error('Failed to reject request', {
+                position: 'top-right',
+                autoClose: 3000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+            })
+        }
+    } else {
+        toast.error('Please enter a remark for rejection')
     }
   }
 
   const handleCancel = () => {
     setApprovePopupOpen(false)
     setRejectPopupOpen(false)
-    setSelectedAuthLoginId(null)
+    setSelectedRequest({ authLoginId: null, id: null })
     setRemark('')
   }
 
@@ -903,12 +892,11 @@ const RentRequest = () => {
                         </td>
                         <td className="px-4 py-3 font-medium border td-wrap-text">
                             <button
-                                                            className={`px-4 py-3 font-medium rounded-full td-wrap-text ${
+                              className={`px-4 py-3 font-medium rounded-full td-wrap-text ${
                                 processedRequests.has(row.AuthLogin)
                                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                   : 'bg-green-100 hover:bg-green-200'
                               }`}
-
                               onClick={() => handleApproveUSDTClick(row)}
                               disabled={
                                 processedRequests.has(row.AuthLogin) ||
@@ -916,7 +904,7 @@ const RentRequest = () => {
                                 chainId !== BSC_CHAIN_ID ||
                                 isSending
                               }
-                                title={
+                              title={
                                 processedRequests.has(row.AuthLogin)
                                   ? 'Already processed'
                                   : !account
@@ -926,7 +914,6 @@ const RentRequest = () => {
                                       : ''
                               }
                             >
-                              {/* Approve USDT */}
                               {processedRequests.has(row.AuthLogin) 
                                 ? 'Approved USDT' 
                                 : 'Approve USDT'}
@@ -935,20 +922,17 @@ const RentRequest = () => {
                        <td className="px-4 py-3 font-medium border td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
                                 <button
-                               className={`px-4 py-3 rounded-full ${
-                                  processedRequests.has(row.AuthLogin)
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                    : 'text-blue-500 bg-green-100 hover:text-blue-700 hover:bg-green-200'
-                                }`}
-                                onClick={() =>
-                                  handleApproveClick(row.AuthLogin)
-                                }
-                                disabled={processedRequests.has(row.AuthLogin)}
-                                title={processedRequests.has(row.AuthLogin) ? 'Already processed' : ''}
-                              >
-                                {/* Approve */}
-                                {processedRequests.has(row.AuthLogin) ? 'Approved' : 'Approve'}
-                              </button>
+                                  className={`px-4 py-3 rounded-full ${
+                                    processedRequests.has(row.AuthLogin)
+                                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                      : 'text-blue-500 bg-green-100 hover:text-blue-700 hover:bg-green-200'
+                                  }`}
+                                  onClick={() => handleApproveClick(row.AuthLogin, row.id)}
+                                  disabled={processedRequests.has(row.AuthLogin)}
+                                  title={processedRequests.has(row.AuthLogin) ? 'Already processed' : ''}
+                                >
+                                  {processedRequests.has(row.AuthLogin) ? 'Approved' : 'Approve'}
+                                </button>
                             </div>
                           </td>
                         <td className="px-4 py-3 font-medium border td-wrap-text">
@@ -993,24 +977,18 @@ const RentRequest = () => {
                         </td>
 
                         <td className="px-4 py-3 font-medium border td-wrap-text">
-                          {/* <button
-                            className="px-3 py-1 font-semibold text-white bg-red-500 rounded hover:bg-red-600"
-                            onClick={() => handleRejectClick(row.AuthLogin)}
-                          >
-                            Reject
-                          </button> */}
                           <button
-    className={`px-3 py-1 text-xs font-semibold rounded-full ${
-      processedRequests.has(row.AuthLogin)
-        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-        : 'bg-red-100 hover:bg-red-200'
-    }`}
-    onClick={() => handleRejectClick(row.AuthLogin)}
-    disabled={processedRequests.has(row.AuthLogin)}
-    title={processedRequests.has(row.AuthLogin) ? 'Already processed' : 'Reject request'}
-  >
-    {processedRequests.has(row.AuthLogin) ? 'Rejected' : 'Reject'}
-  </button>
+                            className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                              processedRequests.has(row.AuthLogin)
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                : 'bg-red-100 hover:bg-red-200'
+                            }`}
+                            onClick={() => handleRejectClick(row.AuthLogin, row.id)}
+                            disabled={processedRequests.has(row.AuthLogin)}
+                            title={processedRequests.has(row.AuthLogin) ? 'Already processed' : 'Reject request'}
+                          >
+                            {processedRequests.has(row.AuthLogin) ? 'Rejected' : 'Reject'}
+                          </button>
                         </td>
                       </tr>
                     ))
@@ -1096,7 +1074,7 @@ const RentRequest = () => {
           <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
             <div className="mb-4 text-lg font-semibold text-gray-800">
               Do you want to approve AuthLoginID{' '}
-              <span className="text-blue-600">{selectedAuthLoginId}</span>?
+              <span className="text-blue-600">{selectedRequest.authLoginId}</span>?
             </div>
             <div className="flex justify-end gap-4">
               <button
@@ -1122,7 +1100,7 @@ const RentRequest = () => {
           <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
             <div className="mb-4 text-lg font-semibold text-gray-800">
               Do you want to reject AuthLoginID{' '}
-              <span className="text-blue-600">{selectedAuthLoginId}</span>?
+              <span className="text-blue-600">{selectedRequest.authLoginId}</span>?
             </div>
             <div className="mb-4">
               <label className="block mb-2 text-sm font-medium text-gray-700">
