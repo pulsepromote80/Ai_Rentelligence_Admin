@@ -35,7 +35,7 @@ const WithdrawalRequest = () => {
   const [rowsPerPage, setRowsPerPage] = useState(500)
   const [approvePopupOpen, setApprovePopupOpen] = useState(false)
   const [rejectPopupOpen, setRejectPopupOpen] = useState(false)
-  const [selectedAuthLoginId, setSelectedAuthLoginId] = useState(null)
+  const [selectedRequest, setSelectedRequest] = useState({ authLoginId: null, id: null })
   const [remark, setRemark] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
   const [userId, setUserId] = useState('')
@@ -143,11 +143,11 @@ const WithdrawalRequest = () => {
     setCurrentPage(1)
     setHasSearched(false)
 
-      dispatch(getAllIncomeRequestAdmin({
-        authLogin: '',
-        fromDate: '',
-        toDate: ''
-      }))
+    dispatch(getAllIncomeRequestAdmin({
+      authLogin: '',
+      fromDate: '',
+      toDate: ''
+    }))
   }
 
   const fetchWalletBalances = async (accountAddress) => {
@@ -423,8 +423,9 @@ const WithdrawalRequest = () => {
   const startItem = (currentPage - 1) * rowsPerPage + 1
   const endItem = Math.min(currentPage * rowsPerPage, rowsToDisplay.length)
 
-  const handleApproveClick = (authLoginId) => {
-    setSelectedAuthLoginId(authLoginId)
+  // Fixed: Properly set selected request with both authLoginId and id
+  const handleApproveClick = (authLoginId, id) => {
+    setSelectedRequest({ authLoginId, id })
     setApprovePopupOpen(true)
   }
 
@@ -467,13 +468,9 @@ const WithdrawalRequest = () => {
         )
         setProcessedRequests(prev => new Set([...prev, row.AuthLogin]));
         toast.success('USDT Transaction Approved Successfully!')
-        // dispatch(
-        //   getAllIncomeRequestAdmin({
-        //     authLogin: userId || '',
-        //     fromDate: formatDate(fromDate) || '',
-        //     toDate: formatDate(toDate) || '',
-        //   }),
-        // )
+        
+        // Refresh data after USDT approval
+        handleRefresh()
       }
     } catch (error) {
       console.error('Error approving USDT:', error)
@@ -487,24 +484,27 @@ const WithdrawalRequest = () => {
     }
   }
 
-  const handleRejectClick = (authLoginId) => {
-    setSelectedAuthLoginId(authLoginId)
+  // Fixed: Properly set selected request with both authLoginId and id
+  const handleRejectClick = (authLoginId, id) => {
+    setSelectedRequest({ authLoginId, id })
     setRejectPopupOpen(true)
   }
 
+  // Fixed: Include id in the approve request - CORRECTED FIELD NAME
   const handleApprove = async () => {
-    if (selectedAuthLoginId) {
+    if (selectedRequest.authLoginId && selectedRequest.id) {
       try {
         await dispatch(
           UpIncomeWithdReqStatusAdmin({
-            authLoginId: selectedAuthLoginId,
+            authLoginId: selectedRequest.authLoginId,
+            id: selectedRequest.id, // Use the correct field name
             rfstatus: 1,
             remark: 'Approved by admin',
           }),
         )
-        setProcessedRequests(prev => new Set([...prev, selectedAuthLoginId]));
+        setProcessedRequests(prev => new Set([...prev, selectedRequest.authLoginId]));
         setApprovePopupOpen(false)
-        setSelectedAuthLoginId(null)
+        setSelectedRequest({ authLoginId: null, id: null })
         toast.success('Approved Successfully!', {
           position: 'top-right',
           autoClose: 3000,
@@ -513,14 +513,11 @@ const WithdrawalRequest = () => {
           pauseOnHover: true,
           draggable: true,
         })
-        // dispatch(
-        //   getAllIncomeRequestAdmin({
-        //     authLogin: userId || '',
-        //     fromDate: formatDate(fromDate) || '',
-        //     toDate: formatDate(toDate) || '',
-        //   }),
-        // )
+        
+        // Refresh data after approval
+        handleRefresh()
       } catch (error) {
+        console.error('Approve error:', error)
         toast.error('Failed to approve request', {
           position: 'top-right',
           autoClose: 3000,
@@ -533,19 +530,21 @@ const WithdrawalRequest = () => {
     }
   }
 
+  // Fixed: Include id in the reject request - CORRECTED FIELD NAME
   const handleReject = async () => {
-    if (selectedAuthLoginId && remark.trim()) {
+    if (selectedRequest.authLoginId && selectedRequest.id && remark.trim()) {
       try {
         await dispatch(
           UpIncomeWithdReqStatusAdmin({
-            authLoginId: selectedAuthLoginId,
+            authLoginId: selectedRequest.authLoginId,
+            id: selectedRequest.id, // Use the correct field name
             rfstatus: 2,
             remark: remark,
           }),
         )
-        setProcessedRequests(prev => new Set([...prev, selectedAuthLoginId]));
+        setProcessedRequests(prev => new Set([...prev, selectedRequest.authLoginId]));
         setRejectPopupOpen(false)
-        setSelectedAuthLoginId(null)
+        setSelectedRequest({ authLoginId: null, id: null })
         setRemark('')
         toast.success('Rejected Successfully!', {
           position: 'top-right',
@@ -555,14 +554,11 @@ const WithdrawalRequest = () => {
           pauseOnHover: true,
           draggable: true,
         })
-        // dispatch(
-        //   getAllIncomeRequestAdmin({
-        //     authLogin: userId || '',
-        //     fromDate: formatDate(fromDate) || '',
-        //     toDate: formatDate(toDate) || '',
-        //   }),
-        // )
+        
+        // Refresh data after rejection
+        handleRefresh()
       } catch (error) {
+        console.error('Reject error:', error)
         toast.error('Failed to reject request', {
           position: 'top-right',
           autoClose: 3000,
@@ -572,13 +568,15 @@ const WithdrawalRequest = () => {
           draggable: true,
         })
       }
+    } else {
+      toast.error('Please enter a remark for rejection')
     }
   }
 
   const handleCancel = () => {
     setApprovePopupOpen(false)
     setRejectPopupOpen(false)
-    setSelectedAuthLoginId(null)
+    setSelectedRequest({ authLoginId: null, id: null })
     setRemark('')
   }
 
@@ -597,98 +595,98 @@ const WithdrawalRequest = () => {
   return (
     <div className="max-w-6xl p-5 mx-auto bg-white border border-blue-100 shadow-2xl mt-0mb-10 rounded-2xl">
       {/* MetaMask Wallet Connection Section */}
-    <div className="flex flex-col gap-4 p-4 mb-6 border border-orange-200 shadow-lg md:flex-row md:items-center md:justify-between rounded-2xl bg-gradient-to-br from-orange-50 to-white">
-  {/* Left Section */}
-  <div className="text-sm">
-    {!isMetamaskInstalled ? (
-      <span className="text-gray-700">
-        MetaMask not detected.{' '}
-        <a
-          href="https://metamask.io/download/"
-          target="_blank"
-          rel="noreferrer"
-          className="font-semibold text-orange-600 underline hover:text-orange-700"
-        >
-          Install MetaMask
-        </a>
-      </span>
-    ) : account ? (
-      <div className="flex flex-wrap items-center gap-3">
-        <span className="font-medium text-gray-700">Connected :</span>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-xl shadow-sm">
-          <span className="font-mono text-xs text-gray-800" title={account}>
-            {formatAddress(account)}
-          </span>
-          <button
-            onClick={() => copyToClipboard(account)}
-            className="p-1 text-gray-500 transition hover:text-gray-700"
-            title="Copy address"
-          >
-            <FaCopy className="w-4 h-4" />
-          </button>
-        </div>
-        {account && (
-          <div className="flex flex-col ml-2">
-            <span className="font-semibold text-green-600 text-md">
-            💰 Wallet Balance: ${Number(balanceInUsdt).toFixed(2)}
+      <div className="flex flex-col gap-4 p-4 mb-6 border border-orange-200 shadow-lg md:flex-row md:items-center md:justify-between rounded-2xl bg-gradient-to-br from-orange-50 to-white">
+        {/* Left Section */}
+        <div className="text-sm">
+          {!isMetamaskInstalled ? (
+            <span className="text-gray-700">
+              MetaMask not detected.{' '}
+              <a
+                href="https://metamask.io/download/"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-orange-600 underline hover:text-orange-700"
+              >
+                Install MetaMask
+              </a>
             </span>
-          </div>
-        )}
-      </div>
-    ) : (
-      <span className="text-gray-700">Wallet not connected.</span>
-    )}
-  </div>
+          ) : account ? (
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="font-medium text-gray-700">Connected :</span>
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-xl shadow-sm">
+                <span className="font-mono text-xs text-gray-800" title={account}>
+                  {formatAddress(account)}
+                </span>
+                <button
+                  onClick={() => copyToClipboard(account)}
+                  className="p-1 text-gray-500 transition hover:text-gray-700"
+                  title="Copy address"
+                >
+                  <FaCopy className="w-4 h-4" />
+                </button>
+              </div>
+              {account && (
+                <div className="flex flex-col ml-2">
+                  <span className="font-semibold text-green-600 text-md">
+                    💰 Wallet Balance: ${Number(balanceInUsdt).toFixed(2)}
+                  </span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <span className="text-gray-700">Wallet not connected.</span>
+          )}
+        </div>
 
-  {/* Right Section - Buttons */}
-  <div className="flex items-center gap-3">
-    {!isMetamaskInstalled ? (
-      <a
-        href="https://metamask.io/download/"
-        target="_blank"
-        rel="noreferrer"
-        className="px-4 py-2 text-sm font-semibold text-white transition shadow bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl hover:from-orange-600 hover:to-orange-700"
-      >
-        Install MetaMask
-      </a>
-    ) : account ? (
-      <>
-        {chainId !== BSC_CHAIN_ID && (
-          <button
-            onClick={switchToBSCNetwork}
-            className="px-4 py-2 text-sm font-semibold text-white transition shadow bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl hover:from-yellow-600 hover:to-yellow-700"
-          >
-            Switch to BSC
-          </button>
-        )}
-        <button
-          onClick={disconnectLocal}
-          className="px-4 py-2 text-sm font-semibold text-gray-700 transition bg-gray-100 border border-gray-300 rounded-xl hover:bg-gray-200"
-        >
-          Disconnect
-        </button>
-      </>
-    ) : (
-      <button
-        onClick={connectWallet}
-        disabled={isConnecting}
-        className={`px-4 py-2 text-sm font-semibold text-white rounded-xl shadow transition ${
-          isConnecting
-            ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700'
-        }`}
-      >
-        {isConnecting ? 'Connecting…' : 'Connect to BSC'}
-      </button>
-    )}
-  </div>
-</div>
+        {/* Right Section - Buttons */}
+        <div className="flex items-center gap-3">
+          {!isMetamaskInstalled ? (
+            <a
+              href="https://metamask.io/download/"
+              target="_blank"
+              rel="noreferrer"
+              className="px-4 py-2 text-sm font-semibold text-white transition shadow bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl hover:from-orange-600 hover:to-orange-700"
+            >
+              Install MetaMask
+            </a>
+          ) : account ? (
+            <>
+              {chainId !== BSC_CHAIN_ID && (
+                <button
+                  onClick={switchToBSCNetwork}
+                  className="px-4 py-2 text-sm font-semibold text-white transition shadow bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl hover:from-yellow-600 hover:to-yellow-700"
+                >
+                  Switch to BSC
+                </button>
+              )}
+              <button
+                onClick={disconnectLocal}
+                className="px-4 py-2 text-sm font-semibold text-gray-700 transition bg-gray-100 border border-gray-300 rounded-xl hover:bg-gray-200"
+              >
+                Disconnect
+              </button>
+            </>
+          ) : (
+            <button
+              onClick={connectWallet}
+              disabled={isConnecting}
+              className={`px-4 py-2 text-sm font-semibold text-white rounded-xl shadow transition ${
+                isConnecting
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700'
+              }`}
+            >
+              {isConnecting ? 'Connecting…' : 'Connect to BSC'}
+            </button>
+          )}
+        </div>
+      </div>
 
       <div>
         <h6 className="heading">
           Withdrawal Requests:{' '}
           <span className="text-green-600">
-             ${Number(totalRelease.toFixed(2))}
+            ${Number(totalRelease.toFixed(2))}
           </span>
         </h6>
       </div>
@@ -755,7 +753,6 @@ const WithdrawalRequest = () => {
               type="text"
               value={username}
               readOnly
-              onChange={(e) => setUsername(e.target.value)}
               className="w-full py-2 pl-10 pr-3 text-gray-700 bg-gray-100 border border-gray-300 rounded-lg shadow-sm"
             />
           </div>
@@ -852,7 +849,7 @@ const WithdrawalRequest = () => {
                     {paginatedRows.length === 0 ? (
                       <tr>
                         <td
-                          colSpan={12}
+                          colSpan={14}
                           className="py-10 text-lg text-center text-gray-400"
                         >
                           No Approve Withdrawal Requests Found
@@ -874,12 +871,11 @@ const WithdrawalRequest = () => {
 
                           <td className="px-4 py-3 font-medium border td-wrap-text">
                             <button
-                                                            className={`px-4 py-3 font-medium rounded-full td-wrap-text ${
+                              className={`px-4 py-3 font-medium rounded-full td-wrap-text ${
                                 processedRequests.has(row.AuthLogin)
                                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                   : 'bg-green-100 hover:bg-green-200'
                               }`}
-
                               onClick={() => handleApproveUSDTClick(row)}
                               disabled={
                                 processedRequests.has(row.AuthLogin) ||
@@ -887,7 +883,7 @@ const WithdrawalRequest = () => {
                                 chainId !== BSC_CHAIN_ID ||
                                 isSending
                               }
-                                title={
+                              title={
                                 processedRequests.has(row.AuthLogin)
                                   ? 'Already processed'
                                   : !account
@@ -897,7 +893,6 @@ const WithdrawalRequest = () => {
                                       : ''
                               }
                             >
-                              {/* Approve USDT */}
                               {processedRequests.has(row.AuthLogin) 
                                 ? 'Approved USDT' 
                                 : 'Approve USDT'}
@@ -907,18 +902,17 @@ const WithdrawalRequest = () => {
                           <td className="px-4 py-3 font-medium border td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
                               <button
-                               className={`px-4 py-3 rounded-full ${
+                                className={`px-4 py-3 rounded-full ${
                                   processedRequests.has(row.AuthLogin)
                                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                     : 'text-blue-500 bg-green-100 hover:text-blue-700 hover:bg-green-200'
                                 }`}
                                 onClick={() =>
-                                  handleApproveClick(row.AuthLogin)
+                                  handleApproveClick(row.AuthLogin, row.Id) // CORRECTED: Changed from row.ID to row.Id
                                 }
                                 disabled={processedRequests.has(row.AuthLogin)}
                                 title={processedRequests.has(row.AuthLogin) ? 'Already processed' : ''}
                               >
-                                {/* Approve */}
                                 {processedRequests.has(row.AuthLogin) ? 'Approved' : 'Approve'}
                               </button>
                             </div>
@@ -952,7 +946,7 @@ const WithdrawalRequest = () => {
 
                           <td className="px-4 py-3 font-medium border td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
-                             {row.Wallet || '-'}
+                              {row.Wallet || '-'}
                               {row.Wallet && (
                                 <button
                                   onClick={() => copyToClipboard(row.Wallet)}
@@ -970,28 +964,20 @@ const WithdrawalRequest = () => {
                           <td className="px-4 py-3 font-medium border td-wrap-text">
                             {row.Remark || '-'}
                           </td>
-                          {/* <td className="px-4 py-3 border td-wrap-text">
-                            <button
-                              className="px-3 py-1 text-xs font-semibold bg-red-100 rounded-full"
-                              onClick={() => handleRejectClick(row.AuthLogin)}
-                            >
-                              Reject
-                            </button>
-                          </td> */}
                           <td className="px-4 py-3 border td-wrap-text">
-  <button
-    className={`px-3 py-1 text-xs font-semibold rounded-full ${
-      processedRequests.has(row.AuthLogin)
-        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-        : 'bg-red-100 hover:bg-red-200'
-    }`}
-    onClick={() => handleRejectClick(row.AuthLogin)}
-    disabled={processedRequests.has(row.AuthLogin)}
-    title={processedRequests.has(row.AuthLogin) ? 'Already processed' : 'Reject request'}
-  >
-    {processedRequests.has(row.AuthLogin) ? 'Rejected' : 'Reject'}
-  </button>
-</td>
+                            <button
+                              className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                                processedRequests.has(row.AuthLogin)
+                                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                  : 'bg-red-100 hover:bg-red-200'
+                              }`}
+                              onClick={() => handleRejectClick(row.AuthLogin, row.Id)} // CORRECTED: Changed from row.ID to row.Id
+                              disabled={processedRequests.has(row.AuthLogin)}
+                              title={processedRequests.has(row.AuthLogin) ? 'Already processed' : 'Reject request'}
+                            >
+                              {processedRequests.has(row.AuthLogin) ? 'Rejected' : 'Reject'}
+                            </button>
+                          </td>
                         </tr>
                       ))
                     )}
@@ -1078,7 +1064,7 @@ const WithdrawalRequest = () => {
           <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
             <div className="mb-4 text-lg font-semibold text-gray-800">
               Do you want to approve AuthLoginID{' '}
-              <span className="text-blue-600">{selectedAuthLoginId}</span>?
+              <span className="text-blue-600">{selectedRequest.authLoginId}</span>?
             </div>
             <div className="flex justify-end gap-4">
               <button
@@ -1104,7 +1090,7 @@ const WithdrawalRequest = () => {
           <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
             <div className="mb-4 text-lg font-semibold text-gray-800">
               Do you want to reject AuthLoginID{' '}
-              <span className="text-blue-600">{selectedAuthLoginId}</span>?
+              <span className="text-blue-600">{selectedRequest.authLoginId}</span>?
             </div>
             <div className="mb-4">
               <label className="block mb-2 text-sm font-medium text-gray-700">

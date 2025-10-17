@@ -14,6 +14,7 @@ import { saveAs } from 'file-saver'
 import { Search, FileSpreadsheet, RefreshCcw } from 'lucide-react'
 import { Calendar, User, UserCircle2 } from 'lucide-react'
 import { FaSearch, FaFileExcel, FaSyncAlt } from 'react-icons/fa'
+
 const DepositRequest = () => {
   const dispatch = useDispatch()
   const { fundRequestData, loading, error } = useSelector(
@@ -21,7 +22,7 @@ const DepositRequest = () => {
   )
   const [approvePopupOpen, setApprovePopupOpen] = useState(false)
   const [rejectPopupOpen, setRejectPopupOpen] = useState(false)
-  const [selectedAuthLoginId, setSelectedAuthLoginId] = useState(null)
+  const [selectedRequest, setSelectedRequest] = useState({ authLoginId: null, id: null })
   const [currentPage, setCurrentPage] = useState(1)
   const [rowsPerPage, setRowsPerPage] = useState(500)
   const [remark, setRemark] = useState('')
@@ -146,49 +147,66 @@ const DepositRequest = () => {
     setCurrentPage(1)
   }, [searchTerm])
 
-  const handleApproveClick = (authLoginId) => {
-    setSelectedAuthLoginId(authLoginId)
+  // Fixed: Properly set selected request with both authLoginId and id
+  const handleApproveClick = (authLoginId, id) => {
+    setSelectedRequest({ authLoginId, id })
     setApprovePopupOpen(true)
   }
 
-  const handleRejectClick = (authLoginId) => {
-    setSelectedAuthLoginId(authLoginId)
+  // Fixed: Properly set selected request with both authLoginId and id
+  const handleRejectClick = (authLoginId, id) => {
+    setSelectedRequest({ authLoginId, id })
     setRejectPopupOpen(true)
   }
 
+  // Fixed: Include id in the approve request
   const handleApprove = async () => {
-    if (selectedAuthLoginId) {
-      await dispatch(
-        updateFundRequestStatusAdmin({
-          authLoginId: selectedAuthLoginId,
-          rfstatus: 1,
-          remark: 'Approved by admin',
-        }),
-      )
-      setApprovePopupOpen(false)
-      setSelectedAuthLoginId(null)
-      dispatch(
+    if (selectedRequest.authLoginId && selectedRequest.id) {
+      try {
+        await dispatch(
+          updateFundRequestStatusAdmin({
+            authLoginId: selectedRequest.authLoginId,
+            id: selectedRequest.id, // Include the id
+            rfstatus: 1,
+            remark: 'Approved by admin',
+          }),
+        )
+        setApprovePopupOpen(false)
+        setSelectedRequest({ authLoginId: null, id: null })
+        toast.success('Approved Successfully!', {
+          position: 'top-right',
+          autoClose: 3000,
+        })
+        dispatch(
           getAllFundRequestReportAdmin({
             authLogin: userId || '',
             fromDate: formatDate(fromDate) || '',
             toDate: formatDate(toDate) || '',
           }),
         )
+      } catch (error) {
+        toast.error('Failed to approve request', {
+          position: 'top-right',
+          autoClose: 3000,
+        })
+      }
     }
   }
 
+  // Fixed: Include id in the reject request
   const handleReject = async () => {
-    if (selectedAuthLoginId && remark.trim()) {
+    if (selectedRequest.authLoginId && selectedRequest.id && remark.trim()) {
       try {
         await dispatch(
           updateFundRequestStatusAdmin({
-            authLoginId: selectedAuthLoginId,
+            authLoginId: selectedRequest.authLoginId,
+            id: selectedRequest.id, // Include the id
             rfstatus: 2,
             remark: remark,
           }),
         )
         setRejectPopupOpen(false)
-        setSelectedAuthLoginId(null)
+        setSelectedRequest({ authLoginId: null, id: null })
         setRemark('')
         toast.success('Rejected Successfully!', {
           position: 'top-right',
@@ -202,18 +220,20 @@ const DepositRequest = () => {
           }),
         )
       } catch (error) {
-        toast.error('Failed to rejected request', {
+        toast.error('Failed to reject request', {
           position: 'top-right',
           autoClose: 3000,
         })
       }
+    } else {
+      toast.error('Please enter a remark for rejection')
     }
   }
 
   const handleCancel = () => {
     setApprovePopupOpen(false)
     setRejectPopupOpen(false)
-    setSelectedAuthLoginId(null)
+    setSelectedRequest({ authLoginId: null, id: null })
     setRemark('')
   }
 
@@ -326,31 +346,30 @@ const DepositRequest = () => {
 
       {/* Action buttons */}
       <div className="flex items-center justify-start mt-3 space-x-4 col-span-full">
-  <button
-    onClick={handleSearch}
-    className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
-  >
-    <Search className="w-5 h-5" />
-    Search
-  </button>
+        <button
+          onClick={handleSearch}
+          className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
+        >
+          <Search className="w-5 h-5" />
+          Search
+        </button>
 
-  <button
-    onClick={handleExport}
-    className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700"
-  >
-    <FileSpreadsheet className="w-5 h-5" />
-    Export Excel
-  </button>
+        <button
+          onClick={handleExport}
+          className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700"
+        >
+          <FileSpreadsheet className="w-5 h-5" />
+          Export Excel
+        </button>
 
-  <button
-    onClick={handleRefresh}
-    className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
-  >
-    <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
-    Refresh
-  </button>
-</div>
-
+        <button
+          onClick={handleRefresh}
+          className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+        >
+          <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
+          Refresh
+        </button>
+      </div>
 
       {/* Table */}
       {hasSearched && (
@@ -421,7 +440,7 @@ const DepositRequest = () => {
                         </td>
                         <td>
                           <button
-                            onClick={() => handleApproveClick(row.AuthLogin)}
+                            onClick={() => handleApproveClick(row.AuthLogin, row.Id || row.ID || row.id)}
                             className="px-3 py-1 text-xs font-semibold text-white transition-transform bg-green-500 rounded-lg shadow hover:bg-green-600 hover:scale-105"
                           >
                             Approve
@@ -464,7 +483,7 @@ const DepositRequest = () => {
                         </td>
                         <td>
                           <button
-                            onClick={() => handleRejectClick(row.AuthLogin)}
+                            onClick={() => handleRejectClick(row.AuthLogin, row.Id || row.ID || row.id)}
                             className="px-3 py-1 text-xs font-semibold text-white transition-transform bg-red-500 rounded-lg shadow hover:bg-red-600 hover:scale-105"
                           >
                             Reject
@@ -530,7 +549,7 @@ const DepositRequest = () => {
           <div className="w-full max-w-md p-6 bg-white shadow-2xl rounded-2xl animate-fadeIn">
             <h2 className="mb-4 text-lg font-semibold text-gray-800">
               Approve request for{' '}
-              <span className="text-blue-600">{selectedAuthLoginId}</span>?
+              <span className="text-blue-600">{selectedRequest.authLoginId}</span>?
             </h2>
             <div className="flex justify-end gap-3">
               <button
@@ -556,7 +575,7 @@ const DepositRequest = () => {
           <div className="w-full max-w-md p-6 bg-white shadow-2xl rounded-2xl animate-fadeIn">
             <h2 className="mb-4 text-lg font-semibold text-gray-800">
               Reject request for{' '}
-              <span className="text-blue-600">{selectedAuthLoginId}</span>?
+              <span className="text-blue-600">{selectedRequest.authLoginId}</span>?
             </h2>
             <textarea
               className="w-full p-3 mb-4 border rounded-lg focus:ring-2 focus:ring-red-400"

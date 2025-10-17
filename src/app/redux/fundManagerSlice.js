@@ -28,12 +28,13 @@ export const getAllFundRequestReportAdmin = createAsyncThunk(
 
 export const updateFundRequestStatusAdmin = createAsyncThunk(
     "fundManager/updateFundRequestStatusAdmin",
-    async ({ authLoginId, rfstatus, remark }, { rejectWithValue }) => {
+    async ({ authLoginId, rfstatus, remark, id }, { rejectWithValue }) => {
         try {
             const response = await postRequest(
                 API_ENDPOINTS.UPDATE_REQUEST_STATUS_ADMIN,
                 {
                     authLoginId,
+                    id,
                     rfstatus,
                     remark
                 }
@@ -80,12 +81,13 @@ export const getAllIncomeRequestAdmin = createAsyncThunk(
 
 export const UpIncomeWithdReqStatusAdmin = createAsyncThunk(
     "fundManager/updateIncomeWithdrawRequestStatusAdmin",
-    async ({ authLoginId, rfstatus, remark }, { rejectWithValue }) => {
+    async ({ authLoginId, rfstatus, remark, id }, { rejectWithValue }) => {
         try {
             const response = await postRequest(
                 API_ENDPOINTS.UPDATE_INCOME_WITHDRAW_REQUEST_STATUS_ADMIN,
                 {
                     authLoginId,
+                    id,
                     rfstatus,
                     remark
                 }
@@ -100,12 +102,13 @@ export const UpIncomeWithdReqStatusAdmin = createAsyncThunk(
 
 export const updateRentWithdrawRequestStatusAdmin = createAsyncThunk(
     "fundManager/updateRentWithdrawRequestStatusAdmin",
-    async ({ authLoginId, rfstatus, remark }, { rejectWithValue }) => {
+    async ({ authLoginId, rfstatus, remark, id }, { rejectWithValue }) => {
         try {
             const response = await postRequest(
                 API_ENDPOINTS.UPDATE_RENT_WITHDRAW_REQUEST_STATUS_ADMIN,
                 {
                     authLoginId,
+                    id,
                     rfstatus,
                     remark
                 }
