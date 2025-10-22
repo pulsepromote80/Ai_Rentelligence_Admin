@@ -13,7 +13,8 @@ const API_ENDPOINTS = {
     GET_LEASE_AGENT: "/AdminMaster/getLeaseAgent",
     GET_ALL_CONTACT_US: "/Geography/getAllContacUs",
    GET_ACC_STATEMENT:"/WalletReport/getAccStatemtnt",
-   GET_LEASE_STATEMENT:"/AdminMaster/getGetLeaseStatement"
+   GET_LEASE_STATEMENT:"/AdminMaster/getGetLeaseStatement",
+   GET_RECHARGE_TRANSACTION_ADMIN: "/WalletReport/getRechargeTransactionAdmin",
 };
 
 export const ChangePasswordAdminMaster = createAsyncThunk(
@@ -163,6 +164,18 @@ export const getLeaseStatemtnt = createAsyncThunk(
     }
 );
 
+export const getRechargeTransactionAdmin = createAsyncThunk(
+    'adminMaster/getRechargeTransactionAdmin',
+    async (data, { rejectWithValue }) => {
+        try {
+            const response = await postRequest(API_ENDPOINTS.GET_RECHARGE_TRANSACTION_ADMIN, data);
+            return response;
+        } catch (error) {
+            return rejectWithValue(error.response?.data || 'Error fetching recharge transaction data');
+        }
+    }
+);
+
 const adminMasterSlice = createSlice({
     name: "adminMaster",
     initialState: {
@@ -179,7 +192,8 @@ const adminMasterSlice = createSlice({
         leaseAgentData: null,
         contactUsData: null,
         accStatementData:null,
-        LeaseStatementData:null
+        LeaseStatementData:null,
+        rechargeTransactionData: null
     },
     reducers: {
         clearError: (state) => {
@@ -338,7 +352,20 @@ const adminMasterSlice = createSlice({
             .addCase(getLeaseStatemtnt.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            }) 
+            })
+            .addCase(getRechargeTransactionAdmin.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getRechargeTransactionAdmin.fulfilled, (state, action) => {
+                state.loading = false;
+                state.rechargeTransactionData = action.payload;
+                state.error = null;
+            })
+            .addCase(getRechargeTransactionAdmin.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
     }
 });
 
