@@ -15,16 +15,23 @@ const AdminLogin = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpValue, setOtpValue] = useState('');
+  const [otpMessage, setOtpMessage] = useState('');
+  const [showOtp, setShowOtp] = useState(false);
+
   const dispatch = useDispatch();
   const router = useRouter();
   const { loading, error } = useSelector((state) => state.auth);
+
+  const HARD_OTP = "667788";
 
   const validate = () => {
     const newErrors = {};
 
     const usernameError = isValidUsername(username);
     if (usernameError) newErrors.username = usernameError;
-    
+
     const passwordError = isValidPassword(password);
     if (passwordError) newErrors.password = passwordError;
 
@@ -36,18 +43,42 @@ const AdminLogin = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    try {
-      const resultAction = await dispatch(adminLogin({ username, password }));
-      if (adminLogin.fulfilled.match(resultAction)) {
-        router.push('/pages/Dashboard');
+    setShowOtp(true);
+    setOtpMessage('');
+  };
+
+  const handleOtpSend = () => {
+    setOtpSent(true);
+    setOtpMessage("OTP sent successfully!");
+  };
+
+  const handleOtpVerify = async () => {
+    if (!otpValue) {
+      setOtpMessage("Please enter OTP");
+      return;
+    }
+    if (otpValue.length !== 6) {
+      setOtpMessage("OTP must be 6 digits");
+      return;
+    }
+
+    if (otpValue === HARD_OTP) {
+      try {
+        const resultAction = await dispatch(adminLogin({ username, password }));
+        if (adminLogin.fulfilled.match(resultAction)) {
+          router.push('/pages/Dashboard');
+        }
+      } catch (error) {
+        console.error('Login failed:', error);
       }
-    } catch (error) {
-      console.error('Login failed:', error);
+    } else {
+      setOtpMessage("Wrong OTP, please try again!");
+      setOtpValue('');
     }
   };
 
   const handleChange = (e, setter, field) => {
-    const limitedValue = limitToCharacters(e.target.value); 
+    const limitedValue = limitToCharacters(e.target.value);
     setter(limitedValue);
 
     if (errors[field]) {
@@ -66,7 +97,7 @@ const AdminLogin = () => {
             <div className="absolute w-32 h-32 bg-white rounded-full bottom-10 right-10"></div>
             <div className="absolute w-40 h-40 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-full top-1/2 left-1/2"></div>
           </div>
-          
+
           <div className="relative z-10">
             <div className="mb-8">
               <h1 className="mb-2 text-4xl font-bold">Welcome Back!</h1>
@@ -74,33 +105,33 @@ const AdminLogin = () => {
                 Rentelligence: Deploying Intelligence for finanicially Independent Future and Empowering the Future with AI Agents — Rent, Lease, Own, and Evolve.
               </p>
             </div>
-            
+
             <div className="relative flex items-center justify-center h-56">
-  <div className="flex items-center justify-center w-40 h-40 transform bg-white/20 rounded-3xl backdrop-blur-sm rotate-12">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="w-20 h-20 text-white transform -rotate-12"
-      fill="currentColor"
-      viewBox="0 0 24 24"
-    >
-      {/* Robot Head */}
-      <rect x="4" y="6" width="16" height="12" rx="3" ry="3" stroke="currentColor" strokeWidth="1.5" fill="none" />
-      
-      {/* Eyes */}
-      <circle cx="9" cy="12" r="1.5" fill="currentColor" />
-      <circle cx="15" cy="12" r="1.5" fill="currentColor" />
+              <div className="flex items-center justify-center w-40 h-40 transform bg-white/20 rounded-3xl backdrop-blur-sm rotate-12">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-20 h-20 text-white transform -rotate-12"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  {/* Robot Head */}
+                  <rect x="4" y="6" width="16" height="12" rx="3" ry="3" stroke="currentColor" strokeWidth="1.5" fill="none" />
 
-      {/* Antenna */}
-      <line x1="12" y1="3" x2="12" y2="6" stroke="currentColor" strokeWidth="1.5" />
-      <circle cx="12" cy="2" r="1" fill="currentColor" />
+                  {/* Eyes */}
+                  <circle cx="9" cy="12" r="1.5" fill="currentColor" />
+                  <circle cx="15" cy="12" r="1.5" fill="currentColor" />
 
-      {/* Mouth */}
-      <rect x="9" y="15" width="6" height="1.5" rx="0.5" fill="currentColor" />
-    </svg>
-  </div>
-</div>
+                  {/* Antenna */}
+                  <line x1="12" y1="3" x2="12" y2="6" stroke="currentColor" strokeWidth="1.5" />
+                  <circle cx="12" cy="2" r="1" fill="currentColor" />
 
-            
+                  {/* Mouth */}
+                  <rect x="9" y="15" width="6" height="1.5" rx="0.5" fill="currentColor" />
+                </svg>
+              </div>
+            </div>
+
+
             <div className="flex items-center mt-8">
               <div className="w-10 h-1 mr-2 bg-purple-300"></div>
               <div className="w-5 h-1 mr-2 bg-purple-400"></div>
@@ -137,9 +168,8 @@ const AdminLogin = () => {
                   placeholder="Enter Your username"
                   value={username}
                   onChange={(e) => handleChange(e, setUsername, 'username')}
-                  className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
-                    errors.username ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-indigo-300'
-                  }`}
+                  className={`w-full pl-12 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${errors.username ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-indigo-300'
+                    }`}
                 />
               </div>
               {errors.username && <p className="flex items-center mt-2 text-sm text-red-600">
@@ -162,9 +192,8 @@ const AdminLogin = () => {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => handleChange(e, setPassword, 'password')}
-                  className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
-                    errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-indigo-300'
-                  }`}
+                  className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${errors.password ? 'border-red-500 bg-red-50' : 'border-gray-300 hover:border-indigo-300'
+                    }`}
                 />
                 <button
                   type="button"
@@ -187,50 +216,65 @@ const AdminLogin = () => {
               </p>}
             </div>
 
-            {/* <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                />
-                {/* <label htmlFor="remember-me" className="block ml-2 text-sm text-gray-700">
-                  Remember me
-                </label> 
+            {/* OTP Section */}
+            {showOtp && (
+              <div className="mt-4 space-y-3">
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    pattern="\\d*"
+                    maxLength={6}
+                    value={otpValue}
+                    onChange={(e) => setOtpValue(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+                    placeholder="Enter 6-digit OTP"
+                    className="flex-1 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 border-gray-300"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleOtpSend}
+                    className="px-4 py-3 text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-colors duration-200"
+                  >
+                    Send OTP
+                  </button>
+                </div>
+                {otpMessage && (
+                  <p className={`text-sm mt-1 ${otpMessage.includes('successfully') ? 'text-green-600' : 'text-red-600'}`}>
+                    {otpMessage}
+                  </p>
+                )}
+                {otpSent && (
+                  <button 
+                    type="button" 
+                    onClick={handleOtpVerify} 
+                    className="w-full py-3 mt-3 text-white bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 transform hover:-translate-y-0.5"
+                  >
+                    Verify OTP & Login
+                  </button>
+                )}
               </div>
+            )}
 
-              {/* <Link href="/login/forgot-password" className="text-sm text-indigo-600 transition-colors duration-200 hover:text-indigo-800">
-                Forgot password?
-              </Link> 
-            </div> */}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-xl shadow-md transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center"
-            >
-              {loading ? (
-                <>
-                  <Spinner />
-                  <span className="ml-2">LOG IN</span>
-                </>
-              ) : (
-                <>
-                  <span>LOG IN</span>
-                  <FaArrowRight className="w-4 h-4 ml-2" />
-                </>
-              )}
-            </button>
-
-            {/* <div className="pt-4 text-center">
-              <p className="text-sm text-gray-600">
-                Don&apos;t have an account?{" "}
-                <Link href="/register" className="font-medium text-indigo-600 transition-colors duration-200 hover:text-indigo-800">
-                  Create
-                </Link>
-              </p>
-            </div> */}
+            {/* Login button */}
+            {!showOtp && (
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium rounded-xl shadow-md transition-all duration-200 transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center"
+              >
+                {loading ? (
+                  <>
+                    <Spinner />
+                    <span className="ml-2">LOG IN</span>
+                  </>
+                ) : (
+                  <>
+                    <span>LOG IN</span>
+                    <FaArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
+              </button>
+            )}
           </form>
         </div>
       </div>
