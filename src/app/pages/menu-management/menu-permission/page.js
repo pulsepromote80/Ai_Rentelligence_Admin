@@ -9,6 +9,7 @@ import {
   addPermission,
 } from "@/app/redux/menuSlice";
 import { toast } from "react-toastify";
+import { FaCheckCircle, FaRegCheckCircle } from 'react-icons/fa';
 
 export default function MenuPermission() {
   const dispatch = useDispatch();
@@ -19,6 +20,17 @@ export default function MenuPermission() {
   const [permissions, setPermissions] = useState([]);
   const [saving, setSaving] = useState(false);
   let toastShown = false;
+
+  // Calculate selected permissions count
+  const getSelectedCounts = () => {
+    const menuCount = permissions.filter((m) => m.hasMenuPermission).length;
+    const subMenuCount = permissions.reduce(
+      (count, menu) =>
+        count + menu.subMenus?.filter((sub) => sub.hasSubMenuPermission).length,
+      0
+    );
+    return { menuCount, subMenuCount };
+  };
 
   // Fetch admin list on mount
   useEffect(() => {
@@ -76,7 +88,6 @@ export default function MenuPermission() {
     })
   );
 };
-
 
 
 
@@ -141,11 +152,10 @@ const handleSavePermissions = async () => {
 
 
 
-
 return (
     <div className="p-2">
-      <div className="max-w-6xl p-6 mx-auto bg-white shadow-lg rounded-2xl">
-        <h1 className="pb-3 mb-6 text-xl font-bold text-gray-800 border-b">
+      <div className="max-w-6xl px-4 pt-1 pb-4 mx-auto bg-white shadow-lg rounded-2xl">
+        <h1 className="pb-2 mb-3 text-xl font-bold text-gray-800 border-b">
           🔑 Menu Permission
         </h1>
 
@@ -153,14 +163,15 @@ return (
         {loading ? (
           <p className="text-gray-600">Loading...</p>
         ) : (
-          <div className="mb-6">
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              Select Admin
+          <div className="mb-6 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+            <label className="block mb-3 text-sm font-semibold text-gray-700 uppercase tracking-wide flex items-center gap-2">
+              <FaCheckCircle className="w-4 h-4 text-indigo-600" />
+              Select Admin User
             </label>
             <select
               value={selectedAdmin}
               onChange={handleChange}
-              className="p-3 border border-gray-300 rounded-lg shadow-sm w-72 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+              className="p-3 border-2 border-indigo-200 rounded-lg shadow-sm w-72 focus:ring-2 focus:ring-indigo-400 focus:outline-none bg-white font-medium"
             >
               <option value="">-- Select Admin --</option>
               {fetchAdminList?.map((admin) => (
@@ -169,6 +180,23 @@ return (
                 </option>
               ))}
             </select>
+          </div>
+        )}
+
+        {/* Permission Count */}
+        {permissions?.length > 0 && (
+          <div className="mb-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-gray-700">Selected Permissions:</span>
+                <span className="px-3 py-1 bg-indigo-600 text-white rounded-full text-sm font-bold">
+                  {getSelectedCounts().menuCount} Menu
+                </span>
+                <span className="px-3 py-1 bg-purple-600 text-white rounded-full text-sm font-bold">
+                  {getSelectedCounts().subMenuCount} SubMenu
+                </span>
+              </div>
+            </div>
           </div>
         )}
 
@@ -199,39 +227,58 @@ return (
                       </td>
 
                       <td className="p-3 text-center">
-                        <input
-                          type="checkbox"
-                          checked={menu.hasMenuPermission || false}
-                          onChange={() => handlePermissionChange(menu.menuId)}
-                          className="w-5 h-5 text-indigo-600 rounded focus:ring-indigo-400"
-                        />
+                        <div className="flex justify-center">
+                          {menu.hasMenuPermission ? (
+                            <FaCheckCircle className="w-6 h-6 text-green-600 cursor-pointer hover:scale-110 transition-transform" 
+                              onClick={() => handlePermissionChange(menu.menuId)} 
+                              title="Click to uncheck" />
+                          ) : (
+                            <FaRegCheckCircle className="w-6 h-6 text-gray-400 cursor-pointer hover:scale-110 transition-transform" 
+                              onClick={() => handlePermissionChange(menu.menuId)} 
+                              title="Click to check" />
+                          )}
+                        </div>
                       </td>
 
-                      <td className="p-3 font-medium text-gray-800">
+                      <td className="p-3 font-semibold text-indigo-700 text-base">
                         {menu.menuName}
                       </td>
 
-                      
-                    
+                      <td className="p-3 text-center">
+                        {menu.subMenus?.length > 0 && (
+                          <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-semibold">
+                            {menu.subMenus.filter((sub) => sub.hasSubMenuPermission).length} / {menu.subMenus.length}
+                          </span>
+                        )}
+                      </td>
+
+                      <td className="p-3 text-gray-400">-</td>
                     </tr>
 
                     {/* SubMenus Rows */}
                     {menu.subMenus?.map((sub) => (
-                      <tr key={sub.subMenuId} className="bg-gray-50 hover:bg-indigo-50">
+                      <tr key={sub.subMenuId} className="bg-purple-50 hover:bg-purple-100">
                         <td className="p-3 text-sm text-center text-gray-700"></td>
                         <td className="p-3 text-center"></td>
-                        <td className="p-3"></td>
-                        <td className="p-3 text-center">
-                          <input
-                            type="checkbox"
-                            checked={sub.hasSubMenuPermission || false}
-                            onChange={() =>
-                              handlePermissionChange(menu.menuId, sub.subMenuId)
-                            }
-                            className="w-5 h-5 text-purple-600 rounded focus:ring-purple-400"
-                          />
+                        <td className="p-3 font-medium text-gray-400">
+                          -
                         </td>
-                        <td className="p-3 text-gray-600">{sub.subMenuName}</td>
+                        <td className="p-3 text-center">
+                          <div className="flex justify-center">
+                            {sub.hasSubMenuPermission ? (
+                              <FaCheckCircle className="w-5 h-5 text-purple-600 cursor-pointer hover:scale-110 transition-transform" 
+                                onClick={() => handlePermissionChange(menu.menuId, sub.subMenuId)} 
+                                title="Click to uncheck" />
+                            ) : (
+                              <FaRegCheckCircle className="w-5 h-5 text-gray-400 cursor-pointer hover:scale-110 transition-transform" 
+                                onClick={() => handlePermissionChange(menu.menuId, sub.subMenuId)} 
+                                title="Click to check" />
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <span className="text-purple-700 font-medium">└─ {sub.subMenuName}</span>
+                        </td>
                       </tr>
                     ))}
                   </React.Fragment>
@@ -244,7 +291,7 @@ return (
               <button
                 onClick={handleSavePermissions}
                 disabled={saving}
-                className="px-6 py-2 text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="px-6 py-2 text-white bg-indigo-600 rounded-lg shadow-md hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed font-semibold"
               >
                 {saving ? "Saving..." : "Save Permissions"}
               </button>
