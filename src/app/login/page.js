@@ -24,7 +24,7 @@ const AdminLogin = () => {
   const router = useRouter();
   const { loading, error } = useSelector((state) => state.auth);
 
-  const HARD_OTP = "667788";
+  const HARD_OTP = "989796";
 
   const validate = () => {
     const newErrors = {};
@@ -88,8 +88,8 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="items-center justify-center p-4 overflow-auto ">
-      <div className="flex flex-col md:flex-row w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl max-h-[90vh] mt-2">
+    <div className="flex items-center justify-center min-h-[calc(100vh-180px)] p-4">
+      <div className="flex flex-col md:flex-row w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl">
         {/* Left side - Illustration and Welcome Text */}
         <div className="relative flex flex-col justify-center w-full p-8 overflow-hidden text-white md:w-2/5 bg-gradient-to-br from-indigo-600 to-purple-700">
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
@@ -228,12 +228,14 @@ const AdminLogin = () => {
                     value={otpValue}
                     onChange={(e) => setOtpValue(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
                     placeholder="Enter 6-digit OTP"
-                    className="flex-1 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 border-gray-300"
+                    disabled={!otpSent}
+                    className={`flex-1 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-indigo-500 border-gray-300 ${!otpSent ? 'bg-gray-100 cursor-not-allowed' : ''}`}
                   />
                   <button
                     type="button"
                     onClick={handleOtpSend}
-                    className="px-4 py-3 text-white bg-indigo-600 rounded-xl hover:bg-indigo-700 transition-colors duration-200"
+                    disabled={otpSent}
+                    className={`px-4 py-3 text-white rounded-xl transition-colors duration-200 ${otpSent ? 'bg-gray-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'}`}
                   >
                     Send OTP
                   </button>
