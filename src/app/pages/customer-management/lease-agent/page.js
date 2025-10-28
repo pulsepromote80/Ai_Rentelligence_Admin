@@ -478,11 +478,11 @@ const LeaseAgentPage = () => {
       {/* Table Head */}
       <thead className="sticky top-0 z-10 text-white bg-gradient-to-r from-blue-600 to-blue-800">
         <tr>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">#</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Image</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Login</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Name</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Product</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">S.No.</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">IMAGE</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">LOGIN</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">SUB TITLE</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">TITLE</th>
           <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Price</th>
           <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Total Return</th>
           <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Weekly Return</th>
