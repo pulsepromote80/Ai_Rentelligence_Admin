@@ -16,7 +16,7 @@ export const metadata = {
   return (
      <html lang="en">
       <body>
-    <div className="flex flex-col overflow-y-scroll" style={{ backgroundColor: "rgb(243, 244, 246)" }}>
+    <div className="flex flex-col min-h-screen overflow-y-scroll" style={{ backgroundColor: "rgb(243, 244, 246)" }}>
       <Providers>
         <ToastContainer />
       <NavbarLogin />
@@ -32,7 +32,6 @@ export const metadata = {
 };
 
 export default RootLayout
-
 
 
 
