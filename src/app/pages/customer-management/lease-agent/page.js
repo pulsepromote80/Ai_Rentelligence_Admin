@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 const LeaseAgentPage = () => {
   const dispatch = useDispatch();
   const { error: usernameError, rechargeTransactionData, usernameData } = useSelector((state) => state.adminMaster ?? {});
-  console.log("Abhishek-->",rechargeTransactionData)
+  console.log("Faisal-->",rechargeTransactionData)
   const { data: productData } = useSelector((state) => state.product ?? {});
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -82,12 +82,46 @@ const LeaseAgentPage = () => {
 
   // Options for dropdowns
   const agentOptions = Array.isArray(productData)
-    ? productData.map((product) => ({
+    ? [...productData]
+        .sort((a, b) => {
+          const priceA = Number(a?.price ?? 0);
+          const priceB = Number(b?.price ?? 0);
+          if (Number.isNaN(priceA) && Number.isNaN(priceB)) return 0;
+          if (Number.isNaN(priceA)) return 1;
+          if (Number.isNaN(priceB)) return -1;
+          return priceA - priceB;
+        })
+        .map((product) => ({
         value: product.productId, // Using productId as unique identifier
-        label: product.productName,
+        label: `${product.productName} - ${product.price}`,
+        icon: product?.image || product?.productImage || product?.imageUrl || product?.icon || null,
       }))
     : [];
 
+  // Custom components for react-select to render icon + label
+  const OptionWithIcon = (props) => {
+    const { data } = props;
+    return (
+      <div {...props.innerProps} ref={props.innerRef} className={`px-3 py-2 flex items-center ${props.isFocused ? 'bg-gray-100' : ''}`}>
+        {data.icon ? (
+          <img src={data.icon} alt="icon" className="w-5 h-5 rounded mr-2 object-cover" />
+        ) : null}
+        <span>{data.label}</span>
+      </div>
+    );
+  };
+
+  const SingleValueWithIcon = (props) => {
+    const { data } = props;
+    return (
+      <div className="flex items-center">
+        {data.icon ? (
+          <img src={data.icon} alt="icon" className="w-5 h-5 rounded mr-2 object-cover" />
+        ) : null}
+        <span>{data.label}</span>
+      </div>
+    );
+  };
   const durationOptions = Array.from({ length: 50 }, (_, i) => ({
     value: i + 1,
     label: `${i + 1} Hr`,
@@ -187,9 +221,10 @@ const LeaseAgentPage = () => {
         options={agentOptions}
         value={selectedAgent}
         onChange={setSelectedAgent}
-        placeholder="Select Agent"
+        placeholder="Select Agent - Price"
         classNamePrefix="select"
         className="select-drop-dwon"
+        components={{ Option: OptionWithIcon, SingleValue: SingleValueWithIcon }}
         styles={{
           control: (provided, state) => ({
             ...provided,
@@ -254,6 +289,8 @@ const LeaseAgentPage = () => {
         isSearchable
       />
     </div>
+
+
 
     {/* Duration Hr DDL */}
     <div>
