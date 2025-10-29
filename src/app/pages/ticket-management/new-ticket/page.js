@@ -141,6 +141,14 @@ const NewTicket = () => {
           </button>
           <h2 className="mb-2 text-xl font-semibold text-gray-700">Ticket Details</h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="flex flex-col">
+              <span className="font-bold text-black uppercase text-l">UserId :</span>
+              <span className="text-gray-800 break-all text-md">{ticket.authLogin || '-'}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold text-black uppercase text-l">User ID :</span>
+              <span className="text-gray-800 break-all text-md">{ticket.userId || '-'}</span>
+            </div>
              <div className="flex flex-col">
               <span className="font-bold text-black uppercase text-l">Name :</span>
               <span className="text-gray-800 break-all text-md">{ticket.name || '-'}</span>

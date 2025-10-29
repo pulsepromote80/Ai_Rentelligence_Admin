@@ -7,11 +7,11 @@ export const API_ENDPOINTS = {
 
 export const Columns = [
     { id: 'id', label: 'S.No.' },
+    {id: 'authLogin', label: 'UserId'},
     {id: 'name', label: 'Name'},
     { id: 'ticketType', label: 'Ticket Type' },
     { id: 'subject', label: 'Subject' },
     { id: 'message', label: 'Message' },
     { id: 'image', label: 'Image' },
     { id: 'active', label: 'Status' },
-
 ];
