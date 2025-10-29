@@ -114,38 +114,49 @@ const EditUser = () => {
     }
   }, [usernameError])
 
-  useEffect(() => {
-    if (usernameData) {
-      setFields({
-        name: usernameData.name || '',
-        fName: usernameData.fName || '',
-        lName: usernameData.lName || '',
-        email: usernameData.email || '',
-        address: usernameData.address || '',
-        mobile: usernameData.mobile || '',
-        countryid: usernameData.countryid || 0,
-        walletBep20: usernameData.walletBep20 || '',
-      })
+  
+ useEffect(() => {
+  if (usernameData) {
+    setFields({
+      name: usernameData.name || '',
+      fName: usernameData.fName || '',
+      lName: usernameData.lName || '',
+      email: usernameData.email || '',
+      address: usernameData.address || '',
+      mobile: usernameData.mobile || '',
+      countryid: usernameData.countryId || 0,
+      walletBep20: usernameData.walletBep20 || '',
+    });
 
-      // Set country data if available
-      if (getAllCountryData?.data && usernameData.countryid) {
-        const country = getAllCountryData.data.find(
-          (c) => c.country_Id === usernameData.countryid
-        )
-        if (country) {
-          const countryOption = {
-            value: country.country_Id,
-            label: country.country_Name,
-            countryFlag: country.countryFlag,
-            countryCode: country.phonecode,
-          }
-          setSelectedCountry(countryOption)
-          setCountryCode(country.phonecode)
-        }
-      }
+    // Country data setup with flag from getAllCountryData
+    if (usernameData.country_Name && getAllCountryData?.data) {
+      // Find the country in getAllCountryData by name to get the flag
+      const countryFromList = getAllCountryData.data.find(
+        country => country.country_Name?.toLowerCase() === usernameData.country_Name?.toLowerCase()
+      );
+
+      const countryOption = {
+        value: usernameData.countryId,
+        label: usernameData.country_Name,
+        countryFlag: countryFromList?.countryFlag || '', // Get flag from country list
+        countryCode: usernameData.phonecode,
+      };
+      
+      setSelectedCountry(countryOption);
+      setCountryCode(usernameData.phonecode);
+    } else if (usernameData.country_Name) {
+      // Fallback if getAllCountryData is not available yet
+      const countryOption = {
+        value: usernameData.countryId,
+        label: usernameData.country_Name,
+        countryFlag: '', // No flag available
+        countryCode: usernameData.phonecode,
+      };
+      setSelectedCountry(countryOption);
+      setCountryCode(usernameData.phonecode);
     }
-  }, [usernameData, getAllCountryData])
-
+  }
+}, [usernameData, getAllCountryData]);
   useEffect(() => {
     if (updateUserData && updateUserData.statusCode === 200) {
       toast.success(updateUserData.message || 'User updated successfully!')
