@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 const LeaseAgentPage = () => {
   const dispatch = useDispatch();
   const { error: usernameError, rechargeTransactionData, usernameData } = useSelector((state) => state.adminMaster ?? {});
-  console.log("Faisal-->",rechargeTransactionData)
+  console.log("hello", usernameData);
   const { data: productData } = useSelector((state) => state.product ?? {});
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -22,6 +22,7 @@ const LeaseAgentPage = () => {
   const [packageType, setPackageType] = useState(null);
   const [useridError, setUseridError] = useState('');
   const [submittedUserid, setSubmittedUserid] = useState('');
+  const [submittedName, setSubmittedName] = useState('');
 
   useEffect(() => {
     dispatch(getProductList());
@@ -186,8 +187,9 @@ const LeaseAgentPage = () => {
       console.error('Error:', error);
     }
 
-    // Set submitted userid for display
+    // Set submitted userid and name for display
     setSubmittedUserid(userid);
+    setSubmittedName(usernameData?.name || '');
 
     // Reset form
     setSelectedAgent(null);
@@ -383,6 +385,9 @@ const LeaseAgentPage = () => {
       {useridError && (
         <div className="mt-2 text-xs text-red-500">{useridError}</div>
       )}
+      {usernameData && usernameData.name && (
+        <div className="mt-2 text-xs text-green-600">{usernameData.name}</div>
+      )}
     </div>
 
     {/* Package Type DDL */}
@@ -481,6 +486,7 @@ const LeaseAgentPage = () => {
           <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">S.No.</th>
           <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">IMAGE</th>
           <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">LOGIN</th>
+          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">NAME</th>
           <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">SUB TITLE</th>
           <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">TITLE</th>
           <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Price</th>
@@ -495,7 +501,7 @@ const LeaseAgentPage = () => {
       <tbody>
         {paginatedData.length === 0 ? (
           <tr className='transition-colors duration-200 bg-blue-50 hover:bg-blue-100'>
-            <td colSpan={10} className="px-2 py-2 border td-wrap-text text-center">
+            <td colSpan={11} className="px-2 py-2 border td-wrap-text text-center">
               No Data Found
             </td>
           </tr>
@@ -520,6 +526,7 @@ const LeaseAgentPage = () => {
                 )}
               </td>
               <td className="px-2 py-2 text-center border td-wrap-text">{submittedUserid || row.URID || 'N/A'}</td>
+              <td className="px-2 py-2 text-center border td-wrap-text">{submittedName || 'N/A'}</td>
               <td className="px-2 py-2 text-center border td-wrap-text">{row.subName || 'N/A'}</td>
               <td className="px-2 py-2 text-center border td-wrap-text">{row.ProductName || 'N/A'}</td>
               <td className="px-2 py-2 text-center border td-wrap-text">${row.Rkprice || 'N/A'}</td>
