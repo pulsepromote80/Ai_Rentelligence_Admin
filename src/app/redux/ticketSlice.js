@@ -15,6 +15,18 @@ export const fetchAllTickets = createAsyncThunk(
   }
 )
 
+export const fetchClosedTickets = createAsyncThunk(
+  'ticket/fetchClosedTickets',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(API_ENDPOINTS.GET_ALL_CLOSED_TICKET)
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Error fetching closed tickets')
+    }
+  }
+)
+
 export const addTicketReply = createAsyncThunk(
   'ticket/addTicketReply',
   async (formData, { rejectWithValue }) => {
@@ -57,6 +69,7 @@ const ticketSlice = createSlice({
   name: 'ticket',
   initialState: {
     tickets:null,
+    closedTickets:null,
     ticketDetails: null,
     loading: false,
     error: null,
@@ -78,6 +91,19 @@ const ticketSlice = createSlice({
         state.loading = false
       })
       .addCase(fetchAllTickets.rejected, (state, action) => {
+        state.error = action.payload
+        state.loading = false
+      })
+
+      // Fetch Closed Tickets
+      .addCase(fetchClosedTickets.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(fetchClosedTickets.fulfilled, (state, action) => {
+        state.closedTickets = action.payload
+        state.loading = false
+      })
+      .addCase(fetchClosedTickets.rejected, (state, action) => {
         state.error = action.payload
         state.loading = false
       })
