@@ -7,7 +7,7 @@ export const fetchAllTickets = createAsyncThunk(
   'ticket/fetchAllTickets',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await getRequest(API_ENDPOINTS.GET_ALL_TICKETS)
+      const response = await postRequest(API_ENDPOINTS.GET_ALL_TICKETS)
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Error fetching tickets')
@@ -31,7 +31,7 @@ export const getAllTicketByTicketId = createAsyncThunk(
   'ticket/getAllTicketByTicketId',
   async (ticketId, { rejectWithValue }) => {
     try {
-      const response = await getRequest(`${API_ENDPOINTS.GET_TICKET_REPLY_BY_TICKET_ID}?ticketId=${ticketId}`);
+      const response = await postRequest(`${API_ENDPOINTS.GET_TICKET_REPLY_BY_TICKET_ID}?TicketId=${ticketId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Error fetching ticket');
@@ -42,9 +42,9 @@ export const getAllTicketByTicketId = createAsyncThunk(
 
 export const deleteTicket = createAsyncThunk(
   'ticket/deleteTicket',
-  async (data, { rejectWithValue }) => {
+  async (ticketId, { rejectWithValue }) => {
     try {
-      const response = await postRequest(`${API_ENDPOINTS.DELETE_TICKET}`, data)
+      const response = await postRequest(`${API_ENDPOINTS.DELETE_TICKET}?TicketId=${ticketId}`)
       return response;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'Error deleting ticket')
@@ -115,7 +115,7 @@ const ticketSlice = createSlice({
       })
       .addCase(deleteTicket.fulfilled, (state, action) => {
         if (state.tickets) {
-          state.tickets = state.tickets.filter(ticket => ticket.ticketId !== action.meta.arg.ticketId);
+          state.tickets = state.tickets.filter(ticket => ticket.TicketId !== action.meta.arg.ticketId);
         }
         state.loading = false;
       })
