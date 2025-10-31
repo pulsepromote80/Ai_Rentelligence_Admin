@@ -1,17 +1,15 @@
 export const API_ENDPOINTS = {
-    GET_ALL_TICKETS: "/Ticket/getAllTicket",
-    TICKET_REPLY: "/Ticket/TicketReply",
-    GET_TICKET_REPLY_BY_TICKET_ID: "/Ticket/getTicketReplyByTicketId",
-    DELETE_TICKET: "/Ticket/deleteTicket"
+    GET_ALL_TICKETS: "/Banner/getAllTicketAdmintest",
+    TICKET_REPLY: "/Banner/addTicketReplytest",
+    GET_TICKET_REPLY_BY_TICKET_ID: "/Banner/getTicketBYTicketId",
+    DELETE_TICKET: "/Banner/closeTicketTest"
 };
 
 export const Columns = [
-    { id: 'id', label: 'S.No.' },
-    {id: 'authLogin', label: 'UserId'},
-    {id: 'name', label: 'Name'},
-    { id: 'ticketType', label: 'Ticket Type' },
-    { id: 'subject', label: 'Subject' },
-    { id: 'message', label: 'Message' },
-    { id: 'image', label: 'Image' },
-    { id: 'active', label: 'Status' },
+    { id: 'sno', label: 'S.No' },
+    { id: 'UserID', label: 'User ID' },
+    { id: 'UserName', label: 'Name' },
+    { id: 'Subject', label: 'Subject' },
+    { id: 'Status', label: 'Status' },
+    { id: 'action', label: 'Action' },
 ];
