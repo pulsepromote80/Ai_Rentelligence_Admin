@@ -5,14 +5,11 @@ import { fetchAllTickets, addTicketReply, getAllTicketByTicketId, deleteTicket, 
 import Table from '@/app/common/datatable';
 import { Columns } from '@/app/constants/ticket-constant';
 import { toast } from 'react-toastify';
-import Tiptap from '@/app/common/rich-text-editor';
-
 
 const NewTicket = () => {
   const dispatch = useDispatch();
   const { tickets, error, ticketDetails } = useSelector((state) => state.ticket);
 
-  const [selectedTicket, setSelectedTicket] = useState(null);
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [replyMessage, setReplyMessage] = useState('');
   const [replyImage, setReplyImage] = useState(null);
@@ -154,13 +151,14 @@ const NewTicket = () => {
 
 
       {showPopup && ticketDetails?.ticket && ticketDetails.ticket.map((ticket, index) => (
-        <div key={index} className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50">
-          <div className="relative w-full max-w-xl bg-white rounded-lg shadow-lg max-h-[90vh] z-[10000] overflow-hidden flex flex-col">
+        // console.log(ticket)
+        <div key={index} className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="relative w-full max-w-xl bg-white rounded-lg shadow-lg max-h-[95vh] z-[10000] overflow-hidden flex flex-col">
 
-            <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-xl font-semibold text-gray-700">Ticket Details</h2>
+            <div className="flex items-center justify-between p-3 border-b">
+              <h2 className="text-lg font-semibold text-gray-700">Ticket Details</h2>
               <button
-                className="text-3xl font-bold text-gray-400 hover:text-red-500 focus:outline-none"
+                className="text-2xl font-bold text-gray-400 hover:text-red-500 focus:outline-none"
                 onClick={() => {
                   dispatch(clearTicketDetails());
                   setShowPopup(false);
@@ -171,55 +169,101 @@ const NewTicket = () => {
               </button>
             </div>
 
-            <div className="p-4 overflow-y-auto flex-1">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="p-3 flex-1">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 bg-white rounded-2xl shadow-sm">
+                {/* User ID */}
                 <div className="flex flex-col">
-                  <span className="font-bold text-black uppercase text-l">UserId :</span>
-                  <span className="text-gray-800 break-all text-md">{ticket.UserID || '-'}</span>
+                  <span className="font-bold text-black uppercase text-sm">User ID</span>
+                  <span className="text-gray-800 break-all text-sm">{ticket.UserID || '-'}</span>
                 </div>
+
+                {/* Name */}
                 <div className="flex flex-col">
-                  <span className="font-bold text-black uppercase text-l">Name :</span>
-                  <span className="text-gray-800 break-all text-md">{ticket.UserName || '-'}</span>
+                  <span className="font-bold text-black uppercase text-sm">Name</span>
+                  <span className="text-gray-800 break-all text-sm">{ticket.UserName || '-'}</span>
                 </div>
+
+                {/* Subject */}
                 <div className="flex flex-col">
-                  <span className="font-bold text-black uppercase text-l">Subject :</span>
-                  <span className="text-gray-800 break-all text-md">{ticket.Subject || '-'}</span>
+                  <span className="font-bold text-black uppercase text-sm">Subject</span>
+                  <span className="text-gray-800 break-all text-sm">{ticket.Subject || '-'}</span>
                 </div>
+
+                {/* Type */}
                 <div className="flex flex-col">
-                  <span className="font-bold text-black uppercase text-l">Image :</span>
+                  <span className="font-bold text-black uppercase text-sm">Type</span>
+                  <span className="text-gray-800 break-all text-sm">{ticket.Type || 'General'}</span>
+                </div>
+
+                {/* Date */}
+                <div className="flex flex-col">
+                  <span className="font-bold text-black uppercase text-sm">Date</span>
+                  <span className="text-gray-800 break-all text-sm">{ticket.CreatedDate}</span>
+                </div>
+
+                {/* Status */}
+                <div className="flex flex-col">
+                  <span className="font-bold text-black uppercase text-sm">Status</span>
+                  <span
+                    className={`break-all text-sm font-semibold ${ticket.Status === 1 ? 'text-green-600' : 'text-red-600'
+                      }`}
+                  >
+                    • {ticket.Status === 1 ? 'Open' : 'Closed'}
+                  </span>
+                </div>
+
+                {/* Image */}
+                <div className="flex flex-col">
+                  <span className="font-bold text-black uppercase text-sm">Image</span>
                   {ticket.ImagePath ? (
-                    <img src={ticket.ImagePath} alt="Ticket" className="object-cover w-20 h-20 mt-1 border rounded" />
+                    <img
+                      src={ticket.ImagePath}
+                      alt="Ticket"
+                      className="object-cover w-20 h-20 mt-2 border rounded-lg shadow-sm"
+                    />
                   ) : (
-                    <span className="text-base text-gray-800">-</span>
+                    <span className="text-sm text-gray-800">-</span>
                   )}
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-bold text-black uppercase text-l">Date :</span>
-                  <span className="text-gray-800 break-all text-md">{ticket.CreatedDate}</span>
                 </div>
               </div>
 
 
+
               {/* Conversation Box */}
-              <div className="mt-4">
-                <h3 className="font-semibold text-gray-700 mb-4">Conversation:</h3>
-                <div className="bg-gray-50 rounded-lg p-4 max-h-80 overflow-y-auto space-y-4">
+              <div className="mt-3">
+                <h3 className="font-semibold text-gray-700 text-sm mb-3">Conversation</h3>
+                <style jsx>{`
+                  .conversation-box::-webkit-scrollbar {
+                    width: 6px;
+                  }
+                  .conversation-box::-webkit-scrollbar-track {
+                    background: #f1f1f1;
+                  }
+                  .conversation-box::-webkit-scrollbar-thumb {
+                    background: #c1c1c1;
+                    border-radius: 3px;
+                  }
+                  .conversation-box::-webkit-scrollbar-thumb:hover {
+                    background: #a1a1a1;
+                  }
+                `}</style>
+                <div className="bg-gray-50 rounded-lg p-3 max-h-40 sm:max-h-40 overflow-y-auto space-y-3 conversation-box">
                   {/* Replies */}
                   {replies.map((reply, idx) => (
                     reply.Status === 1 ? (
                       // User Reply
-                      <div key={idx} className="flex items-start space-x-3">
-                        <div className="bg-white p-4 rounded-2xl rounded-tl-md shadow-sm max-w-xs lg:max-w-md">
-                          <div className="text-xs text-green-600 font-medium mb-1">User</div>
-                          <div className="text-gray-800" dangerouslySetInnerHTML={{ __html: reply.Message }} />
+                      <div key={idx} className="flex items-start space-x-2">
+                        <div className="bg-white p-2 rounded-2xl rounded-tl-md shadow-sm max-w-xs lg:max-w-md">
+                          <div className="text-xs text-green-600 font-medium mb-1">{ticket.UserName || 'User'}</div>
+                          <div className="text-gray-800 text-sm" dangerouslySetInnerHTML={{ __html: reply.Message }} />
                           <div className="text-xs text-gray-500 mb-2">{reply.ReplyDate}</div>
                         </div>
                       </div>
                     ) : (
                       // Admin Reply
-                      <div key={idx} className="flex items-start justify-end space-x-3">
-                        <div className="bg-blue-500 p-4 rounded-2xl rounded-tr-md shadow-sm max-w-xs lg:max-w-md">
-                          <div className="text-white" dangerouslySetInnerHTML={{ __html: reply.Message }} />
+                      <div key={idx} className="flex items-start justify-end space-x-2">
+                        <div className="bg-blue-500 p-2 rounded-2xl rounded-tr-md shadow-sm max-w-xs lg:max-w-md">
+                          <div className="text-white text-sm" dangerouslySetInnerHTML={{ __html: reply.Message }} />
                           <div className="text-xs text-blue-200 mb-2">{reply.ReplyDate}</div>
                         </div>
                       </div>
@@ -228,14 +272,14 @@ const NewTicket = () => {
 
                   {/* Last Reply if any */}
                   {lastReply && (
-                    <div className="flex items-start justify-end space-x-3">
-                      <div className="bg-blue-500 p-4 rounded-2xl rounded-tr-md shadow-sm max-w-xs lg:max-w-md">
+                    <div className="flex items-start justify-end space-x-2">
+                      <div className="bg-blue-500 p-3 rounded-2xl rounded-tr-md shadow-sm max-w-xs lg:max-w-md">
                         <div className="text-xs text-blue-100 font-medium mb-1">Admin</div>
-                        {lastReply.ImagePath && <img src={lastReply.ImagePath} alt="Reply" className="w-20 h-20 rounded-lg mb-2" />}
-                        <div className="text-white">{lastReply.Message}</div>
+                        {lastReply.ImagePath && <img src={lastReply.ImagePath} alt="Reply" className="w-16 h-16 rounded-lg mb-2" />}
+                        <div className="text-white text-sm">{lastReply.Message}</div>
                       </div>
-                      <div className="flex items-center justify-center w-10 h-10 bg-blue-500 rounded-full flex-shrink-0">
-                        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 1114 0H3z" /></svg>
+                      <div className="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-full flex-shrink-0">
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 10a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 1114 0H3z" /></svg>
                       </div>
                     </div>
                   )}
@@ -243,28 +287,28 @@ const NewTicket = () => {
               </div>
 
               {/* Activity Box */}
-              <div className="mt-4">
-                <h3 className="font-semibold text-gray-700 mb-4">Activity:</h3>
+              <div className="mt-3">
+                <h3 className="font-semibold text-gray-700 text-sm mb-3">Activity:</h3>
                 <input
                   value={replyMessage}
                   onChange={(e) => setReplyMessage(e.target.value)}
                   type="text"
-                  className="border rounded px-2 py-1 w-full mb-4"
+                  className="border rounded px-2 py-3 w-full mb-3 text-sm"
                   placeholder="Enter your reply..."
                 />
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-3">
                   <button
-                    className="px-6 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none"
+                    className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none text-sm"
                     onClick={() => handleReplySubmit(ticket)}
                   >
                     Send Reply
                   </button>
-                  <button className="px-6 py-2 text-white bg-gray-600 rounded hover:bg-gray-700 focus:outline-none disabled:opacity-60" onClick={() => handleCloseTicket(ticket)} disabled={closeLoading}>
+                  <button className="px-4 py-2 text-white bg-gray-600 rounded hover:bg-gray-700 focus:outline-none disabled:opacity-60 text-sm" onClick={() => handleCloseTicket(ticket)} disabled={closeLoading}>
                     {closeLoading ? 'Closing...' : 'Close'}
                   </button>
                 </div>
-                {closeError && <div className="mt-2 text-red-500">{closeError}</div>}
-                {closeSuccess && <div className="mt-2 text-green-600">{closeSuccess}</div>}
+                {closeError && <div className="mt-2 text-red-500 text-sm">{closeError}</div>}
+                {closeSuccess && <div className="mt-2 text-green-600 text-sm">{closeSuccess}</div>}
 
               </div>
             </div>

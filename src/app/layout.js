@@ -12,21 +12,21 @@ export const metadata = {
   description: "Developed By Pulse Promote",
 };
 
-  const RootLayout = ({ children}) => {
+const RootLayout = ({ children }) => {
   return (
-     <html lang="en">
+    <html lang="en">
       <body>
-    <div className="flex flex-col min-h-screen overflow-y-scroll" style={{ backgroundColor: "rgb(243, 244, 246)" }}>
-      <Providers>
-        <ToastContainer />
-      <NavbarLogin />
-      <div className="flex justify-center flex-grow">
-        {children}
-      </div>
-      <Footer />
-      </Providers>
-    </div>
-    </body>
+        <div className="flex flex-col min-h-screen overflow-y-scroll" style={{ backgroundColor: "rgb(243, 244, 246)" }}>
+          <Providers>
+            <ToastContainer />
+            <NavbarLogin />
+            <div className="flex justify-center flex-grow">
+              {children}
+            </div>
+            <Footer />
+          </Providers>
+        </div>
+      </body>
     </html>
   );
 };
