@@ -1,9 +1,9 @@
 export const API_ENDPOINTS = {
-    GET_ALL_TICKETS: "/Banner/getAllTicketAdmintest",
-    TICKET_REPLY: "/Banner/addTicketReplytest",
-    GET_TICKET_REPLY_BY_TICKET_ID: "/Banner/getTicketBYTicketId",
-    DELETE_TICKET: "/Banner/closeTicketTest",
-    GET_ALL_CLOSED_TICKET:"/Banner/getAllclosedTicket"
+    GET_ALL_TICKETS: "/Ticket/getAllTicketAdmin",
+    TICKET_REPLY: "/Ticket/addTicketReply",
+    GET_TICKET_REPLY_BY_TICKET_ID: "/Ticket/getTicketBYTicketId",
+    DELETE_TICKET: "/Ticket/closeTicket",
+    GET_ALL_CLOSED_TICKET:"/Ticket/getAllclosedTicket"
 };
 
 export const Columns = [

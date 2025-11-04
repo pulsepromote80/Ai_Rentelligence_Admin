@@ -93,30 +93,30 @@ const TicketLogs = () => {
 
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="flex flex-col">
-                  <span className="font-bold text-black uppercase text-l">UserId :</span>
+                  <span className="font-bold text-black uppercase text-l">UserId </span>
                   <span className="text-gray-800 break-all text-md">{ticket.UserID || '-'}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-black uppercase text-l">Name :</span>
+                  <span className="font-bold text-black uppercase text-l">Name </span>
                   <span className="text-gray-800 break-all text-md">{ticket.UserName || '-'}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-black uppercase text-l">Subject :</span>
+                  <span className="font-bold text-black uppercase text-l">Subject </span>
                   <span className="text-gray-800 break-all text-md">{ticket.Subject || '-'}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-black uppercase text-l">Type :</span>
+                  <span className="font-bold text-black uppercase text-l">Type </span>
                   <span className="text-gray-800 break-all text-md">{ticket.Type || 'General'}</span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-bold text-black uppercase text-l">Date :</span>
+                  <span className="font-bold text-black uppercase text-l">Date </span>
                   <span className="text-gray-800 break-all text-md">{ticket.CreatedDate}</span>
                 </div>
               </div>
 
               {/* Image Display Below Grid */}
               <div className="mt-4">
-                <span className="font-bold text-black uppercase text-l">Image :</span>
+                <span className="font-bold text-black uppercase text-l">Image </span>
                 {ticket.ImagePath ? (
                   <img src={ticket.ImagePath} alt="Ticket" className="object-cover w-20 h-20 mt-1 border rounded" />
                 ) : (
@@ -152,33 +152,6 @@ const TicketLogs = () => {
                 </div>
               </div>
 
-              {/* Activity Box */}
-              <div className="mt-4">
-                <h3 className="font-semibold text-gray-700 mb-4">Activity:</h3>
-                <div className="bg-gray-50 rounded-lg p-4 max-h-80 overflow-y-auto space-y-4">
-                  {/* Replies as Activity */}
-                  {replies?.map((reply, idx) => (
-                    reply.Status === 1 ? (
-                      // User Reply
-                      <div key={idx} className="flex items-start space-x-3">
-                        <div className="bg-white p-4 rounded-2xl rounded-tl-md shadow-sm max-w-xs lg:max-w-md">
-                          <div className="text-xs text-green-600 font-medium mb-1">User</div>
-                          <div className="text-gray-800" dangerouslySetInnerHTML={{ __html: reply.Message }} />
-                          <div className="text-xs text-gray-500 mb-2">{reply.ReplyDate}</div>
-                        </div>
-                      </div>
-                    ) : (
-                      // Admin Reply
-                      <div key={idx} className="flex items-start justify-end space-x-3">
-                        <div className="bg-blue-500 p-4 rounded-2xl rounded-tr-md shadow-sm max-w-xs lg:max-w-md">
-                          <div className="text-white" dangerouslySetInnerHTML={{ __html: reply.Message }} />
-                          <div className="text-xs text-blue-200 mb-2">{reply.ReplyDate}</div>
-                        </div>
-                      </div>
-                    )
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
         </div>
