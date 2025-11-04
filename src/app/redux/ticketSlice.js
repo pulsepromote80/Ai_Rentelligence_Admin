@@ -1,6 +1,6 @@
 'use client'
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { getRequest, postformRequest, postRequest } from '@/app/pages/api/auth'
+import {  postformRequest, postRequest } from '@/app/pages/api/auth'
 import { API_ENDPOINTS } from '@/app/constants/ticket-constant'
 
 export const fetchAllTickets = createAsyncThunk(
