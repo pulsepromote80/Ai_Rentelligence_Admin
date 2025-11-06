@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendNotification } from "@/app/redux/ticketSlice"; 
 import Tiptap from '@/app/common/rich-text-editor'
+import { toast } from 'react-toastify';
 
 export const SendNotification = () => {
   const dispatch = useDispatch();
@@ -30,16 +31,21 @@ export const SendNotification = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (!formData.title.trim() || !formData.body.trim()) {
-      alert('Please fill in both title and body fields');
-      return;
-    }
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    dispatch(sendNotification(formData));
-  };
+ 
+
+  const result = await dispatch(sendNotification(formData));
+
+  if (result?.payload?.statusCode === 200) {
+    toast.success("Notification sent successfully!");
+    setFormData({ title: '', body: '', image: '' }); 
+  } else {
+    toast.error(result?.payload?.message || "Failed to send notification!");
+  }
+};
+
 
   return (
     

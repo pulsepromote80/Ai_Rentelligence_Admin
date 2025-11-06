@@ -79,7 +79,6 @@ export const sendNotification = createAsyncThunk(
   }
 );
 
-// Create Slice
 const ticketSlice = createSlice({
   name: 'ticket',
   initialState: {
@@ -169,7 +168,7 @@ const ticketSlice = createSlice({
         state.loading = true
       })
       .addCase(sendNotification.fulfilled, (state, action) => {
-        state.sendNotification = action.payload
+        state.closedTickets = action.payload
         state.loading = false
       })
       .addCase(sendNotification.rejected, (state, action) => {
