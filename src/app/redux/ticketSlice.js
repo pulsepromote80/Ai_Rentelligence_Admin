@@ -63,6 +63,21 @@ export const deleteTicket = createAsyncThunk(
     }
   }
 )
+export const sendNotification = createAsyncThunk(
+  "ticket/addNotification",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(
+        API_ENDPOINTS.SEND_NOTIFICATION,
+        data
+      );
+      return response;
+    } catch (error) {
+      console.error("API Error:", error.response?.data || error.message);
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
 
 // Create Slice
 const ticketSlice = createSlice({
@@ -71,6 +86,7 @@ const ticketSlice = createSlice({
     tickets:null,
     closedTickets:null,
     ticketDetails: null,
+    sendNotification: null,
     loading: false,
     error: null,
   },
@@ -148,6 +164,17 @@ const ticketSlice = createSlice({
       .addCase(deleteTicket.rejected, (state, action) => {
         state.error = action.payload;
         state.loading = false;
+      })
+       .addCase(sendNotification.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(sendNotification.fulfilled, (state, action) => {
+        state.sendNotification = action.payload
+        state.loading = false
+      })
+      .addCase(sendNotification.rejected, (state, action) => {
+        state.error = action.payload
+        state.loading = false
       })
   },
 })
