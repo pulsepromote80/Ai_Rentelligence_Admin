@@ -22,6 +22,7 @@ import ticketReducer from './ticketSlice';
 import fundManagerReducer from './fundManagerSlice';
 // Import your cloudSlice
 import cloudReducer from './cloudSlice';
+import eventReducer from './eventSlice';
 
 export const store = configureStore({
     reducer: {
@@ -46,6 +47,7 @@ export const store = configureStore({
         adminMaster: adminMasterReducer,
         ticket: ticketReducer,
         fundManager: fundManagerReducer,
-        cloud: cloudReducer 
+        cloud: cloudReducer,
+        event: eventReducer, 
     },
 });
