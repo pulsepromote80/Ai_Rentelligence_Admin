@@ -57,6 +57,6 @@ export const Columns = [
   { key: 'EventType', label: 'Event Type' },
   { key: 'AvailableSeats', label: 'Available Seats' },
   { key: 'Location', label: 'Location' },
-  { key: 'Createdby', label: 'Createdby ' },
-  { key: 'EventDateTime', label: 'DateTime' }
+  { key: 'EventDateTime', label: 'DateTime' },
+  { key: 'EventStatus', label: 'Event Status' },
 ];
