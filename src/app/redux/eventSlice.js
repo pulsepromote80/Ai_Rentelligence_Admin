@@ -56,6 +56,21 @@ export const eventSchedule = createAsyncThunk(
         }
     }
 );
+export const getEventById = createAsyncThunk(
+  "event/getEventById",
+  async (EventMasterID, { rejectWithValue }) => {
+    try {
+      const endpoint = `${API_ENDPOINTS.GET_SCHEDULE_BY_EID}?EventMasterID=${EventMasterID}`;
+      const response = await getRequest(endpoint);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || "Failed to fetch event details"
+      );
+    }
+  }
+);
+
 
 const eventSlice = createSlice({
     name: "event",
@@ -64,6 +79,7 @@ const eventSlice = createSlice({
         error: null,
         success: null,
         data: [],
+        selectedEvent: null,
     },
     reducers: {
         clearError: (state) => {
@@ -136,6 +152,19 @@ const eventSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            .addCase(getEventById.pending, (state) => {
+  state.loading = true;
+  state.error = null;
+})
+.addCase(getEventById.fulfilled, (state, action) => {
+  state.loading = false;
+  state.selectedEvent = action.payload?.data || action.payload;
+})
+.addCase(getEventById.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload;
+});
+
     },
 });
 

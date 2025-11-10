@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -9,7 +8,7 @@ import { toast } from "react-toastify";
 import DeletePopup from "@/app/common/utils/delete-popup";
 import { eventData, eventLoading } from "./event-selectors";
 import { getAdminUserId } from "@/app/pages/api/auth";
-import ScheduleModal from "@/app/components/ScheduleModal"; 
+import ScheduleModal from "@/app/components/ScheduleModal";
 
 const Event = () => {
   const dispatch = useDispatch();
@@ -22,6 +21,10 @@ const Event = () => {
     AvailableSeats: "",
     Location: "",
     DateTime: "",
+    Description: "",
+    VIP: "", 
+    Premium: "", 
+    Standard: "",
     Status: 1
   });
   const [eventImage, setEventImage] = useState(null);
@@ -35,8 +38,8 @@ const Event = () => {
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [eventToDelete, setEventToDelete] = useState(null);
   
-  // Schedule modal states
-  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  // Schedule form states
+  const [showScheduleForm, setShowScheduleForm] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
   useEffect(() => {
@@ -51,6 +54,10 @@ const Event = () => {
       AvailableSeats: "",
       Location: "",
       DateTime: "",
+      Description: "", 
+      VIP: "", 
+      Premium: "", 
+      Standard: "", 
       Status: 1 
     });
     setEventImage(null);
@@ -63,7 +70,7 @@ const Event = () => {
   
   const handleSchedule = useCallback((row) => {
     setSelectedEvent(row);
-    setShowScheduleModal(true);
+    setShowScheduleForm(true);
   }, []);
 
   const updatedColumns = useMemo(() => {
@@ -98,7 +105,6 @@ const Event = () => {
     });
   }, [handleSchedule]);
 
-  // Rest of your existing code remains the same...
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -127,6 +133,7 @@ const Event = () => {
     if (!formData.AvailableSeats.trim()) newErrors.AvailableSeats = "Available Seats is required.";
     if (!formData.Location.trim()) newErrors.Location = "Location is required.";
     if (!formData.DateTime.trim()) newErrors.DateTime = "Date & Time is required.";
+    if (!formData.Description.trim()) newErrors.Description = "Description is required."; 
     
     if (!editMode && !eventImage) {
       newErrors.eventImage = "Event image is required.";
@@ -134,6 +141,16 @@ const Event = () => {
     
     if (formData.AvailableSeats && isNaN(formData.AvailableSeats)) {
       newErrors.AvailableSeats = "Available Seats must be a number.";
+    }
+
+    if (formData.VIP && isNaN(formData.VIP)) {
+      newErrors.VIP = "VIP must be a number.";
+    }
+    if (formData.Premium && isNaN(formData.Premium)) {
+      newErrors.Premium = "Premium must be a number.";
+    }
+    if (formData.Standard && isNaN(formData.Standard)) {
+      newErrors.Standard = "Standard must be a number.";
     }
     
     setErrors(newErrors);
@@ -162,6 +179,10 @@ const Event = () => {
       submitFormData.append("AvailableSeats", formData.AvailableSeats);
       submitFormData.append("Location", formData.Location);
       submitFormData.append("DateTime", formData.DateTime);
+      submitFormData.append("Description", formData.Description); 
+      submitFormData.append("VIP", formData.VIP); 
+      submitFormData.append("Premium", formData.Premium); 
+      submitFormData.append("Standard", formData.Standard); 
       submitFormData.append("Updatedby", currentAdminUserId || "");
       submitFormData.append("Status", formData.Status.toString());
      
@@ -190,6 +211,10 @@ const Event = () => {
       submitFormData.append("AvailableSeats", formData.AvailableSeats);
       submitFormData.append("Location", formData.Location);
       submitFormData.append("DateTime", formData.DateTime);
+      submitFormData.append("Description", formData.Description); 
+      submitFormData.append("VIP", formData.VIP); 
+      submitFormData.append("Premium", formData.Premium); 
+      submitFormData.append("Standard", formData.Standard); 
       submitFormData.append("Createdby", currentAdminUserId || "");
       submitFormData.append("Status", formData.Status.toString());
       
@@ -224,33 +249,38 @@ const Event = () => {
     }
   };
 
-  const handleEdit = (event) => {
-    const statusValue = (event.Status === 0 || event.Status === 1) 
-      ? event.Status 
-      : 1;
-    
-    setFormData({
-      Tittle: event.Tittle || "",
-      EventType: event.EventType || "",
-      AvailableSeats: event.AvailableSeats || "",
-      Location: event.Location || "",
-      DateTime: event.EventDateTime || event.DateTime || "",
-      Status: statusValue
-    });
-    
-    setEditEventId(event.EventMasterID || event.Id);
-    setEditMode(true);
-    setShowForm(true);
-    
-    if (event.Image) {
-      setExistingImageUrl(event.Image);
-      setEventImage(event.Image); 
-    } else {
-      setExistingImageUrl("");
-      setEventImage(null);
-    }
-  };
-
+ 
+const handleEdit = (event) => {
+  const statusValue = (event.Status === 0 || event.Status === 1) 
+    ? event.Status 
+    : 1;
+  
+  setFormData({
+    Tittle: event.Tittle || event.title || "",
+    EventType: event.EventType || event.eventType || "",
+    AvailableSeats: event.AvailableSeats || event.availableSeats || "",
+    Location: event.Location || event.location || "",
+    DateTime: event.EventDateTime || event.DateTime || event.eventDateTime || event.dateTime || "",
+    Description: event.Description || event.description || event.Desc || event.desc || "",
+    VIP: event.VIP || event.vip || event.Vip || "",
+    Premium: event.Premium || event.premium || "",
+    Standard: event.Standard || event.standard || "",
+    Status: statusValue
+  });
+  
+  setEditEventId(event.EventMasterID || event.Id || event.eventMasterID);
+  setEditMode(true);
+  setShowForm(true);
+  
+  if (event.Image || event.image) {
+    const imageUrl = event.Image || event.image;
+    setExistingImageUrl(imageUrl);
+    setEventImage(imageUrl); 
+  } else {
+    setExistingImageUrl("");
+    setEventImage(null);
+  }
+};
   const handleDelete = (event) => {
     setEventToDelete(event);
     setShowDeletePopup(true);
@@ -302,6 +332,19 @@ const Event = () => {
   const submitButtonText = loading ? 
     (editMode ? "Updating..." : "Adding...") : 
     (editMode ? "Update Event" : "Add Event");
+
+  if (showScheduleForm) {
+    return (
+      <ScheduleModal
+        event={selectedEvent}
+        onClose={() => setShowScheduleForm(false)}
+        onSuccess={() => {
+          setShowScheduleForm(false);
+          dispatch(getevent());
+        }}
+      />
+    );
+  }
 
   return (
     <div className="max-w-full mx-auto bg-white rounded-lg">
@@ -380,6 +423,48 @@ const Event = () => {
             </div>
           </div>
 
+          {/* ✅ नए fields - VIP, Premium, Standard */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div>
+              <label className="block mb-2 font-medium">VIP Price</label>
+              <input
+                type="number"
+                name="VIP"
+                placeholder="VIP"
+                value={formData.VIP}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.VIP && <p className="mt-1 text-sm text-red-500">{errors.VIP}</p>}
+            </div>
+
+            <div>
+              <label className="block mb-2 font-medium">Premium Price</label>
+              <input
+                type="number"
+                name="Premium"
+                placeholder="Premium"
+                value={formData.Premium}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.Premium && <p className="mt-1 text-sm text-red-500">{errors.Premium}</p>}
+            </div>
+
+            <div>
+              <label className="block mb-2 font-medium">Standard Price</label>
+              <input
+                type="number"
+                name="Standard"
+                placeholder="Standard"
+                value={formData.Standard}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.Standard && <p className="mt-1 text-sm text-red-500">{errors.Standard}</p>}
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="block mb-2 font-medium">Date & Time</label>
@@ -394,9 +479,7 @@ const Event = () => {
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">
-                Image
-              </label>
+              <label className="block mb-2 font-medium">Image</label>
               <input
                 type="file"
                 accept="image/*"
@@ -406,6 +489,20 @@ const Event = () => {
               {previewImage}
               {errors.eventImage && <p className="mt-1 text-sm text-red-500">{errors.eventImage}</p>}
             </div>
+          </div>
+
+          {/* ✅ Description field - textarea */}
+          <div>
+            <label className="block mb-2 font-medium">Description</label>
+            <textarea
+              name="Description"
+              placeholder="Enter Event Description"
+              value={formData.Description}
+              onChange={handleInputChange}
+              rows={4}
+              className="w-full p-3 border border-gray-300 rounded-md resize-none"
+            />
+            {errors.Description && <p className="mt-1 text-sm text-red-500">{errors.Description}</p>}
           </div>
 
           {editMode && (
@@ -475,13 +572,6 @@ const Event = () => {
           onConfirm={confirmDelete}
         />
       )}
-
-      {/* Schedule Modal */}
-      <ScheduleModal
-        show={showScheduleModal}
-        onClose={() => setShowScheduleModal(false)}
-        event={selectedEvent}
-      />
     </div>
   );
 };
