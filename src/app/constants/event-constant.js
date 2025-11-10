@@ -5,7 +5,8 @@ export const API_ENDPOINTS = {
   GET_ALL_EVENT_MASTER: "/Event/getAllEventMaster",
   ADD_EVENT_MASTER: "/Event/addEventMaster",
   UPDATE_EVENT:"/Event/UpdateEvent",
-  ADD_EVENT_SCHEDULE:"/Event/addEventSchedule"
+  ADD_EVENT_SCHEDULE:"/Event/addEventSchedule",
+  GET_SCHEDULE_BY_EID:"/Event/getScheduleByEID"
 };
 
 
