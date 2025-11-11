@@ -57,19 +57,33 @@ export const eventSchedule = createAsyncThunk(
     }
 );
 export const getEventById = createAsyncThunk(
-  "event/getEventById",
-  async (EventMasterID, { rejectWithValue }) => {
-    try {
-      const endpoint = `${API_ENDPOINTS.GET_SCHEDULE_BY_EID}?EventMasterID=${EventMasterID}`;
-      const response = await getRequest(endpoint);
-      return response;
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message || error.message || "Failed to fetch event details"
-      );
+    "event/getEventById",
+    async (EventMasterID, { rejectWithValue }) => {
+        try {
+            const endpoint = `${API_ENDPOINTS.GET_SCHEDULE_BY_EID}?EventMasterID=${EventMasterID}`;
+            const response = await getRequest(endpoint);
+            return response;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || error.message || "Failed to fetch event details"
+            );
+        }
     }
-  }
 );
+export const getAllUserEventbookingMaster = createAsyncThunk(
+  'sellers/getAllUserEventbookingMaster',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getRequest(API_ENDPOINTS.GET_ALL_USER_EVENT_BOOKING_MASTER)
+      if (!response || !response.data) {
+        throw new Error('Invalid Booking Details received')
+      }
+      return response.data
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Error fetching sellers')
+    }
+  },
+)
 
 
 const eventSlice = createSlice({
@@ -80,6 +94,7 @@ const eventSlice = createSlice({
         success: null,
         data: [],
         selectedEvent: null,
+        Bookingdetails:null
     },
     reducers: {
         clearError: (state) => {
@@ -153,17 +168,29 @@ const eventSlice = createSlice({
                 state.error = action.payload;
             })
             .addCase(getEventById.pending, (state) => {
-  state.loading = true;
-  state.error = null;
-})
-.addCase(getEventById.fulfilled, (state, action) => {
-  state.loading = false;
-  state.selectedEvent = action.payload?.data || action.payload;
-})
-.addCase(getEventById.rejected, (state, action) => {
-  state.loading = false;
-  state.error = action.payload;
-});
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getEventById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.selectedEvent = action.payload?.data || action.payload;
+            })
+            .addCase(getEventById.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+              .addCase(getAllUserEventbookingMaster.pending, (state) => {
+                    state.loading = true
+                    state.error = null
+                  })
+                  .addCase(getAllUserEventbookingMaster.fulfilled, (state, action) => {
+                    state.Bookingdetails = action.payload || []
+                    state.loading = false
+                  })
+                  .addCase(getAllUserEventbookingMaster.rejected, (state, action) => {
+                    state.error = action.payload
+                    state.loading = false
+                  })
 
     },
 });

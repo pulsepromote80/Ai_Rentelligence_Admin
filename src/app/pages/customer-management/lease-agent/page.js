@@ -10,7 +10,6 @@ import { toast } from 'react-toastify';
 const LeaseAgentPage = () => {
   const dispatch = useDispatch();
   const { error: usernameError, rechargeTransactionData, usernameData } = useSelector((state) => state.adminMaster ?? {});
-  console.log("hello", usernameData);
   const { data: productData } = useSelector((state) => state.product ?? {});
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -105,7 +104,7 @@ const LeaseAgentPage = () => {
     return (
       <div {...props.innerProps} ref={props.innerRef} className={`px-3 py-2 flex items-center ${props.isFocused ? 'bg-gray-100' : ''}`}>
         {data.icon ? (
-          <img src={data.icon} alt="icon" className="w-5 h-5 rounded mr-2 object-cover" />
+          <img src={data.icon} alt="icon" className="object-cover w-5 h-5 mr-2 rounded" />
         ) : null}
         <span>{data.label}</span>
       </div>
@@ -117,7 +116,7 @@ const LeaseAgentPage = () => {
     return (
       <div className="flex items-center">
         {data.icon ? (
-          <img src={data.icon} alt="icon" className="w-5 h-5 rounded mr-2 object-cover" />
+          <img src={data.icon} alt="icon" className="object-cover w-5 h-5 mr-2 rounded" />
         ) : null}
         <span>{data.label}</span>
       </div>
@@ -214,8 +213,8 @@ const LeaseAgentPage = () => {
 </h6>
 
 {/* Form Section */}
-<div className="mb-8 p-6 bg-white border border-blue-100 shadow-lg rounded-xl">
-  <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div className="p-6 mb-8 bg-white border border-blue-100 shadow-lg rounded-xl">
+  <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
     {/* Agent List DDL */}
     <div>
       <label className="block mb-1 text-sm font-medium text-gray-600">Agent List</label>
@@ -466,7 +465,7 @@ const LeaseAgentPage = () => {
     </div>
 
     {/* Submit Button */}
-    <div className="md:col-span-2 lg:col-span-4 flex justify-end">
+    <div className="flex justify-end md:col-span-2 lg:col-span-4">
       <button
         type="submit"
         className="px-6 py-3 text-sm font-semibold text-white transition-all rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
@@ -501,7 +500,7 @@ const LeaseAgentPage = () => {
       <tbody>
         {paginatedData.length === 0 ? (
           <tr className='transition-colors duration-200 bg-blue-50 hover:bg-blue-100'>
-            <td colSpan={11} className="px-2 py-2 border td-wrap-text text-center">
+            <td colSpan={11} className="px-2 py-2 text-center border td-wrap-text">
               No Data Found
             </td>
           </tr>
@@ -519,7 +518,7 @@ const LeaseAgentPage = () => {
                   <img
                     src={row.image}
                     alt="Product"
-                    className="w-10 h-10 object-cover rounded mx-auto"
+                    className="object-cover w-10 h-10 mx-auto rounded"
                   />
                 ) : (
                   'N/A'

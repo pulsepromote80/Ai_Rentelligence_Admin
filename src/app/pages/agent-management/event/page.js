@@ -25,6 +25,10 @@ const Event = () => {
     VIP: "", 
     Premium: "", 
     Standard: "",
+    StandardSeats: "", 
+    VIPSeats: "",      
+    PremiumSeats: "",  
+    EventMode: "", // ✅ नया field
     Status: 1
   });
   const [eventImage, setEventImage] = useState(null);
@@ -42,6 +46,14 @@ const Event = () => {
   const [showScheduleForm, setShowScheduleForm] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
 
+  // ✅ Event Mode options
+  const eventModeOptions = [
+    { value: "", label: "Select Event Mode" },
+    { value: "Hybrid Event", label: "Hybrid Event" },
+    { value: "Online Event", label: "Online Event" },
+    { value: "Offline Event", label: "Offline Event" }
+  ];
+
   useEffect(() => {
     dispatch(getevent());
     setMounted(true);
@@ -58,6 +70,10 @@ const Event = () => {
       VIP: "", 
       Premium: "", 
       Standard: "", 
+      StandardSeats: "", 
+      VIPSeats: "",      
+      PremiumSeats: "",  
+      EventMode: "", // ✅ नया field
       Status: 1 
     });
     setEventImage(null);
@@ -134,6 +150,7 @@ const Event = () => {
     if (!formData.Location.trim()) newErrors.Location = "Location is required.";
     if (!formData.DateTime.trim()) newErrors.DateTime = "Date & Time is required.";
     if (!formData.Description.trim()) newErrors.Description = "Description is required."; 
+    if (!formData.EventMode.trim()) newErrors.EventMode = "Event Mode is required."; // ✅ नया validation
     
     if (!editMode && !eventImage) {
       newErrors.eventImage = "Event image is required.";
@@ -151,6 +168,17 @@ const Event = () => {
     }
     if (formData.Standard && isNaN(formData.Standard)) {
       newErrors.Standard = "Standard must be a number.";
+    }
+
+    // ✅ नए fields की validation
+    if (formData.StandardSeats && isNaN(formData.StandardSeats)) {
+      newErrors.StandardSeats = "Standard Seats must be a number.";
+    }
+    if (formData.VIPSeats && isNaN(formData.VIPSeats)) {
+      newErrors.VIPSeats = "VIP Seats must be a number.";
+    }
+    if (formData.PremiumSeats && isNaN(formData.PremiumSeats)) {
+      newErrors.PremiumSeats = "Premium Seats must be a number.";
     }
     
     setErrors(newErrors);
@@ -183,6 +211,10 @@ const Event = () => {
       submitFormData.append("VIP", formData.VIP); 
       submitFormData.append("Premium", formData.Premium); 
       submitFormData.append("Standard", formData.Standard); 
+      submitFormData.append("StandardSeats", formData.StandardSeats); 
+      submitFormData.append("VIPSeats", formData.VIPSeats);          
+      submitFormData.append("PremiumSeats", formData.PremiumSeats);  
+      submitFormData.append("EventMode", formData.EventMode); // ✅ नया field
       submitFormData.append("Updatedby", currentAdminUserId || "");
       submitFormData.append("Status", formData.Status.toString());
      
@@ -215,6 +247,10 @@ const Event = () => {
       submitFormData.append("VIP", formData.VIP); 
       submitFormData.append("Premium", formData.Premium); 
       submitFormData.append("Standard", formData.Standard); 
+      submitFormData.append("StandardSeats", formData.StandardSeats); 
+      submitFormData.append("VIPSeats", formData.VIPSeats);          
+      submitFormData.append("PremiumSeats", formData.PremiumSeats);  
+      submitFormData.append("EventMode", formData.EventMode); // ✅ नया field
       submitFormData.append("Createdby", currentAdminUserId || "");
       submitFormData.append("Status", formData.Status.toString());
       
@@ -265,6 +301,10 @@ const handleEdit = (event) => {
     VIP: event.VIP || event.vip || event.Vip || "",
     Premium: event.Premium || event.premium || "",
     Standard: event.Standard || event.standard || "",
+    StandardSeats: event.StandardSeats || event.standardSeats || "", 
+    VIPSeats: event.VIPSeats || event.vipSeats || "",               
+    PremiumSeats: event.PremiumSeats || event.premiumSeats || "",   
+    EventMode: event.EventMode || event.eventMode || "", // ✅ नया field
     Status: statusValue
   });
   
@@ -410,6 +450,25 @@ const handleEdit = (event) => {
             </div>
 
             <div>
+              <label className="block mb-2 font-medium">Event Mode</label>
+              <select
+                name="EventMode"
+                value={formData.EventMode}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              >
+                {eventModeOptions.map(option => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {errors.EventMode && <p className="mt-1 text-sm text-red-500">{errors.EventMode}</p>}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
               <label className="block mb-2 font-medium">Location</label>
               <input
                 type="text"
@@ -421,21 +480,58 @@ const handleEdit = (event) => {
               />
               {errors.Location && <p className="mt-1 text-sm text-red-500">{errors.Location}</p>}
             </div>
+
+            <div>
+              <label className="block mb-2 font-medium">Date & Time</label>
+              <input
+                type="datetime-local"
+                name="DateTime"
+                value={formData.DateTime}
+                onChange={handleInputChange}
+                min={new Date().toISOString().slice(0, 16)} 
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.DateTime && <p className="mt-1 text-sm text-red-500">{errors.DateTime}</p>}
+            </div>
           </div>
 
-          {/* ✅ नए fields - VIP, Premium, Standard */}
+          {/* ✅ Price and Seats fields */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div>
+              <label className="block mb-2 font-medium">VIP Seats</label>
+              <input
+                type="number"
+                name="VIPSeats"
+                placeholder="VIP Seats"
+                value={formData.VIPSeats}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.VIPSeats && <p className="mt-1 text-sm text-red-500">{errors.VIPSeats}</p>}
+            </div>
             <div>
               <label className="block mb-2 font-medium">VIP Price</label>
               <input
                 type="number"
                 name="VIP"
-                placeholder="VIP"
+                placeholder="VIP Price"
                 value={formData.VIP}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
               {errors.VIP && <p className="mt-1 text-sm text-red-500">{errors.VIP}</p>}
+            </div>
+            <div>
+              <label className="block mb-2 font-medium">Premium Seats</label>
+              <input
+                type="number"
+                name="PremiumSeats"
+                placeholder="Premium Seats"
+                value={formData.PremiumSeats}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.PremiumSeats && <p className="mt-1 text-sm text-red-500">{errors.PremiumSeats}</p>}
             </div>
 
             <div>
@@ -443,12 +539,24 @@ const handleEdit = (event) => {
               <input
                 type="number"
                 name="Premium"
-                placeholder="Premium"
+                placeholder="Premium Price"
                 value={formData.Premium}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
               {errors.Premium && <p className="mt-1 text-sm text-red-500">{errors.Premium}</p>}
+            </div>
+             <div>
+              <label className="block mb-2 font-medium">Standard Seats</label>
+              <input
+                type="number"
+                name="StandardSeats"
+                placeholder="Standard Seats"
+                value={formData.StandardSeats}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.StandardSeats && <p className="mt-1 text-sm text-red-500">{errors.StandardSeats}</p>}
             </div>
 
             <div>
@@ -456,7 +564,7 @@ const handleEdit = (event) => {
               <input
                 type="number"
                 name="Standard"
-                placeholder="Standard"
+                placeholder="Standard Price"
                 value={formData.Standard}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
@@ -466,18 +574,6 @@ const handleEdit = (event) => {
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className="block mb-2 font-medium">Date & Time</label>
-              <input
-                type="datetime-local"
-                name="DateTime"
-                value={formData.DateTime}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
-              />
-              {errors.DateTime && <p className="mt-1 text-sm text-red-500">{errors.DateTime}</p>}
-            </div>
-
             <div>
               <label className="block mb-2 font-medium">Image</label>
               <input
