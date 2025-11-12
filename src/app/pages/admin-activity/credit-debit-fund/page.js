@@ -249,19 +249,19 @@ const handleSubmit = async (e) => {
                 <span>
                   Income Wallet:{" "}
                   <span className="font-semibold text-blue-800">
-                    ₹{walletData.walletDetails.incomeWallet}
+                    ${walletData.walletDetails.incomeWallet}
                   </span>
                 </span>
                 <span>
                   Deposit Wallet:{" "}
                   <span className="font-semibold text-blue-800">
-                    ₹{walletData.walletDetails.depositWallet}
+                    ${walletData.walletDetails.depositWallet}
                   </span>
                 </span>
                 <span>
                   Rent Wallet:{" "}
                   <span className="font-semibold text-blue-800">
-                    ₹{walletData.walletDetails.rentWallet}
+                    ${walletData.walletDetails.rentWallet}
                   </span>
                 </span>
               </div>
