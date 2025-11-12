@@ -302,10 +302,10 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
     try {
       const currentAdminUserId = getAdminUserId();
       const payload = {
-        Title: scheduleData.title,
-        Time: formatTimeForAPI(scheduleData.time),
-        EventMasterID: event?.EventMasterID,
-        Createdby: currentAdminUserId || "",
+        tittle: scheduleData.title,
+        time: formatTimeForAPI(scheduleData.time),
+        eventMasterID: event?.EventMasterID,
+        createdby: currentAdminUserId || "",
       };
 
       const res = await dispatch(eventSchedule(payload)).unwrap();

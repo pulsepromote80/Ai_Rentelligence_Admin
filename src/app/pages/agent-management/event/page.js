@@ -1,354 +1,423 @@
-"use client";
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { addevent, getevent, updateevent, eventSchedule } from "@/app/redux/eventSlice";
-import Table from "@/app/common/datatable";
-import { Columns } from "@/app/constants/event-constant";
-import { toast } from "react-toastify";
-import DeletePopup from "@/app/common/utils/delete-popup";
-import { eventData, eventLoading } from "./event-selectors";
-import { getAdminUserId } from "@/app/pages/api/auth";
-import ScheduleModal from "@/app/components/ScheduleModal";
+'use client'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  addevent,
+  getevent,
+  updateevent,
+  eventSchedule,
+} from '@/app/redux/eventSlice'
+import Table from '@/app/common/datatable'
+import { Columns } from '@/app/constants/event-constant'
+import { toast } from 'react-toastify'
+import DeletePopup from '@/app/common/utils/delete-popup'
+import { eventData, eventLoading } from './event-selectors'
+import { getAdminUserId } from '@/app/pages/api/auth'
+import ScheduleModal from '@/app/components/ScheduleModal'
 
 const Event = () => {
-  const dispatch = useDispatch();
-  const loading = useSelector(eventLoading);
-  const data = useSelector(eventData);
+  const dispatch = useDispatch()
+  const loading = useSelector(eventLoading)
+  const data = useSelector(eventData)
 
   const [formData, setFormData] = useState({
-    Tittle: "",
-    EventType: "",
-    AvailableSeats: "",
-    Location: "",
-    DateTime: "",
-    Description: "",
-    VIP: "", 
-    Premium: "", 
-    Standard: "",
-    StandardSeats: "", 
-    VIPSeats: "",      
-    PremiumSeats: "",  
-    EventMode: "", // ✅ नया field
-    Status: 1
-  });
-  const [eventImage, setEventImage] = useState(null);
-  const [existingImageUrl, setExistingImageUrl] = useState(""); 
-  const [editMode, setEditMode] = useState(false);
-  const [editEventId, setEditEventId] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [mounted, setMounted] = useState(false);
+    Tittle: '',
+    EventType: '',
+    AvailableSeats: '',
+    Location: '',
+    DateTime: '',
+    Description: '',
+    VIP: '',
+    Premium: '',
+    Standard: '',
+    StandardSeats: '',
+    VIPSeats: '',
+    PremiumSeats: '',
+    EventMode: '', // ✅ नया field
+    Status: 1,
+  })
+  const [eventImage, setEventImage] = useState(null)
+  const [existingImageUrl, setExistingImageUrl] = useState('')
+  const [editMode, setEditMode] = useState(false)
+  const [editEventId, setEditEventId] = useState(null)
+  const [showForm, setShowForm] = useState(false)
+  const [errors, setErrors] = useState({})
+  const [mounted, setMounted] = useState(false)
 
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [eventToDelete, setEventToDelete] = useState(null);
-  
+  const [showDeletePopup, setShowDeletePopup] = useState(false)
+  const [eventToDelete, setEventToDelete] = useState(null)
+
   // Schedule form states
-  const [showScheduleForm, setShowScheduleForm] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showScheduleForm, setShowScheduleForm] = useState(false)
+  const [selectedEvent, setSelectedEvent] = useState(null)
 
   // ✅ Event Mode options
   const eventModeOptions = [
-    { value: "", label: "Select Event Mode" },
-    { value: "Hybrid Event", label: "Hybrid Event" },
-    { value: "Online Event", label: "Online Event" },
-    { value: "Offline Event", label: "Offline Event" }
-  ];
+    { value: '', label: 'Select Event Mode' },
+    { value: 'Hybrid Event', label: 'Hybrid Event' },
+    { value: 'Online Event', label: 'Online Event' },
+    { value: 'Offline Event', label: 'Offline Event' },
+  ]
 
   useEffect(() => {
-    dispatch(getevent());
-    setMounted(true);
-  }, [dispatch]);
+    dispatch(getevent())
+    setMounted(true)
+  }, [dispatch])
 
   const resetForm = useCallback(() => {
     setFormData({
-      Tittle: "",
-      EventType: "",
-      AvailableSeats: "",
-      Location: "",
-      DateTime: "",
-      Description: "", 
-      VIP: "", 
-      Premium: "", 
-      Standard: "", 
-      StandardSeats: "", 
-      VIPSeats: "",      
-      PremiumSeats: "",  
-      EventMode: "", // ✅ नया field
-      Status: 1 
-    });
-    setEventImage(null);
-    setExistingImageUrl("");
-    setEditMode(false);
-    setEditEventId(null);
-    setErrors({});
-  }, []);
+      Tittle: '',
+      EventType: '',
+      AvailableSeats: '',
+      Location: '',
+      DateTime: '',
+      Description: '',
+      VIP: '',
+      Premium: '',
+      Standard: '',
+      StandardSeats: '',
+      VIPSeats: '',
+      PremiumSeats: '',
+      EventMode: '', // ✅ नया field
+      Status: 1,
+    })
+    setEventImage(null)
+    setExistingImageUrl('')
+    setEditMode(false)
+    setEditEventId(null)
+    setErrors({})
+  }, [])
 
-  
   const handleSchedule = useCallback((row) => {
-    setSelectedEvent(row);
-    setShowScheduleForm(true);
-  }, []);
+    setSelectedEvent(row)
+    setShowScheduleForm(true)
+  }, [])
 
   const updatedColumns = useMemo(() => {
-    return Columns.map(col => {
+    return Columns.map((col) => {
       if (col.key === 'schedule') {
         return {
           ...col,
           render: (value, row) => (
-            <button 
+            <button
               className="p-2 text-blue-500 transition-colors rounded-full hover:text-blue-700 hover:bg-blue-50"
               onClick={() => handleSchedule(row)}
               title="Schedule Event"
             >
-              <svg 
-                className="w-5 h-5" 
-                fill="none" 
-                stroke="currentColor" 
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" 
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                 />
               </svg>
             </button>
-          )
-        };
+          ),
+        }
       }
-      return col;
-    });
-  }, [handleSchedule]);
+      return col
+    })
+  }, [handleSchedule])
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
+    const { name, value } = e.target
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
-    }));
-    
+      [name]: value,
+    }))
+
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
+      setErrors((prev) => ({ ...prev, [name]: '' }))
     }
-  };
+    if (editMode) {
+      validateForm()
+    }
+  }
 
   const handleStatusChange = (e) => {
-    const isChecked = e.target.checked;
-    setFormData(prev => ({
+    const isChecked = e.target.checked
+    setFormData((prev) => ({
       ...prev,
-      Status: isChecked ? 1 : 0
-    }));
-  };
+      Status: isChecked ? 1 : 0,
+    }))
+  }
 
   const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.Tittle.trim()) newErrors.Tittle = "Title is required.";
-    if (!formData.EventType.trim()) newErrors.EventType = "Event Type is required.";
-    if (!formData.AvailableSeats.trim()) newErrors.AvailableSeats = "Available Seats is required.";
-    if (!formData.Location.trim()) newErrors.Location = "Location is required.";
-    if (!formData.DateTime.trim()) newErrors.DateTime = "Date & Time is required.";
-    if (!formData.Description.trim()) newErrors.Description = "Description is required."; 
-    if (!formData.EventMode.trim()) newErrors.EventMode = "Event Mode is required."; // ✅ नया validation
-    
+    const newErrors = {}
+
+    // helper for safe trim
+    const safeTrim = (v) => String(v ?? '').trim()
+
+    // ✅ Required field validation (safe for numbers)
+    if (!safeTrim(formData.Tittle)) newErrors.Tittle = 'Title is required.'
+    if (!safeTrim(formData.EventType))
+      newErrors.EventType = 'Event Type is required.'
+    if (!safeTrim(formData.AvailableSeats))
+      newErrors.AvailableSeats = 'Available Seats is required.'
+    if (!safeTrim(formData.Location))
+      newErrors.Location = 'Location is required.'
+    if (!safeTrim(formData.DateTime))
+      newErrors.DateTime = 'Date & Time is required.'
+    if (!safeTrim(formData.Description))
+      newErrors.Description = 'Description is required.'
+    if (!safeTrim(formData.EventMode))
+      newErrors.EventMode = 'Event Mode is required.'
+    if (!safeTrim(formData.VIPSeats))
+      newErrors.VIPSeats = 'VIP Seats is required.'
+    if (!safeTrim(formData.PremiumSeats))
+      newErrors.PremiumSeats = 'Premium Seats is required.'
+    if (!safeTrim(formData.StandardSeats))
+      newErrors.StandardSeats = 'Standard Seats is required.'
+    if (!safeTrim(formData.VIP)) newErrors.VIP = 'VIP Price is required.'
+    if (!safeTrim(formData.Premium))
+      newErrors.Premium = 'Premium Price is required.'
+    if (!safeTrim(formData.Standard))
+      newErrors.Standard = 'Standard Price is required.'
+
     if (!editMode && !eventImage) {
-      newErrors.eventImage = "Event image is required.";
-    }
-    
-    if (formData.AvailableSeats && isNaN(formData.AvailableSeats)) {
-      newErrors.AvailableSeats = "Available Seats must be a number.";
+      newErrors.eventImage = 'Event image is required.'
     }
 
-    if (formData.VIP && isNaN(formData.VIP)) {
-      newErrors.VIP = "VIP must be a number.";
+    // ✅ Numeric field validation
+    if (formData.AvailableSeats && isNaN(Number(formData.AvailableSeats))) {
+      newErrors.AvailableSeats = 'Available Seats must be a number.'
     }
-    if (formData.Premium && isNaN(formData.Premium)) {
-      newErrors.Premium = "Premium must be a number.";
+    if (formData.VIP && isNaN(Number(formData.VIP))) {
+      newErrors.VIP = 'VIP Price must be a number.'
     }
-    if (formData.Standard && isNaN(formData.Standard)) {
-      newErrors.Standard = "Standard must be a number.";
+    if (formData.Premium && isNaN(Number(formData.Premium))) {
+      newErrors.Premium = 'Premium Price must be a number.'
+    }
+    if (formData.Standard && isNaN(Number(formData.Standard))) {
+      newErrors.Standard = 'Standard Price must be a number.'
+    }
+    if (formData.VIPSeats && isNaN(Number(formData.VIPSeats))) {
+      newErrors.VIPSeats = 'VIP Seats must be a number.'
+    }
+    if (formData.PremiumSeats && isNaN(Number(formData.PremiumSeats))) {
+      newErrors.PremiumSeats = 'Premium Seats must be a number.'
+    }
+    if (formData.StandardSeats && isNaN(Number(formData.StandardSeats))) {
+      newErrors.StandardSeats = 'Standard Seats must be a number.'
     }
 
-    // ✅ नए fields की validation
-    if (formData.StandardSeats && isNaN(formData.StandardSeats)) {
-      newErrors.StandardSeats = "Standard Seats must be a number.";
+    // ✅ Seat total logic
+    const available = Number(formData.AvailableSeats) || 0
+    const vip = Number(formData.VIPSeats) || 0
+    const premium = Number(formData.PremiumSeats) || 0
+    const standard = Number(formData.StandardSeats) || 0
+    if (vip + premium + standard > available) {
+      newErrors.StandardSeats = `You have entered ${vip + premium + standard} total seats, but only ${available} are available. Please adjust the VIP, Premium, or Standard seats.`
     }
-    if (formData.VIPSeats && isNaN(formData.VIPSeats)) {
-      newErrors.VIPSeats = "VIP Seats must be a number.";
+
+    // ✅ Price hierarchy validation
+    const vipPrice = Number(formData.VIP) || 0
+    const premiumPrice = Number(formData.Premium) || 0
+    const standardPrice = Number(formData.Standard) || 0
+
+    if (premiumPrice >= vipPrice && vipPrice > 0) {
+      newErrors.Premium = `Premium Price (${premiumPrice}) must be less than VIP Price (${vipPrice}).`
     }
-    if (formData.PremiumSeats && isNaN(formData.PremiumSeats)) {
-      newErrors.PremiumSeats = "Premium Seats must be a number.";
+
+    if (standardPrice >= premiumPrice && premiumPrice > 0) {
+      newErrors.Standard = `Standard Price (${standardPrice}) must be less than Premium Price (${premiumPrice}).`
     }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setEventImage(file); 
-    if (errors.eventImage) setErrors((prev) => ({ ...prev, eventImage: "" }));
-  };
+    const file = e.target.files[0]
+    setEventImage(file)
+    if (errors.eventImage) setErrors((prev) => ({ ...prev, eventImage: '' }))
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
+    e.preventDefault()
 
-    const submitFormData = new FormData();
-    
+    if (!validateForm()) return
+
+    const submitFormData = new FormData()
+
     if (editMode) {
-      const currentAdminUserId = getAdminUserId();
-      
-      submitFormData.append("EventMasterID", editEventId);
-      submitFormData.append("Tittle", formData.Tittle);
-      submitFormData.append("EventType", formData.EventType);
-      submitFormData.append("AvailableSeats", formData.AvailableSeats);
-      submitFormData.append("Location", formData.Location);
-      submitFormData.append("DateTime", formData.DateTime);
-      submitFormData.append("Description", formData.Description); 
-      submitFormData.append("VIP", formData.VIP); 
-      submitFormData.append("Premium", formData.Premium); 
-      submitFormData.append("Standard", formData.Standard); 
-      submitFormData.append("StandardSeats", formData.StandardSeats); 
-      submitFormData.append("VIPSeats", formData.VIPSeats);          
-      submitFormData.append("PremiumSeats", formData.PremiumSeats);  
-      submitFormData.append("EventMode", formData.EventMode); // ✅ नया field
-      submitFormData.append("Updatedby", currentAdminUserId || "");
-      submitFormData.append("Status", formData.Status.toString());
-     
+      const currentAdminUserId = getAdminUserId()
+
+      submitFormData.append('EventMasterID', editEventId)
+      submitFormData.append('Tittle', formData.Tittle)
+      submitFormData.append('EventType', formData.EventType)
+      submitFormData.append('AvailableSeats', formData.AvailableSeats)
+      submitFormData.append('Location', formData.Location)
+      submitFormData.append('DateTime', formData.DateTime)
+      submitFormData.append('Description', formData.Description)
+      submitFormData.append('VIP', formData.VIP)
+      submitFormData.append('Premium', formData.Premium)
+      submitFormData.append('Standard', formData.Standard)
+      submitFormData.append('StandardSeats', formData.StandardSeats)
+      submitFormData.append('VIPSeats', formData.VIPSeats)
+      submitFormData.append('PremiumSeats', formData.PremiumSeats)
+      submitFormData.append('EventMode', formData.EventMode) // ✅ नया field
+      submitFormData.append('Updatedby', currentAdminUserId || '')
+      submitFormData.append('Status', formData.Status.toString())
+
       if (eventImage instanceof File) {
-        submitFormData.append("Image", eventImage);
+        submitFormData.append('Image', eventImage)
       } else if (existingImageUrl) {
         try {
-          const response = await fetch(existingImageUrl);
-          const blob = await response.blob();
-          const file = new File([blob], "existing-image.jpg", { type: blob.type });
-          submitFormData.append("Image", file);
+          const response = await fetch(existingImageUrl)
+          const blob = await response.blob()
+          const file = new File([blob], 'existing-image.jpg', {
+            type: blob.type,
+          })
+          submitFormData.append('Image', file)
         } catch (error) {
-          console.error("Failed to convert image URL to file:", error);
-          const emptyFile = new File([""], "empty.jpg", { type: "image/jpeg" });
-          submitFormData.append("Image", emptyFile);
+          console.error('Failed to convert image URL to file:', error)
+          const emptyFile = new File([''], 'empty.jpg', { type: 'image/jpeg' })
+          submitFormData.append('Image', emptyFile)
         }
       } else {
-        const emptyFile = new File([""], "empty.jpg", { type: "image/jpeg" });
-        submitFormData.append("Image", emptyFile);
+        const emptyFile = new File([''], 'empty.jpg', { type: 'image/jpeg' })
+        submitFormData.append('Image', emptyFile)
       }
     } else {
-      const currentAdminUserId = getAdminUserId();
-      
-      submitFormData.append("Tittle", formData.Tittle);
-      submitFormData.append("EventType", formData.EventType);
-      submitFormData.append("AvailableSeats", formData.AvailableSeats);
-      submitFormData.append("Location", formData.Location);
-      submitFormData.append("DateTime", formData.DateTime);
-      submitFormData.append("Description", formData.Description); 
-      submitFormData.append("VIP", formData.VIP); 
-      submitFormData.append("Premium", formData.Premium); 
-      submitFormData.append("Standard", formData.Standard); 
-      submitFormData.append("StandardSeats", formData.StandardSeats); 
-      submitFormData.append("VIPSeats", formData.VIPSeats);          
-      submitFormData.append("PremiumSeats", formData.PremiumSeats);  
-      submitFormData.append("EventMode", formData.EventMode); // ✅ नया field
-      submitFormData.append("Createdby", currentAdminUserId || "");
-      submitFormData.append("Status", formData.Status.toString());
-      
+      const currentAdminUserId = getAdminUserId()
+
+      submitFormData.append('Tittle', formData.Tittle)
+      submitFormData.append('EventType', formData.EventType)
+      submitFormData.append('AvailableSeats', formData.AvailableSeats)
+      submitFormData.append('Location', formData.Location)
+      submitFormData.append('DateTime', formData.DateTime)
+      submitFormData.append('Description', formData.Description)
+      submitFormData.append('VIP', formData.VIP)
+      submitFormData.append('Premium', formData.Premium)
+      submitFormData.append('Standard', formData.Standard)
+      submitFormData.append('StandardSeats', formData.StandardSeats)
+      submitFormData.append('VIPSeats', formData.VIPSeats)
+      submitFormData.append('PremiumSeats', formData.PremiumSeats)
+      submitFormData.append('EventMode', formData.EventMode) // ✅ नया field
+      submitFormData.append('Createdby', currentAdminUserId || '')
+      submitFormData.append('Status', formData.Status.toString())
+
       if (eventImage) {
-        submitFormData.append("Image", eventImage);
+        submitFormData.append('Image', eventImage)
       } else {
-        const emptyFile = new File([""], "empty.jpg", { type: "image/jpeg" });
-        submitFormData.append("Image", emptyFile);
+        const emptyFile = new File([''], 'empty.jpg', { type: 'image/jpeg' })
+        submitFormData.append('Image', emptyFile)
       }
     }
 
     try {
-      let response;
+      let response
 
       if (editMode) {
-        response = await dispatch(updateevent(submitFormData)).unwrap();
+        response = await dispatch(updateevent(submitFormData)).unwrap()
       } else {
-        response = await dispatch(addevent(submitFormData)).unwrap();
+        response = await dispatch(addevent(submitFormData)).unwrap()
       }
 
       if (response.statusCode === 200 || response.statusCode === 1) {
-        toast.success(response.message || `Event ${editMode ? 'updated' : 'added'} successfully!`);
-        resetForm();
-        setShowForm(false);
-        dispatch(getevent());
+        toast.success(
+          response.message ||
+            `Event ${editMode ? 'updated' : 'added'} successfully!`,
+        )
+        resetForm()
+        setShowForm(false)
+        dispatch(getevent())
       } else {
-        toast.error(response.message || `Failed to ${editMode ? 'update' : 'add'} event`);
+        toast.error(
+          response.message || `Failed to ${editMode ? 'update' : 'add'} event`,
+        )
       }
     } catch (error) {
-      console.error("Error during event submit:", error);
-      toast.error(error?.response?.data?.message || `Failed to ${editMode ? 'update' : 'add'} event`);
+      console.error('Error during event submit:', error)
+      toast.error(
+        error?.response?.data?.message ||
+          `Failed to ${editMode ? 'update' : 'add'} event`,
+      )
     }
-  };
-
- 
-const handleEdit = (event) => {
-  const statusValue = (event.Status === 0 || event.Status === 1) 
-    ? event.Status 
-    : 1;
-  
-  setFormData({
-    Tittle: event.Tittle || event.title || "",
-    EventType: event.EventType || event.eventType || "",
-    AvailableSeats: event.AvailableSeats || event.availableSeats || "",
-    Location: event.Location || event.location || "",
-    DateTime: event.EventDateTime || event.DateTime || event.eventDateTime || event.dateTime || "",
-    Description: event.Description || event.description || event.Desc || event.desc || "",
-    VIP: event.VIP || event.vip || event.Vip || "",
-    Premium: event.Premium || event.premium || "",
-    Standard: event.Standard || event.standard || "",
-    StandardSeats: event.StandardSeats || event.standardSeats || "", 
-    VIPSeats: event.VIPSeats || event.vipSeats || "",               
-    PremiumSeats: event.PremiumSeats || event.premiumSeats || "",   
-    EventMode: event.EventMode || event.eventMode || "", // ✅ नया field
-    Status: statusValue
-  });
-  
-  setEditEventId(event.EventMasterID || event.Id || event.eventMasterID);
-  setEditMode(true);
-  setShowForm(true);
-  
-  if (event.Image || event.image) {
-    const imageUrl = event.Image || event.image;
-    setExistingImageUrl(imageUrl);
-    setEventImage(imageUrl); 
-  } else {
-    setExistingImageUrl("");
-    setEventImage(null);
   }
-};
+
+  const handleEdit = (event) => {
+    const statusValue =
+      event.Status === 0 || event.Status === 1 ? event.Status : 1
+
+    setFormData({
+      Tittle: event.Tittle || event.title || '',
+      EventType: event.EventType || event.eventType || '',
+      AvailableSeats: event.AvailableSeats || event.availableSeats || '',
+      Location: event.Location || event.location || '',
+      DateTime:
+        event.EventDateTime ||
+        event.DateTime ||
+        event.eventDateTime ||
+        event.dateTime ||
+        '',
+      Description:
+        event.Description ||
+        event.description ||
+        event.Desc ||
+        event.desc ||
+        '',
+      VIP: event.VIP || event.vip || event.Vip || '',
+      Premium: event.Premium || event.premium || '',
+      Standard: event.Standard || event.standard || '',
+      StandardSeats: event.StandardSeats || event.standardSeats || '',
+      VIPSeats: event.VIPSeats || event.vipSeats || '',
+      PremiumSeats: event.PremiumSeats || event.premiumSeats || '',
+      EventMode: event.EventMode || event.eventMode || '', // ✅ नया field
+      Status: statusValue,
+    })
+
+    setEditEventId(event.EventMasterID || event.Id || event.eventMasterID)
+    setEditMode(true)
+    setShowForm(true)
+
+    if (event.Image || event.image) {
+      const imageUrl = event.Image || event.image
+      setExistingImageUrl(imageUrl)
+      setEventImage(imageUrl)
+    } else {
+      setExistingImageUrl('')
+      setEventImage(null)
+    }
+  }
   const handleDelete = (event) => {
-    setEventToDelete(event);
-    setShowDeletePopup(true);
-  };
+    setEventToDelete(event)
+    setShowDeletePopup(true)
+  }
 
   const confirmDelete = async () => {
     try {
-      const eventId = eventToDelete?.EventMasterID || eventToDelete?.Id;
-      const res = await dispatch(deleteEvent(eventId)).unwrap();
+      const eventId = eventToDelete?.EventMasterID || eventToDelete?.Id
+      const res = await dispatch(deleteEvent(eventId)).unwrap()
       if (res.statusCode === 200 || res.statusCode === 1) {
-        toast.success(res.message || "Event deleted successfully!");
+        toast.success(res.message || 'Event deleted successfully!')
       } else {
-        toast.error(res.message || "Failed to delete event");
+        toast.error(res.message || 'Failed to delete event')
       }
-      dispatch(getevent());
+      dispatch(getevent())
     } catch (error) {
-      console.error("Delete Error:", error);
-      toast.error("Failed to delete event");
+      console.error('Delete Error:', error)
+      toast.error('Failed to delete event')
     } finally {
-      setShowDeletePopup(false);
-      setEventToDelete(null);
+      setShowDeletePopup(false)
+      setEventToDelete(null)
     }
-  };
+  }
 
   const previewImage = useMemo(() => {
-    if (!eventImage) return null;
-    
-    const src = typeof eventImage === 'string' ? eventImage : URL.createObjectURL(eventImage);
+    if (!eventImage) return null
+
+    const src =
+      typeof eventImage === 'string'
+        ? eventImage
+        : URL.createObjectURL(eventImage)
     return (
       <img
         src={src}
@@ -357,21 +426,25 @@ const handleEdit = (event) => {
         alt="Preview"
         className="object-cover w-32 h-32 mt-2 border rounded"
       />
-    );
-  }, [eventImage]);
+    )
+  }, [eventImage])
 
   const tableData = useMemo(() => {
-    if (!Array.isArray(data)) return [];
+    if (!Array.isArray(data)) return []
     return data.map((item, index) => ({
       ...item,
-      sno: index + 1
-    }));
-  }, [data]);
+      sno: index + 1,
+    }))
+  }, [data])
 
-  const formTitle = editMode ? "Edit Event" : "Add New Event";
-  const submitButtonText = loading ? 
-    (editMode ? "Updating..." : "Adding...") : 
-    (editMode ? "Update Event" : "Add Event");
+  const formTitle = editMode ? 'Edit Event' : 'Add New Event'
+  const submitButtonText = loading
+    ? editMode
+      ? 'Updating...'
+      : 'Adding...'
+    : editMode
+      ? 'Update Event'
+      : 'Add Event'
 
   if (showScheduleForm) {
     return (
@@ -379,11 +452,11 @@ const handleEdit = (event) => {
         event={selectedEvent}
         onClose={() => setShowScheduleForm(false)}
         onSuccess={() => {
-          setShowScheduleForm(false);
-          dispatch(getevent());
+          setShowScheduleForm(false)
+          dispatch(getevent())
         }}
       />
-    );
+    )
   }
 
   return (
@@ -392,9 +465,9 @@ const handleEdit = (event) => {
         {!showForm && (
           <button
             onClick={() => {
-              setShowForm(true);
-              setEditMode(false);
-              resetForm();
+              setShowForm(true)
+              setEditMode(false)
+              resetForm()
             }}
             className="px-4 py-2 mx-auto mt-3 text-white rounded-md bg-add-btn md:mx-0"
           >
@@ -405,11 +478,13 @@ const handleEdit = (event) => {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="p-4 space-y-6">
-          <h2 className="mb-6 text-xl font-bold text-left text-black">{formTitle}</h2>
-          
+          <h2 className="mb-6 text-xl font-bold text-left text-black">
+            {formTitle}
+          </h2>
+
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block mb-2 font-medium">Title</label>
+              <label className="block mb-2 font-medium">Title <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 name="Tittle"
@@ -418,11 +493,13 @@ const handleEdit = (event) => {
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
-              {errors.Tittle && <p className="mt-1 text-sm text-red-500">{errors.Tittle}</p>}
+              {errors.Tittle && (
+                <p className="mt-1 text-sm text-red-500">{errors.Tittle}</p>
+              )}
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">Event Type</label>
+              <label className="block mb-2 font-medium">Event Type <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 name="EventType"
@@ -431,13 +508,15 @@ const handleEdit = (event) => {
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
-              {errors.EventType && <p className="mt-1 text-sm text-red-500">{errors.EventType}</p>}
+              {errors.EventType && (
+                <p className="mt-1 text-sm text-red-500">{errors.EventType}</p>
+              )}
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block mb-2 font-medium">Available Seats</label>
+              <label className="block mb-2 font-medium">Available Seats <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="AvailableSeats"
@@ -446,30 +525,36 @@ const handleEdit = (event) => {
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
-              {errors.AvailableSeats && <p className="mt-1 text-sm text-red-500">{errors.AvailableSeats}</p>}
+              {errors.AvailableSeats && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.AvailableSeats}
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">Event Mode</label>
+              <label className="block mb-2 font-medium">Event Mode <span className="text-red-500">*</span></label>
               <select
                 name="EventMode"
                 value={formData.EventMode}
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               >
-                {eventModeOptions.map(option => (
+                {eventModeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
                 ))}
               </select>
-              {errors.EventMode && <p className="mt-1 text-sm text-red-500">{errors.EventMode}</p>}
+              {errors.EventMode && (
+                <p className="mt-1 text-sm text-red-500">{errors.EventMode}</p>
+              )}
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block mb-2 font-medium">Location</label>
+              <label className="block mb-2 font-medium">Location <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 name="Location"
@@ -478,27 +563,31 @@ const handleEdit = (event) => {
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
-              {errors.Location && <p className="mt-1 text-sm text-red-500">{errors.Location}</p>}
+              {errors.Location && (
+                <p className="mt-1 text-sm text-red-500">{errors.Location}</p>
+              )}
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">Date & Time</label>
+              <label className="block mb-2 font-medium">Date & Time <span className="text-red-500">*</span></label>
               <input
                 type="datetime-local"
                 name="DateTime"
                 value={formData.DateTime}
                 onChange={handleInputChange}
-                min={new Date().toISOString().slice(0, 16)} 
+                min={new Date().toISOString().slice(0, 16)}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
-              {errors.DateTime && <p className="mt-1 text-sm text-red-500">{errors.DateTime}</p>}
+              {errors.DateTime && (
+                <p className="mt-1 text-sm text-red-500">{errors.DateTime}</p>
+              )}
             </div>
           </div>
 
           {/* ✅ Price and Seats fields */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div>
-              <label className="block mb-2 font-medium">VIP Seats</label>
+              <label className="block mb-2 font-medium">VIP Seats <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="VIPSeats"
@@ -507,10 +596,12 @@ const handleEdit = (event) => {
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
-              {errors.VIPSeats && <p className="mt-1 text-sm text-red-500">{errors.VIPSeats}</p>}
+              {errors.VIPSeats && (
+                <p className="mt-1 text-sm text-red-500">{errors.VIPSeats}</p>
+              )}
             </div>
             <div>
-              <label className="block mb-2 font-medium">VIP Price</label>
+              <label className="block mb-2 font-medium">VIP Price <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="VIP"
@@ -519,10 +610,12 @@ const handleEdit = (event) => {
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
-              {errors.VIP && <p className="mt-1 text-sm text-red-500">{errors.VIP}</p>}
+              {errors.VIP && (
+                <p className="mt-1 text-sm text-red-500">{errors.VIP}</p>
+              )}
             </div>
             <div>
-              <label className="block mb-2 font-medium">Premium Seats</label>
+              <label className="block mb-2 font-medium">Premium Seats <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="PremiumSeats"
@@ -531,11 +624,15 @@ const handleEdit = (event) => {
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
-              {errors.PremiumSeats && <p className="mt-1 text-sm text-red-500">{errors.PremiumSeats}</p>}
+              {errors.PremiumSeats && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.PremiumSeats}
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">Premium Price</label>
+              <label className="block mb-2 font-medium">Premium Price <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="Premium"
@@ -544,10 +641,12 @@ const handleEdit = (event) => {
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
-              {errors.Premium && <p className="mt-1 text-sm text-red-500">{errors.Premium}</p>}
+              {errors.Premium && (
+                <p className="mt-1 text-sm text-red-500">{errors.Premium}</p>
+              )}
             </div>
-             <div>
-              <label className="block mb-2 font-medium">Standard Seats</label>
+            <div>
+              <label className="block mb-2 font-medium">Standard Seats <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="StandardSeats"
@@ -556,11 +655,15 @@ const handleEdit = (event) => {
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
-              {errors.StandardSeats && <p className="mt-1 text-sm text-red-500">{errors.StandardSeats}</p>}
+              {errors.StandardSeats && (
+                <p className="mt-1 text-sm text-red-500">
+                  {errors.StandardSeats}
+                </p>
+              )}
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">Standard Price</label>
+              <label className="block mb-2 font-medium">Standard Price <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="Standard"
@@ -569,13 +672,15 @@ const handleEdit = (event) => {
                 onChange={handleInputChange}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
-              {errors.Standard && <p className="mt-1 text-sm text-red-500">{errors.Standard}</p>}
+              {errors.Standard && (
+                <p className="mt-1 text-sm text-red-500">{errors.Standard}</p>
+              )}
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block mb-2 font-medium">Image</label>
+              <label className="block mb-2 font-medium">Image <span className="text-red-500">*</span></label>
               <input
                 type="file"
                 accept="image/*"
@@ -583,13 +688,15 @@ const handleEdit = (event) => {
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
               {previewImage}
-              {errors.eventImage && <p className="mt-1 text-sm text-red-500">{errors.eventImage}</p>}
+              {errors.eventImage && (
+                <p className="mt-1 text-sm text-red-500">{errors.eventImage}</p>
+              )}
             </div>
           </div>
 
           {/* ✅ Description field - textarea */}
           <div>
-            <label className="block mb-2 font-medium">Description</label>
+            <label className="block mb-2 font-medium">Description <span className="text-red-500">*</span></label>
             <textarea
               name="Description"
               placeholder="Enter Event Description"
@@ -598,7 +705,9 @@ const handleEdit = (event) => {
               rows={4}
               className="w-full p-3 border border-gray-300 rounded-md resize-none"
             />
-            {errors.Description && <p className="mt-1 text-sm text-red-500">{errors.Description}</p>}
+            {errors.Description && (
+              <p className="mt-1 text-sm text-red-500">{errors.Description}</p>
+            )}
           </div>
 
           {editMode && (
@@ -610,7 +719,10 @@ const handleEdit = (event) => {
                 onChange={handleStatusChange}
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
               />
-              <label htmlFor="statusCheckbox" className="ml-2 text-sm font-medium text-gray-900">
+              <label
+                htmlFor="statusCheckbox"
+                className="ml-2 text-sm font-medium text-gray-900"
+              >
                 Active
               </label>
             </div>
@@ -627,8 +739,8 @@ const handleEdit = (event) => {
             <button
               type="button"
               onClick={() => {
-                resetForm();
-                setShowForm(false);
+                resetForm()
+                setShowForm(false)
               }}
               className="px-6 py-2 text-white rounded-md bg-cancel-btn hover:bg-gray-600"
             >
@@ -641,15 +753,15 @@ const handleEdit = (event) => {
       {!showForm && mounted && (
         <>
           {loading && <div className="p-4 text-center">Loading events...</div>}
-          
+
           {!loading && (
             <Table
-              columns={updatedColumns} 
+              columns={updatedColumns}
               data={tableData}
               loading={loading}
-              title={"Events"}
+              title={'Events'}
               onEdit={handleEdit}
-            //   onDelete={handleDelete}
+              //   onDelete={handleDelete}
             />
           )}
 
@@ -669,7 +781,7 @@ const handleEdit = (event) => {
         />
       )}
     </div>
-  );
-};
+  )
+}
 
-export default React.memo(Event);
+export default React.memo(Event)
