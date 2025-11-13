@@ -212,16 +212,10 @@ const Event = () => {
     const vip = Number(formData.VIPSeats) || 0
     const premium = Number(formData.PremiumSeats) || 0
     const standard = Number(formData.StandardSeats) || 0
-    // if (vip + premium + standard > available) {
-    //   newErrors.StandardSeats = `You have entered ${vip + premium + standard} total seats, but only ${available} are available. Please adjust the VIP, Premium, or Standard seats.`
-    // }
-    const totalSeats = vip + premium + standard
-
-    if (totalSeats > available) {
-      newErrors.StandardSeats = `You have entered ${totalSeats} total seats, but only ${available} are available. Please adjust the VIP, Premium, or Standard seats.`
-    } else if (totalSeats < available) {
-      newErrors.StandardSeats = `You have entered only ${totalSeats} total seats, but ${available} are required. Please add more seats in VIP, Premium, or Standard sections.`
+    if (vip + premium + standard > available) {
+      newErrors.StandardSeats = `You have entered ${vip + premium + standard} total seats, but only ${available} are available. Please adjust the VIP, Premium, or Standard seats.`
     }
+
     // ✅ Price hierarchy validation
     const vipPrice = Number(formData.VIP) || 0
     const premiumPrice = Number(formData.Premium) || 0
@@ -490,9 +484,7 @@ const Event = () => {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block mb-2 font-medium">
-                Title <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">Title <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 name="Tittle"
@@ -507,9 +499,7 @@ const Event = () => {
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">
-                Event Type <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">Event Type <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 name="EventType"
@@ -526,9 +516,7 @@ const Event = () => {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block mb-2 font-medium">
-                Available Seats <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">Available Seats <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="AvailableSeats"
@@ -545,9 +533,7 @@ const Event = () => {
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">
-                Event Mode <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">Event Mode <span className="text-red-500">*</span></label>
               <select
                 name="EventMode"
                 value={formData.EventMode}
@@ -568,9 +554,7 @@ const Event = () => {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block mb-2 font-medium">
-                Location <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">Location <span className="text-red-500">*</span></label>
               <input
                 type="text"
                 name="Location"
@@ -585,9 +569,7 @@ const Event = () => {
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">
-                Date & Time <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">Date & Time <span className="text-red-500">*</span></label>
               <input
                 type="datetime-local"
                 name="DateTime"
@@ -605,9 +587,7 @@ const Event = () => {
           {/* ✅ Price and Seats fields */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div>
-              <label className="block mb-2 font-medium">
-                VIP Seats <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">VIP Seats <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="VIPSeats"
@@ -621,9 +601,7 @@ const Event = () => {
               )}
             </div>
             <div>
-              <label className="block mb-2 font-medium">
-                VIP Price <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">VIP Price <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="VIP"
@@ -637,9 +615,7 @@ const Event = () => {
               )}
             </div>
             <div>
-              <label className="block mb-2 font-medium">
-                Premium Seats <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">Premium Seats <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="PremiumSeats"
@@ -656,9 +632,7 @@ const Event = () => {
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">
-                Premium Price <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">Premium Price <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="Premium"
@@ -672,9 +646,7 @@ const Event = () => {
               )}
             </div>
             <div>
-              <label className="block mb-2 font-medium">
-                Standard Seats <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">Standard Seats <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="StandardSeats"
@@ -691,9 +663,7 @@ const Event = () => {
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">
-                Standard Price <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">Standard Price <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="Standard"
@@ -710,9 +680,7 @@ const Event = () => {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block mb-2 font-medium">
-                Image <span className="text-red-500">*</span>
-              </label>
+              <label className="block mb-2 font-medium">Image <span className="text-red-500">*</span></label>
               <input
                 type="file"
                 accept="image/*"
@@ -728,9 +696,7 @@ const Event = () => {
 
           {/* ✅ Description field - textarea */}
           <div>
-            <label className="block mb-2 font-medium">
-              Description <span className="text-red-500">*</span>
-            </label>
+            <label className="block mb-2 font-medium">Description <span className="text-red-500">*</span></label>
             <textarea
               name="Description"
               placeholder="Enter Event Description"
