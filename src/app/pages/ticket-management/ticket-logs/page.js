@@ -192,7 +192,7 @@ const TicketLogs = () => {
                         <div key={idx} className="flex items-start space-x-2">
                           <div className="bg-white p-3 rounded-2xl rounded-tl-md shadow-sm max-w-xs lg:max-w-md">
                             <div className="text-[11px] text-green-600 font-medium mb-1">
-                              User
+                              {reply?.Name || "User"}
                             </div>
                             <div
                               className="text-gray-800 text-[13px]"
