@@ -7,6 +7,8 @@ import {
   getAllTicketByTicketId,
   deleteTicket,
   clearTicketDetails,
+  fetchUserReplyCount,
+  updateUserReplyCount,
 } from '@/app/redux/ticketSlice'
 import Table from '@/app/common/datatable'
 import { Columns } from '@/app/constants/ticket-constant'
@@ -14,7 +16,9 @@ import { toast } from 'react-toastify'
 
 const NewTicket = () => {
   const dispatch = useDispatch()
-  const { tickets, error, ticketDetails } = useSelector((state) => state.ticket)
+  const { tickets, error, ticketDetails, userReplyCount } = useSelector((state) => state.ticket)
+
+  console.log("ReplyCount----->", userReplyCount);
 
   const [showReplyBox, setShowReplyBox] = useState(false)
   const [replyMessage, setReplyMessage] = useState('')
@@ -33,6 +37,15 @@ const NewTicket = () => {
     window.__didFetchTickets = true
     dispatch(fetchAllTickets()).unwrap()
   }, [dispatch])
+
+  useEffect(() => {
+    if (tickets && tickets.length > 0) {
+      const openTickets = tickets.filter(ticket => ticket.Status === 1)
+      openTickets.forEach(ticket => {
+        dispatch(fetchUserReplyCount({ URID: ticket.URID, TicketId: ticket.TicketId }))
+      })
+    }
+  }, [tickets, dispatch])
 
   useEffect(() => {
     setShowReplyBox(false)
@@ -66,16 +79,24 @@ const NewTicket = () => {
             label: col.label,
             render: (value, row) =>
               row.Status === 1 ? (
-                <button
-                  className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none"
-                  onClick={(e) => {
-                    e.stopPropagation() // Prevent row click
-                    dispatch(getAllTicketByTicketId(row.TicketId))
-                    setShowPopup(true)
-                  }}
-                >
-                  Reply
-                </button>
+                <div className="relative">
+                  <button
+                    className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none"
+                    onClick={(e) => {
+                      e.stopPropagation() // Prevent row click
+                      dispatch(updateUserReplyCount({ URID: row.URID, TicketId: row.TicketId }))
+                      dispatch(getAllTicketByTicketId(row.TicketId))
+                      setShowPopup(true)
+                    }}
+                  >
+                    Reply
+                  </button>
+                  {userReplyCount[row.TicketId] > 0 && (
+                    <span className="absolute -top-3 right-5 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      {userReplyCount[row.TicketId]}
+                    </span>
+                  )}
+                </div>
               ) : null,
           }
         : { key: col.id, label: col.label },
@@ -101,7 +122,8 @@ const NewTicket = () => {
       formData.append('TicketId', ticket.TicketId)
       formData.append('Message', replyMessage)
       formData.append('CreatedBy', ticket.TicketId) // Ensure correct field
-      formData.append('Status', 0) // Include status, assuming 1 for open/active reply
+      formData.append('Status', 0) 
+      formData.append('Seen', 0)// Include status, assuming 1 for open/active reply
       formData.append('ImagePath', ticket.ImagePath)
 
       const result = await dispatch(addTicketReply(formData)).unwrap()
@@ -244,6 +266,8 @@ const NewTicket = () => {
                       {ticket.StatusType}
                     </p>
                   </div>
+
+
                 </div>
 
                 {ticket.ImagePath && (
@@ -308,6 +332,13 @@ const NewTicket = () => {
 
               {/* Reply Section */}
               <div className="border-t bg-white p-2.5">
+                {userReplyCount && userReplyCount.length > 0 && (
+                  <div className="mb-2">
+                    <p className="text-xs text-gray-600">
+                      User Reply Count: <span className="font-semibold">{userReplyCount[0]?.ReplyCount || 0}</span>
+                    </p>
+                  </div>
+                )}
                 <h3 className="font-semibold text-gray-700 text-xs mb-1.5">
                   Activity
                 </h3>
@@ -323,7 +354,7 @@ const NewTicket = () => {
                   />
                 </div>
 
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-2">
                   <button
                     onClick={() => handleReplySubmit(ticket)}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs"
