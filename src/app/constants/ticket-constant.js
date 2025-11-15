@@ -4,7 +4,9 @@ export const API_ENDPOINTS = {
     GET_TICKET_REPLY_BY_TICKET_ID: "/Ticket/getTicketBYTicketId",
     DELETE_TICKET: "/Ticket/closeTicket",
     GET_ALL_CLOSED_TICKET:"/Ticket/getAllclosedTicket",
-    SEND_NOTIFICATION:"/Ticket/sendNotification"
+    SEND_NOTIFICATION:"/Ticket/sendNotification",
+    USER_REPLY_COUNT: "/Ticket/userReplyCount",
+    UPDATE_USER_REPLY_COUNT: "/Ticket/updateUserReplyCount"
 };
 
 export const Columns = [

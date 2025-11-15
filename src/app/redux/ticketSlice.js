@@ -79,6 +79,36 @@ export const sendNotification = createAsyncThunk(
   }
 );
 
+export const fetchUserReplyCount = createAsyncThunk(
+  'ticket/fetchUserReplyCount',
+  async ({ URID, TicketId }, { rejectWithValue }) => {
+    try {
+      console.log("fetchUserReplyCount called with URID:", URID, "TicketId:", TicketId)
+      const response = await postRequest(`${API_ENDPOINTS.USER_REPLY_COUNT}?URID=${URID}&TicketId=${TicketId}`);
+      console.log("fetchUserReplyCount response:", response)
+      return response.data;
+    } catch (error) {
+      console.error("fetchUserReplyCount error:", error)
+      return rejectWithValue(error.response?.data || 'Error fetching user reply count');
+    }
+  }
+);
+
+export const updateUserReplyCount = createAsyncThunk(
+  'ticket/updateUserReplyCount',
+  async ({ URID, TicketId }, { rejectWithValue }) => {
+    try {
+      console.log("updateUserReplyCount called with URID:", URID, "TicketId:", TicketId)
+      const response = await postRequest(`${API_ENDPOINTS.UPDATE_USER_REPLY_COUNT}?URID=${URID}&TicketId=${TicketId}`);
+      console.log("updateUserReplyCount response:", response)
+      return response.data;
+    } catch (error) {
+      console.error("updateUserReplyCount error:", error)
+      return rejectWithValue(error.response?.data || 'Error updating user reply count');
+    }
+  }
+);
+
 const ticketSlice = createSlice({
   name: 'ticket',
   initialState: {
@@ -86,6 +116,7 @@ const ticketSlice = createSlice({
     closedTickets:null,
     ticketDetails: null,
     sendNotification: null,
+    userReplyCount: {},
     loading: false,
     error: null,
   },
@@ -172,6 +203,38 @@ const ticketSlice = createSlice({
         state.loading = false
       })
       .addCase(sendNotification.rejected, (state, action) => {
+        state.error = action.payload
+        state.loading = false
+      })
+
+      // Fetch User Reply Count
+      .addCase(fetchUserReplyCount.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(fetchUserReplyCount.fulfilled, (state, action) => {
+        const ticketId = action.meta.arg.TicketId
+        const replyCount = action.payload?.userReplyCount && action.payload.userReplyCount.length > 0 ? action.payload.userReplyCount[0]?.ReplyCount || 0 : 0
+        state.userReplyCount[ticketId] = replyCount
+        console.log(action)
+        state.loading = false
+      })
+      .addCase(fetchUserReplyCount.rejected, (state, action) => {
+        state.error = action.payload
+        state.loading = false
+      })
+
+      // Update User Reply Count
+      .addCase(updateUserReplyCount.pending, (state) => {
+        state.loading = true
+      })
+      .addCase(updateUserReplyCount.fulfilled, (state, action) => {
+        // Optionally, reset or update the userReplyCount after update
+        // For example, set to 0 or refetch
+        const ticketId = action.meta.arg.TicketId
+        state.userReplyCount[ticketId] = 0 // Assuming update resets the count
+        state.loading = false
+      })
+      .addCase(updateUserReplyCount.rejected, (state, action) => {
         state.error = action.payload
         state.loading = false
       })
