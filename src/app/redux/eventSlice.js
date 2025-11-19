@@ -85,6 +85,50 @@ export const getAllUserEventbookingMaster = createAsyncThunk(
   },
 )
 
+export const closeEventMaster = createAsyncThunk(
+  'event/closeEventMaster',
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getRequest(API_ENDPOINTS.CLOSE_EVENT_MASTER);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || 'Failed to close event'
+      );
+    }
+  }
+);
+
+export const addEventPreImages = createAsyncThunk(
+  'event/addEventPreImages',
+  async ({ EventMasterID, formData }, { rejectWithValue }) => {
+    try {
+      const endpoint = `${API_ENDPOINTS.ADD_EVENT_PRE_IMAGES}?EventMasterID=${EventMasterID}`;
+      const response = await postformRequest(endpoint, formData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || 'Failed to add pre-images'
+      );
+    }
+  }
+);
+
+export const deleteEventImages = createAsyncThunk(
+  'event/deleteEventImages',
+  async (Id, { rejectWithValue }) => {
+    try {
+      const endpoint = `${API_ENDPOINTS.DELETE_EVENT_IMAGES}?Id=${Id}`;
+      const response = await getRequest(endpoint);
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || 'Failed to delete event images'
+      );
+    }
+  }
+);
+
 
 const eventSlice = createSlice({
     name: "event",
@@ -190,6 +234,33 @@ const eventSlice = createSlice({
                   .addCase(getAllUserEventbookingMaster.rejected, (state, action) => {
                     state.error = action.payload
                     state.loading = false
+                  })
+                  .addCase(closeEventMaster.pending, (state) => {
+                    state.loading = true;
+                    state.error = null;
+                    state.success = null;
+                  })
+                  .addCase(closeEventMaster.fulfilled, (state, action) => {
+                    state.loading = false;
+                    state.success = action.payload.message || 'Event closed successfully';
+                    state.closeData = action.payload;
+                  })
+                  .addCase(closeEventMaster.rejected, (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
+                  })
+                  .addCase(addEventPreImages.pending, (state) => {
+                    state.loading = true;
+                    state.error = null;
+                    state.success = null;
+                  })
+                  .addCase(addEventPreImages.fulfilled, (state, action) => {
+                    state.loading = false;
+                    state.success = action.payload.message || 'Pre-images added successfully';
+                  })
+                  .addCase(addEventPreImages.rejected, (state, action) => {
+                    state.loading = false;
+                    state.error = action.payload;
                   })
 
     },

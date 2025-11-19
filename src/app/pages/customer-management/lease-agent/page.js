@@ -130,6 +130,7 @@ const LeaseAgentPage = () => {
   const packageOptions = [
     { value: 1, label: 'Zero Pin' },
     { value: 2, label: 'Power' },
+    { value: 3, label: 'Adjust Package 50-50' },
   ];
 
   // Form handlers
