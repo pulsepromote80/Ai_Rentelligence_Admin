@@ -314,17 +314,31 @@ const Event = () => {
 
   const handleNumberInputChange = (e) => {
     const { name, value } = e.target
-    const numericValue = value === '' ? '' : Number(value)
+    
+    // Prevent negative values and allow only numbers
+    let numericValue = ''
+    if (value === '') {
+      numericValue = ''
+    } else {
+      // Remove any non-digit characters and ensure it's positive
+      const cleanedValue = value.replace(/[^0-9]/g, '')
+      numericValue = cleanedValue === '' ? '' : Number(cleanedValue)
+      
+      // Ensure the value is not negative
+      if (numericValue < 0) {
+        numericValue = 0
+      }
+    }
     
     setFormData((prev) => ({
       ...prev,
       [name]: numericValue,
     }))
 
- 
+    // Validation for session seats exceeding available seats
     if (name === 'SessionSeats' || name === 'SessionOneSeats' || name === 'SessionTwoSeats') {
       const availableSeats = Number(formData.AvailableSeats) || 0
-      const sessionSeatsValue = Number(value) || 0
+      const sessionSeatsValue = Number(numericValue) || 0
       
       if (sessionSeatsValue > availableSeats) {
         let fieldName = ''
@@ -339,7 +353,7 @@ const Event = () => {
       } else {
         setErrors((prev) => ({ ...prev, [name]: '' }))
         
-   
+        // Clear total session seats error if individual errors are fixed
         if (errors.totalSessionSeats) {
           setErrors((prevErrors) => {
             const newErrors = { ...prevErrors }
@@ -350,8 +364,9 @@ const Event = () => {
       }
     }
 
+    // Validation when Available Seats changes
     if (name === 'AvailableSeats') {
-      const availableSeats = Number(value) || 0
+      const availableSeats = Number(numericValue) || 0
       
       const sessionFields = [
         { key: 'SessionSeats', label: 'Session Seats' },
@@ -389,6 +404,7 @@ const Event = () => {
       }
     }
 
+    // Clear individual field errors
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }))
     }
@@ -490,31 +506,19 @@ const Event = () => {
       }
     }
 
-    if (formData.AvailableSeats && isNaN(Number(formData.AvailableSeats))) {
-      newErrors.AvailableSeats = 'Available Seats must be a number.'
+    // Number validation with positive check
+    if (formData.AvailableSeats && (isNaN(Number(formData.AvailableSeats)) || Number(formData.AvailableSeats) < 0)) {
+      newErrors.AvailableSeats = 'Available Seats must be a positive number.'
     }
-    if (formData.SessionSeats && isNaN(Number(formData.SessionSeats))) {
-      newErrors.SessionSeats = 'Session Seats must be a number.'
+    if (formData.SessionSeats && (isNaN(Number(formData.SessionSeats)) || Number(formData.SessionSeats) < 0)) {
+      newErrors.SessionSeats = 'Session Seats must be a positive number.'
     }
-    if (formData.SessionOneSeats && isNaN(Number(formData.SessionOneSeats))) {
-      newErrors.SessionOneSeats = 'Session One Seats must be a number.'
+    if (formData.SessionOneSeats && (isNaN(Number(formData.SessionOneSeats)) || Number(formData.SessionOneSeats) < 0)) {
+      newErrors.SessionOneSeats = 'Session One Seats must be a positive number.'
     }
-    if (formData.SessionTwoSeats && isNaN(Number(formData.SessionTwoSeats))) {
-      newErrors.SessionTwoSeats = 'Session Two Seats must be a number.'
+    if (formData.SessionTwoSeats && (isNaN(Number(formData.SessionTwoSeats)) || Number(formData.SessionTwoSeats) < 0)) {
+      newErrors.SessionTwoSeats = 'Session Two Seats must be a positive number.'
     }
-    
-    if (formData.SessionSeats !== '' && formData.SessionSeats < 0) {
-      newErrors.SessionSeats = 'Session Seats cannot be negative'
-    }
-
-    if (formData.SessionOneSeats !== '' && formData.SessionOneSeats < 0) {
-      newErrors.SessionOneSeats = 'Session One Seats cannot be negative'
-    }
-
-    if (formData.SessionTwoSeats !== '' && formData.SessionTwoSeats < 0) {
-      newErrors.SessionTwoSeats = 'Session Two Seats cannot be negative'
-    }
-
 
     const availableSeats = Number(formData.AvailableSeats) || 0
 
@@ -861,6 +865,7 @@ const Event = () => {
                 placeholder="Enter Available Seats"
                 value={formData.AvailableSeats}
                 onChange={handleNumberInputChange}
+                min="0"
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
               {errors.AvailableSeats && (
@@ -948,6 +953,7 @@ const Event = () => {
                 placeholder="Session Seats"
                 value={formData.SessionSeats}
                 onChange={handleNumberInputChange}
+                min="0"
                 className={`w-full p-3 border rounded-md ${
                   errors.SessionSeats ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
@@ -979,6 +985,7 @@ const Event = () => {
                 placeholder="Session One Seats"
                 value={formData.SessionOneSeats}
                 onChange={handleNumberInputChange}
+                min="0"
                 className={`w-full p-3 border rounded-md ${
                   errors.SessionOneSeats ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
@@ -1010,6 +1017,7 @@ const Event = () => {
                 placeholder="Session Two Seats"
                 value={formData.SessionTwoSeats}
                 onChange={handleNumberInputChange}
+                min="0"
                 className={`w-full p-3 border rounded-md ${
                   errors.SessionTwoSeats ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
