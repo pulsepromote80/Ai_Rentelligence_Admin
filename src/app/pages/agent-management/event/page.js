@@ -926,7 +926,7 @@ const Event = () => {
             </div>
           </div>
 
-          {/* ✅ Session Time Fields with Time Range Input */}
+          {/* ✅ Session Time Fields with Time Range Input - Properly Aligned */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="block mb-2 font-medium">Session Time <span className="text-red-500">*</span></label>
@@ -941,34 +941,6 @@ const Event = () => {
               )}
             </div>
             <div>
-              <label className="block mb-2 font-medium">Session Time One</label>
-              <TimeRangeInput
-                value={formData.SessionsTimeOne}
-                onChange={(value) => setFormData(prev => ({ ...prev, SessionsTimeOne: value }))}
-                placeholder="Select Session Time One Range"
-                name="SessionsTimeOne"
-              />
-              {errors.SessionsTimeOne && (
-                <p className="mt-1 text-sm text-red-500">{errors.SessionsTimeOne}</p>
-              )}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div>
-              <label className="block mb-2 font-medium">Session Time Two</label>
-              <TimeRangeInput
-                value={formData.SessionsTimeTwo}
-                onChange={(value) => setFormData(prev => ({ ...prev, SessionsTimeTwo: value }))}
-                placeholder="Select Session Time Two Range"
-                name="SessionsTimeTwo"
-              />
-              {errors.SessionsTimeTwo && (
-                <p className="mt-1 text-sm text-red-500">{errors.SessionsTimeTwo}</p>
-              )}
-            </div>
-
-            <div>
               <label className="block mb-2 font-medium">Session Seats <span className="text-red-500">*</span></label>
               <input
                 type="number"
@@ -982,6 +954,21 @@ const Event = () => {
               />
               {errors.SessionSeats && (
                 <p className="mt-1 text-sm text-red-500">{errors.SessionSeats}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="block mb-2 font-medium">Session Time One</label>
+              <TimeRangeInput
+                value={formData.SessionsTimeOne}
+                onChange={(value) => setFormData(prev => ({ ...prev, SessionsTimeOne: value }))}
+                placeholder="Select Session Time One Range"
+                name="SessionsTimeOne"
+              />
+              {errors.SessionsTimeOne && (
+                <p className="mt-1 text-sm text-red-500">{errors.SessionsTimeOne}</p>
               )}
             </div>
             <div>
@@ -1004,6 +991,18 @@ const Event = () => {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
+              <label className="block mb-2 font-medium">Session Time Two</label>
+              <TimeRangeInput
+                value={formData.SessionsTimeTwo}
+                onChange={(value) => setFormData(prev => ({ ...prev, SessionsTimeTwo: value }))}
+                placeholder="Select Session Time Two Range"
+                name="SessionsTimeTwo"
+              />
+              {errors.SessionsTimeTwo && (
+                <p className="mt-1 text-sm text-red-500">{errors.SessionsTimeTwo}</p>
+              )}
+            </div>
+            <div>
               <label className="block mb-2 font-medium">Session Two Seats</label>
               <input
                 type="number"
@@ -1019,6 +1018,24 @@ const Event = () => {
                 <p className="mt-1 text-sm text-red-500">{errors.SessionTwoSeats}</p>
               )}
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="block mb-2 font-medium">Description <span className="text-red-500">*</span></label>
+              <textarea
+                name="Description"
+                placeholder="Enter Event Description"
+                value={formData.Description}
+                onChange={handleInputChange}
+                rows={4}
+                className="w-full p-3 border border-gray-300 rounded-md resize-none"
+              />
+              {errors.Description && (
+                <p className="mt-1 text-sm text-red-500">{errors.Description}</p>
+              )}
+            </div>
+            
             <div>
               <label className="block mb-2 font-medium">Image <span className="text-red-500">*</span></label>
               <input
@@ -1049,21 +1066,6 @@ const Event = () => {
               </p>
             </div>
           )}
-
-          <div>
-            <label className="block mb-2 font-medium">Description <span className="text-red-500">*</span></label>
-            <textarea
-              name="Description"
-              placeholder="Enter Event Description"
-              value={formData.Description}
-              onChange={handleInputChange}
-              rows={4}
-              className="w-full p-3 border border-gray-300 rounded-md resize-none"
-            />
-            {errors.Description && (
-              <p className="mt-1 text-sm text-red-500">{errors.Description}</p>
-            )}
-          </div>
 
           {editMode && (
             <div className="flex items-center pt-2">
