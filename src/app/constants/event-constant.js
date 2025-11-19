@@ -57,9 +57,11 @@ export const Columns = [
     </div>
   ),},
   { key: 'EventType', label: 'Event Type' },
+  { key: 'AccessType', label: 'Access Type' },
   { key: 'AvailableSeats', label: 'Available Seats' },
   { key: 'Location', label: 'Location' },
-  { key: 'EventDateTime', label: 'DateTime' },
+  { key: 'EventStartDate', label: 'Event Start Date' },
+   { key: 'EndStartDate', label: 'Event End Date' },
   { key: 'EventStatus', label: 'Event Status', 
   render: (value) => {
     const getStatusClass = (status) => {
