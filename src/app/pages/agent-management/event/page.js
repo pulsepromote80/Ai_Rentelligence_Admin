@@ -36,6 +36,7 @@ const Event = () => {
     SessionOneSeats: '',
     SessionTwoSeats: '',
     Description: '',
+    EventURL: '', 
     Status: 1,
   })
   const [eventImage, setEventImage] = useState(null)
@@ -221,6 +222,7 @@ const Event = () => {
       SessionOneSeats: '',
       SessionTwoSeats: '',
       Description: '',
+      EventURL: '', 
       Status: 1,
     })
     setEventImage(null)
@@ -461,6 +463,14 @@ const Event = () => {
       }
     }
 
+    // ✅ EventURL format validation
+    if (formData.EventURL) {
+      const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/
+      if (!urlPattern.test(formData.EventURL)) {
+        newErrors.EventURL = 'Please enter a valid URL'
+      }
+    }
+
     if (formData.SessionsTime) {
       const timeRangeRegex = /^(\d{1,2}:\d{2} [AP]M) to (\d{1,2}:\d{2} [AP]M)$/
       if (!timeRangeRegex.test(formData.SessionsTime)) {
@@ -579,6 +589,7 @@ const Event = () => {
       SessionOneSeats: formData.SessionOneSeats,
       SessionTwoSeats: formData.SessionTwoSeats,
       Description: formData.Description,
+      EventURL: formData.EventURL, 
       Status: formData.Status.toString(),
     }
 
@@ -673,6 +684,7 @@ const Event = () => {
       SessionOneSeats: event.SessionOneSeats || event.sessionOneSeats || '',
       SessionTwoSeats: event.SessionTwoSeats || event.sessionTwoSeats || '',
       Description: event.Description || event.description || '',
+      EventURL: event.EventURL || event.eventURL || '', 
       Status: statusValue,
     })
 
@@ -1026,6 +1038,33 @@ const Event = () => {
                 <p className="mt-1 text-sm text-red-500">{errors.SessionTwoSeats}</p>
               )}
             </div>
+            <div>
+              <label className="block mb-2 font-medium">Event URL</label>
+              <input
+                type="url"
+                name="EventURL"
+                placeholder="Enter Event URL (e.g., https://example.com/event)"
+                value={formData.EventURL}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.EventURL && (
+                <p className="mt-1 text-sm text-red-500">{errors.EventURL}</p>
+              )}
+            </div>
+            <div>
+              <label className="block mb-2 font-medium">Image <span className="text-red-500">*</span></label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {previewImage}
+              {errors.eventImage && (
+                <p className="mt-1 text-sm text-red-500">{errors.eventImage}</p>
+              )}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -1044,19 +1083,7 @@ const Event = () => {
               )}
             </div>
             
-            <div>
-              <label className="block mb-2 font-medium">Image <span className="text-red-500">*</span></label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
-              />
-              {previewImage}
-              {errors.eventImage && (
-                <p className="mt-1 text-sm text-red-500">{errors.eventImage}</p>
-              )}
-            </div>
+            
           </div>
 
           {/* ✅ Total session seats error message */}
