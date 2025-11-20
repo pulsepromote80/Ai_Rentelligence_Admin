@@ -91,7 +91,13 @@ const Sidebar = () => {
     return <IconComponent className="w-5 h-5 text-white group-hover:text-black" />
   }
 
-  if (loading) return <Loading />
+  if (loading)
+    return (
+      <div className="ml-28">
+        <Loading />
+      </div>
+    );
+  
 
   return (
     <>

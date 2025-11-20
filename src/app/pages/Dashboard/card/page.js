@@ -1,4 +1,5 @@
 'use client'
+import Loading from '@/app/common/loading'
 import { useSelector } from 'react-redux'
 
 const Card = ({ loading, error = null }) => {
@@ -12,7 +13,7 @@ const Card = ({ loading, error = null }) => {
       </div>
 
       {loading ? (
-        <p className="text-center text-gray-500">Loading...</p>
+        <div className="text-center text-gray-500"><Loading/></div>
       ) : stats ? (
         <>
           {/* Stats Grid */}

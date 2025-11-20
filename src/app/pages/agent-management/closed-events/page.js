@@ -5,19 +5,19 @@ import { closeEventMaster } from '@/app/redux/eventSlice'
 import Table from '@/app/common/datatable'
 import { Columns } from '@/app/constants/event-constant'
 import Loading from '@/app/common/loading'
-import { addEventPreImages ,deleteEventImages} from '@/app/redux/eventSlice'
+import { addEventPreImages, deleteEventImages, getEventImagesByEMID } from '@/app/redux/eventSlice'
 import { toast } from 'react-toastify'
 
 
 const ClosedEvents = () => {
   const dispatch = useDispatch()
-  const {closeData, loading,} = useSelector((state) => state.event)
+  const { closeData, loading, eventImages } = useSelector((state) => state.event)
+  console.log("eventImages----->", eventImages);
 
   const [showUpload, setShowUpload] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState(null)
-  // console.log("selected", selectedEvent);
+  //console.log("selected", selectedEvent);
   const [images, setImages] = useState([])
-  console.log(images)
   const [videos, setVideos] = useState([])
   const [imagePreviews, setImagePreviews] = useState([])
   const [videoPreviews, setVideoPreviews] = useState([])
@@ -25,23 +25,27 @@ const ClosedEvents = () => {
 
   const handleActionClick = (row) => {
     setSelectedEvent(row)
+    dispatch(getEventImagesByEMID(row.EventMasterID))
     setShowUpload(true)
   }
 
   const handleMediaSubmit = async (files, event) => {
-    if (images.length === 0 ) {
-      toast.error('Please select at least one image.')
+    if (images.length === 0 && videos.length === 0) {
+      toast.error('Please select at least one image')
       return
     }
 
     const formData = new FormData()
-    images.forEach((image, index) => {
-      formData.append(`images[${index}]`, image)
+    images.forEach((image) => {
+      formData.append(`Image`, image)
+    })
+    videos.forEach((video) => {
+      formData.append(`EventVideos`, video)
     })
 
     try {
       const result = await dispatch(addEventPreImages({ EventMasterID: selectedEvent.EventMasterID, formData })).unwrap();
-      if(result.statusCode === 200){
+      if (result.statusCode === 200) {
         toast.success("Upload Media successfully !")
       }
       setShowUpload(false)
@@ -56,7 +60,6 @@ const ClosedEvents = () => {
 
   useEffect(() => {
     dispatch(closeEventMaster());
-    dispatch(deleteEventImages());
   }, [dispatch])
 
   const tableData = useMemo(() => {
@@ -72,11 +75,26 @@ const ClosedEvents = () => {
       key: 'action',
       label: 'Action',
       render: (value, row) => (
-        <button className="text-blue-500 hover:text-blue-700" title="Add" onClick={() => handleActionClick(row)}>
+        <button
+          className="flex items-center gap-2 text-blue-500 hover:text-blue-700"
+          title="Add"
+          onClick={() => handleActionClick(row)}
+        >
+          {/* SVG Icon */}
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
           </svg>
+
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M21 5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5zm-11 4a2 2 0 110 4 2 2 0 010-4zm10 10H4v-2l3-3 2 2 5-5 7 7v1z" />
+          </svg>
+
+          {/* Video icon (SVG) */}
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M17 10.5V7a2 2 0 00-2-2H5A2 2 0 003 7v10a2 2 0 002 2h10a2 2 0 002-2v-3.5l4 4v-11l-4 4z" />
+          </svg>
         </button>
+
       )
     },
     ...Columns
@@ -148,18 +166,21 @@ const ClosedEvents = () => {
               className="w-full p-3 border border-gray-300 rounded-md"
             />
           </div>
+
           {imagePreviews.length > 0 && (
-            <div className="mb-4">
+            <div className="mb-8">
               <h4 className="font-medium mb-2">Image Previews:</h4>
               <div className="grid grid-cols-4 gap-2">
                 {imagePreviews.map((url, index) => (
-                  <img key={index} src={url} alt={`Image Preview ${index}`} className="w-full h-20 object-cover rounded" />
+                  <div key={index} className="relative">
+                    <img src={url} alt={`Image Preview ${index}`} className="w-full h-20 object-cover rounded" />
+                  </div>
                 ))}
               </div>
             </div>
           )}
           {videoPreviews.length > 0 && (
-            <div className="mb-4">
+            <div className="mb-8">
               <h4 className="font-medium mb-2">Video Previews:</h4>
               <div className="grid grid-cols-4 gap-2">
                 {videoPreviews.map((url, index) => (
@@ -168,7 +189,8 @@ const ClosedEvents = () => {
               </div>
             </div>
           )}
-          <div className="flex gap-2">
+
+          <div className="flex gap-2 mb-4">
             <button
               onClick={() => {
                 const allFiles = [...images, ...videos]
@@ -196,10 +218,66 @@ const ClosedEvents = () => {
               Cancel
             </button>
           </div>
+          {eventImages?.event?.filter(item => item.EventImages).length > 0 && (
+            <div className="mb-4">
+              <h4 className="font-medium mb-2">Existing Images:</h4>
+              <div className="grid grid-cols-4 gap-8">
+                {eventImages?.event?.filter(item => item.EventImages).map((image, index) => (
+                  <div key={index} className="relative">
+                    <img src={image.EventImages} alt={`Existing Image ${index}`} className="w-full h-40 object-cover rounded" />
+                    <button
+                      onClick={async () => {
+                        try {
+                          await dispatch(deleteEventImages(image.Id)).unwrap();
+                          toast.success("Image deleted successfully!");
+                          dispatch(getEventImagesByEMID(selectedEvent.EventMasterID));
+                        } catch (error) {
+                          toast.error(`Delete failed: ${error}`);
+                        }
+                      }}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                      title="Delete image"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {eventImages?.event?.filter(item => item.EventVideos).length > 0 && (
+            <div className="mb-8">
+              <h4 className="font-medium mb-2">Existing Videos:</h4>
+              <div className="grid grid-cols-4 gap-8">
+                {eventImages?.event?.filter(item => item.EventVideos).map((video, index) => (
+                  <div key={index} className="relative">
+                    <video src={video?.EventVideos} className="w-full h-40 object-cover rounded" controls />
+                    <button
+                      onClick={async () => {
+                        try {
+                          await dispatch(deleteEventImages(video.Id)).unwrap();
+                          toast.success("Video deleted successfully!");
+                          dispatch(getEventImagesByEMID(selectedEvent.EventMasterID));
+                        } catch (error) {
+                          toast.error(`Delete failed: ${error}`);
+                        }
+                      }}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                      title="Delete video"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       ) : (
         <>
-          {loading && <div className="p-4 text-center"><Loading/></div>}
+          {loading && <div className="p-4 text-center"><Loading /></div>}
 
           {!loading && (
             <Table

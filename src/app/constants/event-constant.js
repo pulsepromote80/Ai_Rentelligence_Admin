@@ -9,7 +9,9 @@ export const API_ENDPOINTS = {
   GET_SCHEDULE_BY_EID:"/Event/getScheduleByEID",
   GET_ALL_USER_EVENT_BOOKING_MASTER:"/Event/getAllUserEventbookingMaster",
   CLOSE_EVENT_MASTER: "/Event/closeEventMaster",
-  ADD_EVENT_PRE_IMAGES: "/Event/addEventPreImages"
+  ADD_EVENT_PRE_IMAGES: "/Event/addEventPreImages",
+  GET_EVENT_IMAGES_BY_EMID: "/Event/getEventImagesbyEMID",
+  DELETE_EVENT_IMAGES: "/Event/deleteEventImages"
 };
 
 
@@ -35,8 +37,9 @@ export const Columns = [
   { key: 'EventType', label: 'Event Type' },
   { key: 'AvailableSeats', label: 'Available Seats' },
   { key: 'Location', label: 'Location' },
-  { key: 'EventDateTime', label: 'DateTime' },
-  { key: 'EventStatus', label: 'Event Status', 
+  { key: 'EventStartDate', label: 'Start Date' },
+  { key: 'EndStartDate', label: 'End Date' },
+  { key: 'EventStatus', label: 'Event Status',
   render: (value) => {
     const getStatusClass = (status) => {
       switch(status?.toLowerCase()) {
