@@ -7,37 +7,15 @@ export const API_ENDPOINTS = {
   UPDATE_EVENT:"/Event/UpdateEvent",
   ADD_EVENT_SCHEDULE:"/Event/addEventSchedule",
   GET_SCHEDULE_BY_EID:"/Event/getScheduleByEID",
-  GET_ALL_USER_EVENT_BOOKING_MASTER:"/Event/getAllUserEventbookingMaster"
+  GET_ALL_USER_EVENT_BOOKING_MASTER:"/Event/getAllUserEventbookingMaster",
+  CLOSE_EVENT_MASTER: "/Event/closeEventMaster",
+  ADD_EVENT_PRE_IMAGES: "/Event/addEventPreImages",
+  GET_EVENT_IMAGES_BY_EMID: "/Event/getEventImagesbyEMID",
+  DELETE_EVENT_IMAGES: "/Event/deleteEventImages"
 };
 
 
 export const Columns = [
-    { 
-  key: 'schedule', 
-  label: 'Event Schedule',
-  render: (value, row) => (
-    <button 
-      className="p-2 text-blue-500 transition-colors rounded-full hover:text-blue-700 hover:bg-blue-50"
-      onClick={() => handleSchedule(row)}
-      title="Schedule Event"
-    >
-      <svg 
-        className="w-5 h-5" 
-        fill="none" 
-        stroke="currentColor" 
-        viewBox="0 0 24 24"
-      >
-        <path 
-          strokeLinecap="round" 
-          strokeLinejoin="round" 
-          strokeWidth={2} 
-          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" 
-        />
-      </svg>
-    </button>
-  )
-},
-
  { 
     key: 'sno', 
     label: 'S.No.',

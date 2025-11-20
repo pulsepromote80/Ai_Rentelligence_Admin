@@ -8,6 +8,7 @@ import Card from '@/app/pages/Dashboard/card/page'
 import RecentActivity from '@/app/pages/Dashboard/recent-activity/page'
 import { chartData } from '@/app/constants/chartData-constant'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import Loading from '@/app/common/loading'
 
 const Dashboard = () => {
   const dispatch = useDispatch()
@@ -23,7 +24,7 @@ const Dashboard = () => {
   }, [token, dispatch])
 
   return (
-    <div className="min-h-screen space-y-8 from-gray-50 to-gray-100">
+    <div className="min-h-screen space-y-8 from-gray-50  to-gray-100">
       {/* Top Stats */}
       <div className="p-6 transition-shadow duration-300 bg-white border border-gray-100 shadow-xl rounded-3xl md:p-8 hover:shadow-2xl">
         <Card stats={stats} loading={loading} error={error} />
@@ -107,7 +108,7 @@ function StatCard() {
   if (!stats) {
     return (
       <div className="p-6 text-center bg-white border border-gray-100 shadow-xl rounded-3xl">
-        Loading...
+      <Loading/>
       </div>
     )
   }
