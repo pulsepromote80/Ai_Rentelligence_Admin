@@ -5,6 +5,7 @@ export const API_ENDPOINTS = {
     DELETE_TICKET: "/Ticket/closeTicket",
     GET_ALL_CLOSED_TICKET:"/Ticket/getAllclosedTicket",
     SEND_NOTIFICATION:"/Ticket/sendNotification",
+    SEND_EMAIL:"/Event/sendEmailsAllUser",
     USER_REPLY_COUNT: "/Ticket/userReplyCount",
     UPDATE_USER_REPLY_COUNT: "/Ticket/updateUserReplyCount"
 };
