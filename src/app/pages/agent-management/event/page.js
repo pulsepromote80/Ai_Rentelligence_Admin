@@ -37,6 +37,7 @@ const Event = () => {
     SessionTwoSeats: '',
     Description: '',
     EventURL: '', 
+    EventPrice: '',
     Status: 1,
   })
   const [eventImage, setEventImage] = useState(null)
@@ -200,6 +201,11 @@ const Event = () => {
     )
   }
 
+  // ✅ Get today's date in YYYY-MM-DD format
+  const getTodayDate = () => {
+    return new Date().toISOString().split('T')[0]
+  }
+
   useEffect(() => {
     dispatch(getevent())
     setMounted(true)
@@ -223,6 +229,7 @@ const Event = () => {
       SessionTwoSeats: '',
       Description: '',
       EventURL: '', 
+      EventPrice: '',
       Status: 1,
     })
     setEventImage(null)
@@ -323,8 +330,8 @@ const Event = () => {
       numericValue = ''
     } else {
       // Remove any non-digit characters and ensure it's positive
-      const cleanedValue = value.replace(/[^0-9]/g, '')
-      numericValue = cleanedValue === '' ? '' : Number(cleanedValue)
+      const cleanedValue = value.replace(/[^0-9.]/g, '')
+      numericValue = cleanedValue === '' ? '' : cleanedValue
       
       // Ensure the value is not negative
       if (numericValue < 0) {
@@ -449,6 +456,13 @@ const Event = () => {
     // ✅ Session Seats mandatory validation
     if (!safeTrim(formData.SessionSeats))
       newErrors.SessionSeats = 'Session Seats is required.'
+
+    // ✅ Event Price validation
+    if (!safeTrim(formData.EventPrice)) {
+      newErrors.EventPrice = 'Event Price is required.'
+    } else if (isNaN(Number(formData.EventPrice)) || Number(formData.EventPrice) < 0) {
+      newErrors.EventPrice = 'Event Price must be a valid positive number.'
+    }
 
     if (!editMode && !eventImage) {
       newErrors.eventImage = 'Event image is required.'
@@ -590,6 +604,7 @@ const Event = () => {
       SessionTwoSeats: formData.SessionTwoSeats,
       Description: formData.Description,
       EventURL: formData.EventURL, 
+      EventPrice: formData.EventPrice,
       Status: formData.Status.toString(),
     }
 
@@ -685,6 +700,7 @@ const Event = () => {
       SessionTwoSeats: event.SessionTwoSeats || event.sessionTwoSeats || '',
       Description: event.Description || event.description || '',
       EventURL: event.EventURL || event.eventURL || '', 
+      EventPrice: event.EventPrice || event.eventPrice || '',
       Status: statusValue,
     })
 
@@ -836,15 +852,16 @@ const Event = () => {
             </div>
           </div>
 
+          {/* ✅ Date fields with min attribute set to today's date */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="block mb-2 font-medium">Event Start Date <span className="text-red-500">*</span></label>
               <input
-                type="datetime-local"
+                type="date"
                 name="EventStartDate"
                 value={formData.EventStartDate}
                 onChange={handleInputChange}
-                min={new Date().toISOString().slice(0, 16)}
+                min={getTodayDate()}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
               {errors.EventStartDate && (
@@ -855,11 +872,11 @@ const Event = () => {
             <div>
               <label className="block mb-2 font-medium">Event End Date <span className="text-red-500">*</span></label>
               <input
-                type="datetime-local"
+                type="date"
                 name="EndStartDate"
                 value={formData.EndStartDate}
                 onChange={handleInputChange}
-                min={formData.EventStartDate || new Date().toISOString().slice(0, 16)}
+                min={formData.EventStartDate || getTodayDate()}
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
               {errors.EndStartDate && (
@@ -943,7 +960,41 @@ const Event = () => {
             </div>
           </div>
 
-          {/* ✅ Session Time Fields with Time Range Input - Properly Aligned */}
+          {/* ✅ Event Price Field */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="block mb-2 font-medium">Event Price <span className="text-red-500">*</span></label>
+              <input
+                type="number"
+                name="EventPrice"
+                placeholder="Enter Event Price"
+                value={formData.EventPrice}
+                onChange={handleNumberInputChange}
+                min="0"
+                step="0.01"
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.EventPrice && (
+                <p className="mt-1 text-sm text-red-500">{errors.EventPrice}</p>
+              )}
+            </div>
+            <div>
+              <label className="block mb-2 font-medium">Event URL</label>
+              <input
+                type="url"
+                name="EventURL"
+                placeholder="Enter Event URL (e.g., https://example.com/event)"
+                value={formData.EventURL}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.EventURL && (
+                <p className="mt-1 text-sm text-red-500">{errors.EventURL}</p>
+              )}
+            </div>
+          </div>
+
+          {/* ✅ Session Time Fields with Time Range Input */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="block mb-2 font-medium">Session Time <span className="text-red-500">*</span></label>
@@ -1038,33 +1089,6 @@ const Event = () => {
                 <p className="mt-1 text-sm text-red-500">{errors.SessionTwoSeats}</p>
               )}
             </div>
-            <div>
-              <label className="block mb-2 font-medium">Event URL</label>
-              <input
-                type="url"
-                name="EventURL"
-                placeholder="Enter Event URL (e.g., https://example.com/event)"
-                value={formData.EventURL}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
-              />
-              {errors.EventURL && (
-                <p className="mt-1 text-sm text-red-500">{errors.EventURL}</p>
-              )}
-            </div>
-            <div>
-              <label className="block mb-2 font-medium">Image <span className="text-red-500">*</span></label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
-              />
-              {previewImage}
-              {errors.eventImage && (
-                <p className="mt-1 text-sm text-red-500">{errors.eventImage}</p>
-              )}
-            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -1083,7 +1107,19 @@ const Event = () => {
               )}
             </div>
             
-            
+            <div>
+              <label className="block mb-2 font-medium">Image <span className="text-red-500">*</span></label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {previewImage}
+              {errors.eventImage && (
+                <p className="mt-1 text-sm text-red-500">{errors.eventImage}</p>
+              )}
+            </div>
           </div>
 
           {/* ✅ Total session seats error message */}
