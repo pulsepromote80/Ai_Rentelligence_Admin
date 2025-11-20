@@ -35,11 +35,12 @@ export const Columns = [
     </div>
   ),},
   { key: 'EventType', label: 'Event Type' },
+  { key: 'AccessType', label: 'Access Type' },
   { key: 'AvailableSeats', label: 'Available Seats' },
   { key: 'Location', label: 'Location' },
-  { key: 'EventStartDate', label: 'Start Date' },
-  { key: 'EndStartDate', label: 'End Date' },
-  { key: 'EventStatus', label: 'Event Status',
+  { key: 'EventStartDate', label: 'Event Start Date' },
+   { key: 'EndStartDate', label: 'Event End Date' },
+  { key: 'EventStatus', label: 'Event Status', 
   render: (value) => {
     const getStatusClass = (status) => {
       switch(status?.toLowerCase()) {

@@ -23,17 +23,20 @@ const Event = () => {
   const [formData, setFormData] = useState({
     Tittle: '',
     EventType: '',
+    EventStartDate: '',
+    EndStartDate: '',
     AvailableSeats: '',
     Location: '',
-    DateTime: '',
+    EventMode: '',
+    AccessType: '',
+    SessionsTime: '',
+    SessionsTimeOne: '',
+    SessionsTimeTwo: '',
+    SessionSeats: '',
+    SessionOneSeats: '',
+    SessionTwoSeats: '',
     Description: '',
-    VIP: '',
-    Premium: '',
-    Standard: '',
-    StandardSeats: '',
-    VIPSeats: '',
-    PremiumSeats: '',
-    EventMode: '', // ✅ नया field
+    EventURL: '', 
     Status: 1,
   })
   const [eventImage, setEventImage] = useState(null)
@@ -47,17 +50,155 @@ const Event = () => {
   const [showDeletePopup, setShowDeletePopup] = useState(false)
   const [eventToDelete, setEventToDelete] = useState(null)
 
-  // Schedule form states
+  
   const [showScheduleForm, setShowScheduleForm] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState(null)
 
-  // ✅ Event Mode options
+  
   const eventModeOptions = [
     { value: '', label: 'Select Event Mode' },
     { value: 'Hybrid Event', label: 'Hybrid Event' },
     { value: 'Online Event', label: 'Online Event' },
     { value: 'Offline Event', label: 'Offline Event' },
   ]
+
+ 
+  const accessTypeOptions = [
+    { value: '', label: 'Select Access Type' },
+    { value: 'Open Event', label: 'Open Event' },
+    { value: 'Exclusive Event', label: 'Exclusive Event' },
+  ]
+
+
+  const parseTimeRange = (timeRange) => {
+    if (!timeRange) return { startTime: '', endTime: '' }
+    
+    const parts = timeRange.split(' to ')
+    if (parts.length === 2) {
+      return {
+        startTime: parts[0] || '', 
+        endTime: parts[1] || ''    
+      }
+    }
+    return { startTime: '', endTime: '' }
+  }
+
+  
+  const formatTimeToAMPM = (timeString) => {
+    if (!timeString) return ''
+    
+    
+    if (timeString.includes('AM') || timeString.includes('PM')) {
+      return timeString
+    }
+    
+   
+    const [hours, minutes] = timeString.split(':')
+    const hour = parseInt(hours, 10)
+    const ampm = hour >= 12 ? 'PM' : 'AM'
+    const twelveHour = hour % 12 || 12
+    
+    return `${twelveHour}:${minutes} ${ampm}`
+  }
+
+  const formatTimeTo24H = (timeString) => {
+    if (!timeString) return ''
+    
+    if (!timeString.includes('AM') && !timeString.includes('PM')) {
+      return timeString
+    }
+    
+    const [timePart, meridian] = timeString.split(' ')
+    let [hours, minutes] = timePart.split(':')
+    let hour = parseInt(hours, 10)
+    
+    if (meridian === 'PM' && hour < 12) {
+      hour += 12
+    } else if (meridian === 'AM' && hour === 12) {
+      hour = 0
+    }
+    
+    return `${hour.toString().padStart(2, '0')}:${minutes}`
+  }
+
+  
+  const parseTimeStringToDate = (timeString) => {
+    if (!timeString) return null
+    
+    const [timePart, meridian] = timeString.split(' ')
+    const [hours, minutes] = timePart.split(':')
+    
+    let hour = parseInt(hours, 10)
+    const minute = parseInt(minutes, 10)
+    
+    
+    if (meridian === 'PM' && hour < 12) {
+      hour += 12
+    } else if (meridian === 'AM' && hour === 12) {
+      hour = 0
+    }
+    
+    
+    const date = new Date()
+    date.setHours(hour, minute, 0, 0)
+    return date
+  }
+
+  const TimeRangeInput = ({ value, onChange, placeholder, name }) => {
+    const [startTime, setStartTime] = useState('')
+    const [endTime, setEndTime] = useState('')
+
+    useEffect(() => {
+      if (value) {
+        const { startTime: parsedStart, endTime: parsedEnd } = parseTimeRange(value)
+        setStartTime(formatTimeTo24H(parsedStart))
+        setEndTime(formatTimeTo24H(parsedEnd))
+      } else {
+        setStartTime('')
+        setEndTime('')
+      }
+    }, [value])
+
+    const handleStartTimeChange = (e) => {
+      const newStartTime = e.target.value
+      setStartTime(newStartTime)
+      if (newStartTime && endTime) {
+        const formattedStart = formatTimeToAMPM(newStartTime)
+        const formattedEnd = formatTimeToAMPM(endTime)
+        onChange(`${formattedStart} to ${formattedEnd}`)
+      }
+    }
+
+    const handleEndTimeChange = (e) => {
+      const newEndTime = e.target.value
+      setEndTime(newEndTime)
+      if (startTime && newEndTime) {
+        const formattedStart = formatTimeToAMPM(startTime)
+        const formattedEnd = formatTimeToAMPM(newEndTime)
+        onChange(`${formattedStart} to ${formattedEnd}`)
+      }
+    }
+
+    return (
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          <input
+            type="time"
+            value={startTime}
+            onChange={handleStartTimeChange}
+            className="flex-1 p-3 border border-gray-300 rounded-md"
+          />
+          <span className="text-gray-500">to</span>
+          <input
+            type="time"
+            value={endTime}
+            onChange={handleEndTimeChange}
+            className="flex-1 p-3 border border-gray-300 rounded-md"
+          />
+        </div>
+      </div>
+    )
+  }
 
   useEffect(() => {
     dispatch(getevent())
@@ -68,17 +209,20 @@ const Event = () => {
     setFormData({
       Tittle: '',
       EventType: '',
+      EventStartDate: '',
+      EndStartDate: '',
       AvailableSeats: '',
       Location: '',
-      DateTime: '',
+      EventMode: '',
+      AccessType: '',
+      SessionsTime: '',
+      SessionsTimeOne: '',
+      SessionsTimeTwo: '',
+      SessionSeats: '',
+      SessionOneSeats: '',
+      SessionTwoSeats: '',
       Description: '',
-      VIP: '',
-      Premium: '',
-      Standard: '',
-      StandardSeats: '',
-      VIPSeats: '',
-      PremiumSeats: '',
-      EventMode: '', // ✅ नया field
+      EventURL: '', 
       Status: 1,
     })
     setEventImage(null)
@@ -87,6 +231,39 @@ const Event = () => {
     setEditEventId(null)
     setErrors({})
   }, [])
+
+  
+  const totalSessionSeats = useMemo(() => {
+    return (
+      (Number(formData.SessionSeats) || 0) +
+      (Number(formData.SessionOneSeats) || 0) +
+      (Number(formData.SessionTwoSeats) || 0)
+    )
+  }, [formData.SessionSeats, formData.SessionOneSeats, formData.SessionTwoSeats])
+
+
+  const isSessionSeatsExceeded = useMemo(() => {
+    const availableSeats = Number(formData.AvailableSeats) || 0
+    return totalSessionSeats > availableSeats
+  }, [totalSessionSeats, formData.AvailableSeats])
+
+
+  useEffect(() => {
+    const availableSeats = Number(formData.AvailableSeats) || 0
+    
+    if (availableSeats > 0 && totalSessionSeats > availableSeats) {
+      setErrors((prev) => ({
+        ...prev,
+        totalSessionSeats: `Total session seats (${totalSessionSeats}) cannot exceed available seats (${availableSeats})`
+      }))
+    } else if (errors.totalSessionSeats) {
+      setErrors((prev) => {
+        const newErrors = { ...prev }
+        delete newErrors.totalSessionSeats
+        return newErrors
+      })
+    }
+  }, [totalSessionSeats, formData.AvailableSeats])
 
   const handleSchedule = useCallback((row) => {
     setSelectedEvent(row)
@@ -135,8 +312,103 @@ const Event = () => {
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: '' }))
     }
-    if (editMode) {
-      validateForm()
+  }
+
+  const handleNumberInputChange = (e) => {
+    const { name, value } = e.target
+    
+    // Prevent negative values and allow only numbers
+    let numericValue = ''
+    if (value === '') {
+      numericValue = ''
+    } else {
+      // Remove any non-digit characters and ensure it's positive
+      const cleanedValue = value.replace(/[^0-9]/g, '')
+      numericValue = cleanedValue === '' ? '' : Number(cleanedValue)
+      
+      // Ensure the value is not negative
+      if (numericValue < 0) {
+        numericValue = 0
+      }
+    }
+    
+    setFormData((prev) => ({
+      ...prev,
+      [name]: numericValue,
+    }))
+
+    // Validation for session seats exceeding available seats
+    if (name === 'SessionSeats' || name === 'SessionOneSeats' || name === 'SessionTwoSeats') {
+      const availableSeats = Number(formData.AvailableSeats) || 0
+      const sessionSeatsValue = Number(numericValue) || 0
+      
+      if (sessionSeatsValue > availableSeats) {
+        let fieldName = ''
+        if (name === 'SessionSeats') fieldName = 'Session Seats'
+        else if (name === 'SessionOneSeats') fieldName = 'Session One Seats'
+        else if (name === 'SessionTwoSeats') fieldName = 'Session Two Seats'
+        
+        setErrors((prev) => ({
+          ...prev,
+          [name]: `${fieldName} cannot exceed available seats (${availableSeats})`
+        }))
+      } else {
+        setErrors((prev) => ({ ...prev, [name]: '' }))
+        
+        // Clear total session seats error if individual errors are fixed
+        if (errors.totalSessionSeats) {
+          setErrors((prevErrors) => {
+            const newErrors = { ...prevErrors }
+            delete newErrors.totalSessionSeats
+            return newErrors
+          })
+        }
+      }
+    }
+
+    // Validation when Available Seats changes
+    if (name === 'AvailableSeats') {
+      const availableSeats = Number(numericValue) || 0
+      
+      const sessionFields = [
+        { key: 'SessionSeats', label: 'Session Seats' },
+        { key: 'SessionOneSeats', label: 'Session One Seats' },
+        { key: 'SessionTwoSeats', label: 'Session Two Seats' }
+      ]
+      
+      sessionFields.forEach(({ key, label }) => {
+        const sessionValue = Number(formData[key]) || 0
+        if (sessionValue > availableSeats) {
+          setErrors((prev) => ({
+            ...prev,
+            [key]: `${label} cannot exceed available seats (${availableSeats})`
+          }))
+        } else if (errors[key]) {
+          setErrors((prev) => {
+            const newErrors = { ...prev }
+            delete newErrors[key]
+            return newErrors
+          })
+        }
+      })
+    
+      if (totalSessionSeats > availableSeats) {
+        setErrors((prev) => ({
+          ...prev,
+          totalSessionSeats: `Total session seats (${totalSessionSeats}) cannot exceed available seats (${availableSeats})`
+        }))
+      } else if (errors.totalSessionSeats) {
+        setErrors((prev) => {
+          const newErrors = { ...prev }
+          delete newErrors.totalSessionSeats
+          return newErrors
+        })
+      }
+    }
+
+    // Clear individual field errors
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: '' }))
     }
   }
 
@@ -151,82 +423,135 @@ const Event = () => {
   const validateForm = () => {
     const newErrors = {}
 
-    // helper for safe trim
     const safeTrim = (v) => String(v ?? '').trim()
-
-    // ✅ Required field validation (safe for numbers)
     if (!safeTrim(formData.Tittle)) newErrors.Tittle = 'Title is required.'
     if (!safeTrim(formData.EventType))
       newErrors.EventType = 'Event Type is required.'
+    if (!safeTrim(formData.EventStartDate))
+      newErrors.EventStartDate = 'Event Start Date is required.'
+    if (!safeTrim(formData.EndStartDate))
+      newErrors.EndStartDate = 'End Date is required.'
     if (!safeTrim(formData.AvailableSeats))
       newErrors.AvailableSeats = 'Available Seats is required.'
     if (!safeTrim(formData.Location))
       newErrors.Location = 'Location is required.'
-    if (!safeTrim(formData.DateTime))
-      newErrors.DateTime = 'Date & Time is required.'
-    if (!safeTrim(formData.Description))
-      newErrors.Description = 'Description is required.'
     if (!safeTrim(formData.EventMode))
       newErrors.EventMode = 'Event Mode is required.'
-    if (!safeTrim(formData.VIPSeats))
-      newErrors.VIPSeats = 'VIP Seats is required.'
-    if (!safeTrim(formData.PremiumSeats))
-      newErrors.PremiumSeats = 'Premium Seats is required.'
-    if (!safeTrim(formData.StandardSeats))
-      newErrors.StandardSeats = 'Standard Seats is required.'
-    if (!safeTrim(formData.VIP)) newErrors.VIP = 'VIP Price is required.'
-    if (!safeTrim(formData.Premium))
-      newErrors.Premium = 'Premium Price is required.'
-    if (!safeTrim(formData.Standard))
-      newErrors.Standard = 'Standard Price is required.'
+    if (!safeTrim(formData.AccessType))
+      newErrors.AccessType = 'Access Type is required.'
+    if (!safeTrim(formData.Description))
+      newErrors.Description = 'Description is required.'
+
+    // ✅ Session Time mandatory validation
+    if (!safeTrim(formData.SessionsTime))
+      newErrors.SessionsTime = 'Session Time is required.'
+
+    // ✅ Session Seats mandatory validation
+    if (!safeTrim(formData.SessionSeats))
+      newErrors.SessionSeats = 'Session Seats is required.'
 
     if (!editMode && !eventImage) {
       newErrors.eventImage = 'Event image is required.'
     }
 
-    // ✅ Numeric field validation
-    if (formData.AvailableSeats && isNaN(Number(formData.AvailableSeats))) {
-      newErrors.AvailableSeats = 'Available Seats must be a number.'
-    }
-    if (formData.VIP && isNaN(Number(formData.VIP))) {
-      newErrors.VIP = 'VIP Price must be a number.'
-    }
-    if (formData.Premium && isNaN(Number(formData.Premium))) {
-      newErrors.Premium = 'Premium Price must be a number.'
-    }
-    if (formData.Standard && isNaN(Number(formData.Standard))) {
-      newErrors.Standard = 'Standard Price must be a number.'
-    }
-    if (formData.VIPSeats && isNaN(Number(formData.VIPSeats))) {
-      newErrors.VIPSeats = 'VIP Seats must be a number.'
-    }
-    if (formData.PremiumSeats && isNaN(Number(formData.PremiumSeats))) {
-      newErrors.PremiumSeats = 'Premium Seats must be a number.'
-    }
-    if (formData.StandardSeats && isNaN(Number(formData.StandardSeats))) {
-      newErrors.StandardSeats = 'Standard Seats must be a number.'
+    // ✅ Date validation
+    if (formData.EventStartDate && formData.EndStartDate) {
+      const startDate = new Date(formData.EventStartDate)
+      const endDate = new Date(formData.EndStartDate)
+      if (endDate < startDate) {
+        newErrors.EndStartDate = 'End date cannot be before start date.'
+      }
     }
 
-    // ✅ Seat total logic
-    const available = Number(formData.AvailableSeats) || 0
-    const vip = Number(formData.VIPSeats) || 0
-    const premium = Number(formData.PremiumSeats) || 0
-    const standard = Number(formData.StandardSeats) || 0
-    if (vip + premium + standard > available) {
-      newErrors.StandardSeats = `You have entered ${vip + premium + standard} total seats, but only ${available} are available. Please adjust the VIP, Premium, or Standard seats.`
+    // ✅ EventURL format validation
+    if (formData.EventURL) {
+      const urlPattern = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/
+      if (!urlPattern.test(formData.EventURL)) {
+        newErrors.EventURL = 'Please enter a valid URL'
+      }
     }
 
-    // ✅ Price hierarchy validation
-    const vipPrice = Number(formData.VIP) || 0
-    const premiumPrice = Number(formData.Premium) || 0
-    const standardPrice = Number(formData.Standard) || 0
-
-    if (premiumPrice >= vipPrice && vipPrice > 0) {
-      newErrors.Premium = `Premium Price (${premiumPrice}) must be less than VIP Price (${vipPrice}).`
+    if (formData.SessionsTime) {
+      const timeRangeRegex = /^(\d{1,2}:\d{2} [AP]M) to (\d{1,2}:\d{2} [AP]M)$/
+      if (!timeRangeRegex.test(formData.SessionsTime)) {
+        newErrors.SessionsTime = 'Session Time must be in format "HH:MM AM/PM to HH:MM AM/PM"'
+      } else {
+        const [startTimeStr, endTimeStr] = formData.SessionsTime.split(' to ')
+        const startTime = parseTimeStringToDate(startTimeStr)
+        const endTime = parseTimeStringToDate(endTimeStr)
+        
+        if (startTime && endTime && endTime <= startTime) {
+          newErrors.SessionsTime = 'Session end time must be after start time'
+        }
+      }
     }
 
-    if (standardPrice >= premiumPrice && premiumPrice > 0) {
-      newErrors.Standard = `Standard Price (${standardPrice}) must be less than Premium Price (${premiumPrice}).`
+    if (formData.SessionsTimeOne) {
+      const timeRangeRegex = /^(\d{1,2}:\d{2} [AP]M) to (\d{1,2}:\d{2} [AP]M)$/
+      if (!timeRangeRegex.test(formData.SessionsTimeOne)) {
+        newErrors.SessionsTimeOne = 'Session Time One must be in format "HH:MM AM/PM to HH:MM AM/PM"'
+      } else {
+        const [startTimeStr, endTimeStr] = formData.SessionsTimeOne.split(' to ')
+        const startTime = parseTimeStringToDate(startTimeStr)
+        const endTime = parseTimeStringToDate(endTimeStr)
+        
+        if (startTime && endTime && endTime <= startTime) {
+          newErrors.SessionsTimeOne = 'Session One end time must be after start time'
+        }
+      }
+    }
+
+    if (formData.SessionsTimeTwo) {
+      const timeRangeRegex = /^(\d{1,2}:\d{2} [AP]M) to (\d{1,2}:\d{2} [AP]M)$/
+      if (!timeRangeRegex.test(formData.SessionsTimeTwo)) {
+        newErrors.SessionsTimeTwo = 'Session Time Two must be in format "HH:MM AM/PM to HH:MM AM/PM"'
+      } else {
+        const [startTimeStr, endTimeStr] = formData.SessionsTimeTwo.split(' to ')
+        const startTime = parseTimeStringToDate(startTimeStr)
+        const endTime = parseTimeStringToDate(endTimeStr)
+        
+        if (startTime && endTime && endTime <= startTime) {
+          newErrors.SessionsTimeTwo = 'Session Two end time must be after start time'
+        }
+      }
+    }
+
+    // Number validation with positive check
+    if (formData.AvailableSeats && (isNaN(Number(formData.AvailableSeats)) || Number(formData.AvailableSeats) < 0)) {
+      newErrors.AvailableSeats = 'Available Seats must be a positive number.'
+    }
+    if (formData.SessionSeats && (isNaN(Number(formData.SessionSeats)) || Number(formData.SessionSeats) < 0)) {
+      newErrors.SessionSeats = 'Session Seats must be a positive number.'
+    }
+    if (formData.SessionOneSeats && (isNaN(Number(formData.SessionOneSeats)) || Number(formData.SessionOneSeats) < 0)) {
+      newErrors.SessionOneSeats = 'Session One Seats must be a positive number.'
+    }
+    if (formData.SessionTwoSeats && (isNaN(Number(formData.SessionTwoSeats)) || Number(formData.SessionTwoSeats) < 0)) {
+      newErrors.SessionTwoSeats = 'Session Two Seats must be a positive number.'
+    }
+
+    const availableSeats = Number(formData.AvailableSeats) || 0
+
+    if (formData.SessionSeats !== '' && formData.SessionSeats > availableSeats) {
+      newErrors.SessionSeats = `Session Seats cannot exceed available seats (${availableSeats})`
+    }
+
+    if (formData.SessionOneSeats !== '' && formData.SessionOneSeats > availableSeats) {
+      newErrors.SessionOneSeats = `Session One Seats cannot exceed available seats (${availableSeats})`
+    }
+
+    if (formData.SessionTwoSeats !== '' && formData.SessionTwoSeats > availableSeats) {
+      newErrors.SessionTwoSeats = `Session Two Seats cannot exceed available seats (${availableSeats})`
+    }
+
+    if (totalSessionSeats > availableSeats) {
+      newErrors.totalSessionSeats = `Total session seats (${totalSessionSeats}) cannot exceed available seats (${availableSeats})`
+    }
+
+    if (formData.SessionSeats !== '' && formData.SessionOneSeats !== '' && formData.SessionTwoSeats !== '') {
+      if (totalSessionSeats === 0) {
+        newErrors.totalSessionSeats = 'At least one session must have seats allocated'
+      }
     }
 
     setErrors(newErrors)
@@ -245,26 +570,35 @@ const Event = () => {
     if (!validateForm()) return
 
     const submitFormData = new FormData()
+    const currentAdminUserId = getAdminUserId()
+
+
+    const commonFields = {
+      Tittle: formData.Tittle,
+      EventType: formData.EventType,
+      EventStartDate: formData.EventStartDate,
+      EndStartDate: formData.EndStartDate,
+      AvailableSeats: formData.AvailableSeats,
+      Location: formData.Location,
+      EventMode: formData.EventMode,
+      AccessType: formData.AccessType,
+      SessionsTime: formData.SessionsTime,
+      SessionsTimeOne: formData.SessionsTimeOne,
+      SessionsTimeTwo: formData.SessionsTimeTwo,
+      SessionSeats: formData.SessionSeats,
+      SessionOneSeats: formData.SessionOneSeats,
+      SessionTwoSeats: formData.SessionTwoSeats,
+      Description: formData.Description,
+      EventURL: formData.EventURL, 
+      Status: formData.Status.toString(),
+    }
 
     if (editMode) {
-      const currentAdminUserId = getAdminUserId()
-
       submitFormData.append('EventMasterID', editEventId)
-      submitFormData.append('Tittle', formData.Tittle)
-      submitFormData.append('EventType', formData.EventType)
-      submitFormData.append('AvailableSeats', formData.AvailableSeats)
-      submitFormData.append('Location', formData.Location)
-      submitFormData.append('DateTime', formData.DateTime)
-      submitFormData.append('Description', formData.Description)
-      submitFormData.append('VIP', formData.VIP)
-      submitFormData.append('Premium', formData.Premium)
-      submitFormData.append('Standard', formData.Standard)
-      submitFormData.append('StandardSeats', formData.StandardSeats)
-      submitFormData.append('VIPSeats', formData.VIPSeats)
-      submitFormData.append('PremiumSeats', formData.PremiumSeats)
-      submitFormData.append('EventMode', formData.EventMode) // ✅ नया field
+      Object.entries(commonFields).forEach(([key, value]) => {
+        submitFormData.append(key, value)
+      })
       submitFormData.append('Updatedby', currentAdminUserId || '')
-      submitFormData.append('Status', formData.Status.toString())
 
       if (eventImage instanceof File) {
         submitFormData.append('Image', eventImage)
@@ -286,23 +620,10 @@ const Event = () => {
         submitFormData.append('Image', emptyFile)
       }
     } else {
-      const currentAdminUserId = getAdminUserId()
-
-      submitFormData.append('Tittle', formData.Tittle)
-      submitFormData.append('EventType', formData.EventType)
-      submitFormData.append('AvailableSeats', formData.AvailableSeats)
-      submitFormData.append('Location', formData.Location)
-      submitFormData.append('DateTime', formData.DateTime)
-      submitFormData.append('Description', formData.Description)
-      submitFormData.append('VIP', formData.VIP)
-      submitFormData.append('Premium', formData.Premium)
-      submitFormData.append('Standard', formData.Standard)
-      submitFormData.append('StandardSeats', formData.StandardSeats)
-      submitFormData.append('VIPSeats', formData.VIPSeats)
-      submitFormData.append('PremiumSeats', formData.PremiumSeats)
-      submitFormData.append('EventMode', formData.EventMode) // ✅ नया field
+      Object.entries(commonFields).forEach(([key, value]) => {
+        submitFormData.append(key, value)
+      })
       submitFormData.append('Createdby', currentAdminUserId || '')
-      submitFormData.append('Status', formData.Status.toString())
 
       if (eventImage) {
         submitFormData.append('Image', eventImage)
@@ -350,27 +671,20 @@ const Event = () => {
     setFormData({
       Tittle: event.Tittle || event.title || '',
       EventType: event.EventType || event.eventType || '',
+      EventStartDate: event.EventStartDate || event.eventStartDate || '',
+      EndStartDate: event.EndStartDate || event.endStartDate || '',
       AvailableSeats: event.AvailableSeats || event.availableSeats || '',
       Location: event.Location || event.location || '',
-      DateTime:
-        event.EventDateTime ||
-        event.DateTime ||
-        event.eventDateTime ||
-        event.dateTime ||
-        '',
-      Description:
-        event.Description ||
-        event.description ||
-        event.Desc ||
-        event.desc ||
-        '',
-      VIP: event.VIP || event.vip || event.Vip || '',
-      Premium: event.Premium || event.premium || '',
-      Standard: event.Standard || event.standard || '',
-      StandardSeats: event.StandardSeats || event.standardSeats || '',
-      VIPSeats: event.VIPSeats || event.vipSeats || '',
-      PremiumSeats: event.PremiumSeats || event.premiumSeats || '',
-      EventMode: event.EventMode || event.eventMode || '', // ✅ नया field
+      EventMode: event.EventMode || event.eventMode || '',
+      AccessType: event.AccessType || event.accessType || '',
+      SessionsTime: event.SessionsTime || event.sessionsTime || '',
+      SessionsTimeOne: event.SessionsTimeOne || event.sessionsTimeOne || '',
+      SessionsTimeTwo: event.SessionsTimeTwo || event.sessionsTimeTwo || '',
+      SessionSeats: event.SessionSeats || event.sessionSeats || '',
+      SessionOneSeats: event.SessionOneSeats || event.sessionOneSeats || '',
+      SessionTwoSeats: event.SessionTwoSeats || event.sessionTwoSeats || '',
+      Description: event.Description || event.description || '',
+      EventURL: event.EventURL || event.eventURL || '', 
       Status: statusValue,
     })
 
@@ -387,6 +701,7 @@ const Event = () => {
       setEventImage(null)
     }
   }
+
   const handleDelete = (event) => {
     setEventToDelete(event)
     setShowDeletePopup(true)
@@ -445,6 +760,13 @@ const Event = () => {
     : editMode
       ? 'Update Event'
       : 'Add Event'
+
+  const publishButtonText = useMemo(() => {
+    if (loading) {
+      return formData.Status === 1 ? 'Publishing...' : 'Unpublishing...'
+    }
+    return formData.Status === 1 ? 'Publish Event' : 'Update Event'
+  }, [loading, formData.Status])
 
   if (showScheduleForm) {
     return (
@@ -516,13 +838,46 @@ const Event = () => {
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
+              <label className="block mb-2 font-medium">Event Start Date <span className="text-red-500">*</span></label>
+              <input
+                type="datetime-local"
+                name="EventStartDate"
+                value={formData.EventStartDate}
+                onChange={handleInputChange}
+                min={new Date().toISOString().slice(0, 16)}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.EventStartDate && (
+                <p className="mt-1 text-sm text-red-500">{errors.EventStartDate}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block mb-2 font-medium">Event End Date <span className="text-red-500">*</span></label>
+              <input
+                type="datetime-local"
+                name="EndStartDate"
+                value={formData.EndStartDate}
+                onChange={handleInputChange}
+                min={formData.EventStartDate || new Date().toISOString().slice(0, 16)}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.EndStartDate && (
+                <p className="mt-1 text-sm text-red-500">{errors.EndStartDate}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
               <label className="block mb-2 font-medium">Available Seats <span className="text-red-500">*</span></label>
               <input
                 type="number"
                 name="AvailableSeats"
                 placeholder="Enter Available Seats"
                 value={formData.AvailableSeats}
-                onChange={handleInputChange}
+                onChange={handleNumberInputChange}
+                min="0"
                 className="w-full p-3 border border-gray-300 rounded-md"
               />
               {errors.AvailableSeats && (
@@ -532,6 +887,23 @@ const Event = () => {
               )}
             </div>
 
+            <div>
+              <label className="block mb-2 font-medium">Location <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                name="Location"
+                placeholder="Enter Event Location"
+                value={formData.Location}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.Location && (
+                <p className="mt-1 text-sm text-red-500">{errors.Location}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
               <label className="block mb-2 font-medium">Event Mode <span className="text-red-500">*</span></label>
               <select
@@ -550,135 +922,136 @@ const Event = () => {
                 <p className="mt-1 text-sm text-red-500">{errors.EventMode}</p>
               )}
             </div>
+
+            <div>
+              <label className="block mb-2 font-medium">Access Type <span className="text-red-500">*</span></label>
+              <select
+                name="AccessType"
+                value={formData.AccessType}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              >
+                {accessTypeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {errors.AccessType && (
+                <p className="mt-1 text-sm text-red-500">{errors.AccessType}</p>
+              )}
+            </div>
           </div>
 
+          {/* ✅ Session Time Fields with Time Range Input - Properly Aligned */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block mb-2 font-medium">Location <span className="text-red-500">*</span></label>
-              <input
-                type="text"
-                name="Location"
-                placeholder="Enter Event Location"
-                value={formData.Location}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
+              <label className="block mb-2 font-medium">Session Time <span className="text-red-500">*</span></label>
+              <TimeRangeInput
+                value={formData.SessionsTime}
+                onChange={(value) => setFormData(prev => ({ ...prev, SessionsTime: value }))}
+                placeholder="Select Session Time Range"
+                name="SessionsTime"
               />
-              {errors.Location && (
-                <p className="mt-1 text-sm text-red-500">{errors.Location}</p>
+              {errors.SessionsTime && (
+                <p className="mt-1 text-sm text-red-500">{errors.SessionsTime}</p>
               )}
             </div>
-
             <div>
-              <label className="block mb-2 font-medium">Date & Time <span className="text-red-500">*</span></label>
-              <input
-                type="datetime-local"
-                name="DateTime"
-                value={formData.DateTime}
-                onChange={handleInputChange}
-                min={new Date().toISOString().slice(0, 16)}
-                className="w-full p-3 border border-gray-300 rounded-md"
-              />
-              {errors.DateTime && (
-                <p className="mt-1 text-sm text-red-500">{errors.DateTime}</p>
-              )}
-            </div>
-          </div>
-
-          {/* ✅ Price and Seats fields */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div>
-              <label className="block mb-2 font-medium">VIP Seats <span className="text-red-500">*</span></label>
+              <label className="block mb-2 font-medium">Session Seats <span className="text-red-500">*</span></label>
               <input
                 type="number"
-                name="VIPSeats"
-                placeholder="VIP Seats"
-                value={formData.VIPSeats}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
+                name="SessionSeats"
+                placeholder="Session Seats"
+                value={formData.SessionSeats}
+                onChange={handleNumberInputChange}
+                min="0"
+                className={`w-full p-3 border rounded-md ${
+                  errors.SessionSeats ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
               />
-              {errors.VIPSeats && (
-                <p className="mt-1 text-sm text-red-500">{errors.VIPSeats}</p>
-              )}
-            </div>
-            <div>
-              <label className="block mb-2 font-medium">VIP Price <span className="text-red-500">*</span></label>
-              <input
-                type="number"
-                name="VIP"
-                placeholder="VIP Price"
-                value={formData.VIP}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
-              />
-              {errors.VIP && (
-                <p className="mt-1 text-sm text-red-500">{errors.VIP}</p>
-              )}
-            </div>
-            <div>
-              <label className="block mb-2 font-medium">Premium Seats <span className="text-red-500">*</span></label>
-              <input
-                type="number"
-                name="PremiumSeats"
-                placeholder="Premium Seats"
-                value={formData.PremiumSeats}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
-              />
-              {errors.PremiumSeats && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.PremiumSeats}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block mb-2 font-medium">Premium Price <span className="text-red-500">*</span></label>
-              <input
-                type="number"
-                name="Premium"
-                placeholder="Premium Price"
-                value={formData.Premium}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
-              />
-              {errors.Premium && (
-                <p className="mt-1 text-sm text-red-500">{errors.Premium}</p>
-              )}
-            </div>
-            <div>
-              <label className="block mb-2 font-medium">Standard Seats <span className="text-red-500">*</span></label>
-              <input
-                type="number"
-                name="StandardSeats"
-                placeholder="Standard Seats"
-                value={formData.StandardSeats}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
-              />
-              {errors.StandardSeats && (
-                <p className="mt-1 text-sm text-red-500">
-                  {errors.StandardSeats}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label className="block mb-2 font-medium">Standard Price <span className="text-red-500">*</span></label>
-              <input
-                type="number"
-                name="Standard"
-                placeholder="Standard Price"
-                value={formData.Standard}
-                onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md"
-              />
-              {errors.Standard && (
-                <p className="mt-1 text-sm text-red-500">{errors.Standard}</p>
+              {errors.SessionSeats && (
+                <p className="mt-1 text-sm text-red-500">{errors.SessionSeats}</p>
               )}
             </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="block mb-2 font-medium">Session Time One</label>
+              <TimeRangeInput
+                value={formData.SessionsTimeOne}
+                onChange={(value) => setFormData(prev => ({ ...prev, SessionsTimeOne: value }))}
+                placeholder="Select Session Time One Range"
+                name="SessionsTimeOne"
+              />
+              {errors.SessionsTimeOne && (
+                <p className="mt-1 text-sm text-red-500">{errors.SessionsTimeOne}</p>
+              )}
+            </div>
+            <div>
+              <label className="block mb-2 font-medium">Session One Seats</label>
+              <input
+                type="number"
+                name="SessionOneSeats"
+                placeholder="Session One Seats"
+                value={formData.SessionOneSeats}
+                onChange={handleNumberInputChange}
+                min="0"
+                className={`w-full p-3 border rounded-md ${
+                  errors.SessionOneSeats ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
+              />
+              {errors.SessionOneSeats && (
+                <p className="mt-1 text-sm text-red-500">{errors.SessionOneSeats}</p>
+              )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="block mb-2 font-medium">Session Time Two</label>
+              <TimeRangeInput
+                value={formData.SessionsTimeTwo}
+                onChange={(value) => setFormData(prev => ({ ...prev, SessionsTimeTwo: value }))}
+                placeholder="Select Session Time Two Range"
+                name="SessionsTimeTwo"
+              />
+              {errors.SessionsTimeTwo && (
+                <p className="mt-1 text-sm text-red-500">{errors.SessionsTimeTwo}</p>
+              )}
+            </div>
+            <div>
+              <label className="block mb-2 font-medium">Session Two Seats</label>
+              <input
+                type="number"
+                name="SessionTwoSeats"
+                placeholder="Session Two Seats"
+                value={formData.SessionTwoSeats}
+                onChange={handleNumberInputChange}
+                min="0"
+                className={`w-full p-3 border rounded-md ${
+                  errors.SessionTwoSeats ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                }`}
+              />
+              {errors.SessionTwoSeats && (
+                <p className="mt-1 text-sm text-red-500">{errors.SessionTwoSeats}</p>
+              )}
+            </div>
+            <div>
+              <label className="block mb-2 font-medium">Event URL</label>
+              <input
+                type="url"
+                name="EventURL"
+                placeholder="Enter Event URL (e.g., https://example.com/event)"
+                value={formData.EventURL}
+                onChange={handleInputChange}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              {errors.EventURL && (
+                <p className="mt-1 text-sm text-red-500">{errors.EventURL}</p>
+              )}
+            </div>
             <div>
               <label className="block mb-2 font-medium">Image <span className="text-red-500">*</span></label>
               <input
@@ -694,21 +1067,40 @@ const Event = () => {
             </div>
           </div>
 
-          {/* ✅ Description field - textarea */}
-          <div>
-            <label className="block mb-2 font-medium">Description <span className="text-red-500">*</span></label>
-            <textarea
-              name="Description"
-              placeholder="Enter Event Description"
-              value={formData.Description}
-              onChange={handleInputChange}
-              rows={4}
-              className="w-full p-3 border border-gray-300 rounded-md resize-none"
-            />
-            {errors.Description && (
-              <p className="mt-1 text-sm text-red-500">{errors.Description}</p>
-            )}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="block mb-2 font-medium">Description <span className="text-red-500">*</span></label>
+              <textarea
+                name="Description"
+                placeholder="Enter Event Description"
+                value={formData.Description}
+                onChange={handleInputChange}
+                rows={4}
+                className="w-full p-3 border border-gray-300 rounded-md resize-none"
+              />
+              {errors.Description && (
+                <p className="mt-1 text-sm text-red-500">{errors.Description}</p>
+              )}
+            </div>
+            
+            
           </div>
+
+          {/* ✅ Total session seats error message */}
+          {errors.totalSessionSeats && (
+            <div className="p-3 border border-red-200 rounded-md bg-red-50">
+              <p className="text-sm text-red-500">{errors.totalSessionSeats}</p>
+            </div>
+          )}
+
+          {/* ✅ Session seats exceeded warning */}
+          {isSessionSeatsExceeded && !errors.totalSessionSeats && (
+            <div className="p-3 border border-orange-200 rounded-md bg-orange-50">
+              <p className="text-sm text-orange-500">
+                ⚠️ Total session seats exceed available seats. Please adjust the values.
+              </p>
+            </div>
+          )}
 
           {editMode && (
             <div className="flex items-center pt-2">
@@ -723,7 +1115,7 @@ const Event = () => {
                 htmlFor="statusCheckbox"
                 className="ml-2 text-sm font-medium text-gray-900"
               >
-                Active
+                {formData.Status === 1 ? 'Active' : 'Active'}
               </label>
             </div>
           )}
@@ -731,10 +1123,14 @@ const Event = () => {
           <div className="flex gap-2 pt-4">
             <button
               type="submit"
-              className="px-6 py-2 text-white rounded-md bg-submit-btn hover:bg-green-700"
-              disabled={loading}
+              className={`px-6 py-2 text-white rounded-md ${
+                formData.Status === 1 
+                  ? 'bg-green-600 hover:bg-green-700' 
+                  : 'bg-gray-600 hover:bg-gray-700'
+              }`}
+              disabled={loading || isSessionSeatsExceeded}
             >
-              {submitButtonText}
+              {editMode ? publishButtonText : submitButtonText}
             </button>
             <button
               type="button"
@@ -761,7 +1157,6 @@ const Event = () => {
               loading={loading}
               title={'Events'}
               onEdit={handleEdit}
-              //   onDelete={handleDelete}
             />
           )}
 

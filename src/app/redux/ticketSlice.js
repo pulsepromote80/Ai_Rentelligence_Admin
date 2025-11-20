@@ -79,6 +79,24 @@ export const sendNotification = createAsyncThunk(
   }
 );
 
+// Send Email to all users
+export const sendEmail = createAsyncThunk(
+  "ticket/sendEmailsAllUser",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(
+        API_ENDPOINTS.SEND_EMAIL,
+        data
+      );
+      return response;
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message || 'Error sending email';
+      console.error("API Error:", error.response?.data || error.message);
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 export const fetchUserReplyCount = createAsyncThunk(
   'ticket/fetchUserReplyCount',
   async ({ URID, TicketId }, { rejectWithValue }) => {
