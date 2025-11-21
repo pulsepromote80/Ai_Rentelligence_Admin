@@ -839,6 +839,7 @@ useEffect(() => {
               </label>
               <input
                 type="number"
+                min={0}
                 value={aiCredits}
                 onChange={(e) => {
                   setAiCredits(e.target.value)
