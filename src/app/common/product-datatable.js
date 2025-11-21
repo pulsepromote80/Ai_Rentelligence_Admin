@@ -86,7 +86,7 @@ const ProductTable = ({ columns, data = [], onEdit, onDelete, onAddImage, onRowC
             {/* Search */}
             <div className="flex flex-col items-center justify-end mb-4 sm:flex-row">
                 <h1 className="flex-1 text-xl font-semibold text-center text-gray-800 text-list-label sm:text-left sm:mr-4">
-                    Products
+                    Agents
                 </h1>
                 <input
                     type="text"
@@ -99,11 +99,11 @@ const ProductTable = ({ columns, data = [], onEdit, onDelete, onAddImage, onRowC
 
             {/* Desktop Table */}
          <div className="hidden overflow-x-auto md:block">
-  <table className="min-w-full border border-gray-200 shadow-lg rounded-xl overflow-hidden">
+  <table className="min-w-full overflow-hidden border border-gray-200 shadow-lg rounded-xl">
     <thead>
       <tr className="bg-blue-600">
         {(onEdit || onDelete) && (
-          <th className=" th-wrap-text px-6 py-3 text-sm font-semibold tracking-wide text-center text-white border border-gray-200">
+          <th className="px-6 py-3 text-sm font-semibold tracking-wide text-center text-white border border-gray-200  th-wrap-text">
             Actions
           </th>
         )}
@@ -111,7 +111,7 @@ const ProductTable = ({ columns, data = [], onEdit, onDelete, onAddImage, onRowC
           <th
             key={col.key}
             onClick={() => sortData(col.key)}
-            className="th-wrap-text px-6 py-3 text-sm font-semibold tracking-wide text-center text-white uppercase border border-gray-200 cursor-pointer hover:bg-blue-700"
+            className="px-6 py-3 text-sm font-semibold tracking-wide text-center text-white uppercase border border-gray-200 cursor-pointer th-wrap-text hover:bg-blue-700"
           >
             <div className="flex items-center justify-center">
               {col.label}
@@ -129,7 +129,7 @@ const ProductTable = ({ columns, data = [], onEdit, onDelete, onAddImage, onRowC
       {currentRows.map((row) => (
         <tr
           key={row.id}
-          className="odd:bg-white even:bg-gray-50 hover:bg-blue-50 transition-colors"
+          className="transition-colors odd:bg-white even:bg-gray-50 hover:bg-blue-50"
         >
           {(onEdit || onDelete) && (
             <td className="px-6 py-4 text-center border border-gray-200">
@@ -182,7 +182,7 @@ const ProductTable = ({ columns, data = [], onEdit, onDelete, onAddImage, onRowC
               ) : col.key === "username" ? (
                 <Link
                   href={`/pages/customer-management/customer-order-activity?username=${row[col.key]}`}
-                  className="text-blue-600 hover:underline font-medium"
+                  className="font-medium text-blue-600 hover:underline"
                 >
                   {row[col.key]}
                 </Link>

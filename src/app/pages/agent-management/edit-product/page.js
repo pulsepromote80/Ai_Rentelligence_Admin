@@ -37,6 +37,7 @@ const EditProduct = ({ product, onClose }) => {
         rating: '',
         noOfRating: '',
         description: '',
+        aiCredits: '', // New field
         isNewArrial: false,
         isBestSeller: false,
         isRecommended: false,
@@ -142,6 +143,7 @@ const EditProduct = ({ product, onClose }) => {
                 rating: product.rating || '',
                 noOfRating: product.noOfRating || '',
                 description: product.description || '',
+                aiCredits: product.aiCredits || '', // Initialize AI Credits
                 isNewArrial: product.isNewArrial,
                 isBestSeller: product.isBestSeller,
                 isRecommended: product.isRecommended,
@@ -179,6 +181,21 @@ const EditProduct = ({ product, onClose }) => {
                 newData.discountPrice = discountPrice.toString();
             }
 
+            // Validate AI Credits if provided
+            if (name === 'aiCredits' && value.trim() !== '') {
+                if (isNaN(value) || parseFloat(value) < 0) {
+                    setErrors({
+                        ...errors,
+                        aiCredits: 'AI Credits must be a positive number'
+                    });
+                } else {
+                    setErrors({
+                        ...errors,
+                        aiCredits: ''
+                    });
+                }
+            }
+
             return newData;
         });
     };
@@ -214,6 +231,7 @@ const EditProduct = ({ product, onClose }) => {
         toatalmonth: formData.toatalmonth,
         nfTurL: formData.nfTurL,
         tokenId: formData.tokenId,
+        aiCredits: formData.aiCredits || null, // Include AI Credits in payload
         specification: formData.specification,
         description: formData.description,
         isNewArrial: formData.isNewArrial,
@@ -229,8 +247,15 @@ const EditProduct = ({ product, onClose }) => {
         const newErrors = {};
         const mrp = parseFloat(formData.mrp) || 0;
         const price = parseFloat(formData.price) || 0;
+        
         if (price > mrp) {
             newErrors.price = 'Price cannot be greater than MRP';
+            isValid = false;
+        }
+
+        // Validate AI Credits if provided
+        if (formData.aiCredits.trim() && (isNaN(formData.aiCredits) || parseFloat(formData.aiCredits) < 0)) {
+            newErrors.aiCredits = 'AI Credits must be a positive number';
             isValid = false;
         }
 
@@ -359,7 +384,6 @@ const EditProduct = ({ product, onClose }) => {
                     />
                 </div>
 
-                {/* Price */}
                 <div className="md:col-span-1">
                     <label className="block text-sm font-medium">Price</label>
                     <input
@@ -455,6 +479,7 @@ const EditProduct = ({ product, onClose }) => {
                         className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
                     />
                 </div>
+                
                 {/* Total Return */}
                 <div className="md:col-span-1">
                     <label className="block text-sm font-medium">Total Return(%)</label>
@@ -467,6 +492,7 @@ const EditProduct = ({ product, onClose }) => {
                         className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
                     />
                 </div>
+                
                 {/* Weekly Return */}
                 <div className="md:col-span-1"> 
                     <label className="block text-sm font-medium">Weekly Return($)</label>
@@ -479,6 +505,7 @@ const EditProduct = ({ product, onClose }) => {
                         className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
                     />
                 </div>
+                
                 {/* Month */}
                 <div className="md:col-span-1">
                     <label className="block text-sm font-medium">Monthly Return(%)</label>
@@ -492,7 +519,7 @@ const EditProduct = ({ product, onClose }) => {
                     />
                 </div>
                 
-                 <div className="md:col-span-1">
+                <div className="md:col-span-1">
                     <label className="block text-sm font-medium">Total Month</label>
                     <input
                         type="number"
@@ -503,6 +530,7 @@ const EditProduct = ({ product, onClose }) => {
                         className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
                     />
                 </div>
+                
                 <div className="md:col-span-1">
                     <label className="block text-sm font-medium">NFT Url</label>
                     <input
@@ -523,6 +551,22 @@ const EditProduct = ({ product, onClose }) => {
                         onChange={handleChange}
                         className="w-full px-3 py-2 mt-2 text-sm border rounded md:text-base"
                     />
+                </div>
+
+                {/* AI Credits Field */}
+                <div className="md:col-span-1">
+                    <label className="block text-sm font-medium">AI Credits</label>
+                    <input
+                        type="number"
+                        name="aiCredits"
+                        value={formData.aiCredits}
+                        onChange={handleChange}
+                        placeholder="ai Credits"
+                        className={`w-full px-3 py-2 mt-2 text-sm border rounded md:text-base ${errors.aiCredits ? 'border-red-500' : ''}`}
+                    />
+                    {errors.aiCredits && (
+                        <p className="mt-1 text-xs text-red-500">{errors.aiCredits}</p>
+                    )}
                 </div>
                 
                 <div className="md:col-span-2">
