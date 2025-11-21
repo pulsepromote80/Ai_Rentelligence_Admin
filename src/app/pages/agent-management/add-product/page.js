@@ -44,6 +44,7 @@ const AddProduct = ({ onClose, productId }) => {
   const [nfTurL, setnfTurL] = useState('')
   const [month, setMonth] = useState('')
   const [tokenId, settokenId] = useState('')
+  const [aiCredits, setAiCredits] = useState('') // New field
   const [activeTab, setActiveTab] = useState('addProduct');
   const [isProductMetaTagEnabled, setIsProductMetaTagEnabled] = useState(false);
   const [isSimilarProductTabEnabled, setIsSimilarProductTabEnabled] = useState(false);
@@ -259,6 +260,11 @@ useEffect(() => {
       newErrors.toatalmonth = 'Total Month must be a positive number'
     }
 
+    // AI Credits validation - not mandatory, but if provided must be a positive number
+    if (aiCredits.trim() && (isNaN(aiCredits) || parseFloat(aiCredits) < 0)) {
+      newErrors.aiCredits = 'AI Credits must be a positive number'
+    }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -321,6 +327,7 @@ useEffect(() => {
       weeklyReturn,
       month,
       tokenId,
+      aiCredits: aiCredits || null, // Include AI Credits in the payload
       categoryId: selectedCategory.value,
       categoryName: selectedCategory.label,
       subCategoryId: selectedSubCategory.value,
@@ -822,6 +829,28 @@ useEffect(() => {
               />
               {errors.tokenId && (
                 <p className="text-xs text-red-500">{errors.tokenId}</p>
+              )}
+            </div>
+
+            {/* New AI Credits Field */}
+            <div>
+              <label className="block text-sm font-medium">
+                AI Credits
+              </label>
+              <input
+                type="number"
+                value={aiCredits}
+                onChange={(e) => {
+                  setAiCredits(e.target.value)
+                  if (errors.aiCredits) {
+                    setErrors((prev) => ({ ...prev, aiCredits: '' }))
+                  }
+                }}
+                placeholder="AI Credits"
+                className={`w-full px-3 py-2 mt-2 border rounded ${errors.aiCredits ? 'border-red-500' : ''}`}
+              />
+              {errors.aiCredits && (
+                <p className="text-xs text-red-500">{errors.aiCredits}</p>
               )}
             </div>
             
