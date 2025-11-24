@@ -2,9 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+/* body {
   @apply overflow-hidden;
-}
+} */
 
 .Hello {
   width: '8rem';

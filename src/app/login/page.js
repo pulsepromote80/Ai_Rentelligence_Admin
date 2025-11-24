@@ -84,7 +84,7 @@ const AdminLogin = () => {
 
   return (
     <div className="flex items-center justify-center w-full p-2 xs:p-4 sm:p-6 lg:p-8 bg-gray-50">
-      <div className="flex flex-col w-full max-w-4xl overflow-hidden bg-white shadow-2xl md:flex-row xl:max-w-4xl rounded-2xl">
+      <div className="flex flex-col w-full max-w-4xl bg-white shadow-2xl md:flex-row xl:max-w-4xl rounded-2xl overflow-auto">
         {/* Left side */}
         <div className="relative flex flex-col justify-center w-full p-4 text-white md:w-2/5 xs:p-6 sm:p-8 lg:p-10 bg-gradient-to-br from-indigo-600 to-purple-700">
           <div className="absolute top-0 left-0 w-full h-full opacity-10">
