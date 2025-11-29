@@ -1,4 +1,3 @@
-
 "use client";
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -22,7 +21,6 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingScheduleId, setEditingScheduleId] = useState(null);
 
-  // ✅ Fetch event details and schedule list
   useEffect(() => {
     if (event?.EventMasterID) {
       dispatch(getEventById(event.EventMasterID))
@@ -56,7 +54,6 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
       value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
-
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
@@ -99,7 +96,7 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
     const { name, value, type, checked } = e.target;
     setScheduleData((prev) => ({ 
       ...prev, 
-      [name]: type === 'checkbox' ? (checked ? "Completed" : "Active") : value 
+      [name]: type === 'checkbox' ? (checked ? "Active" : "Completed") : value 
     }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
@@ -118,62 +115,63 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
     return `${parts[0]}:${parts[1]}:00`;
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!validateForm()) return;
-  setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    setLoading(true);
 
-  try {
-    const currentAdminUserId = getAdminUserId();
-    
-    if (isEditMode && editingScheduleId) {
-      const payload = {
-        id: editingScheduleId,
-        status: scheduleData.status === "Completed" ? 1 : 0, 
-        eventMasterID: event?.EventMasterID,
-        tittle: scheduleData.title,
-        time: formatTimeForAPI(scheduleData.time),
-        createdby: currentAdminUserId || "",
-      };
-
-      const res = await dispatch(eventSchedule(payload)).unwrap();
+    try {
+      const currentAdminUserId = getAdminUserId();
       
-      if (res?.statusCode === 200 || res?.statusCode === 1) {
-        toast.success(res.message || "Event schedule updated successfully!");
-        resetForm();
-        refreshScheduleList(); 
-        onSuccess();
-      } else {
-        toast.error(res?.message || "Failed to update event schedule");
-      }
-    } else {
-      const payload = {
-        id: 0,
-        status: 0, 
-        eventMasterID: event?.EventMasterID,
-        tittle: scheduleData.title,
-        time: formatTimeForAPI(scheduleData.time),
-        createdby: currentAdminUserId || "",
-      };
+      if (isEditMode && editingScheduleId) {
+        const payload = {
+          id: editingScheduleId,
+          status: scheduleData.status === "Active" ? 1 : 0,
+          eventMasterID: event?.EventMasterID,
+          tittle: scheduleData.title,
+          time: formatTimeForAPI(scheduleData.time),
+          createdby: currentAdminUserId || "",
+        };
 
-      const res = await dispatch(eventSchedule(payload)).unwrap();
-      
-      if (res?.statusCode === 200 || res?.statusCode === 1) {
-        toast.success(res.message || "Event scheduled successfully!");
-        resetForm();
-        refreshScheduleList(); 
-        onSuccess();
+        const res = await dispatch(eventSchedule(payload)).unwrap();
+        
+        if (res?.statusCode === 200 || res?.statusCode === 1) {
+          toast.success(res.message || "Event schedule updated successfully!");
+          resetForm();
+          refreshScheduleList(); 
+          onSuccess();
+        } else {
+          toast.error(res?.message || "Failed to update event schedule");
+        }
       } else {
-        toast.error(res?.message || "Failed to schedule event");
+        const payload = {
+          id: 0,
+          status: 1,
+          eventMasterID: event?.EventMasterID,
+          tittle: scheduleData.title,
+          time: formatTimeForAPI(scheduleData.time),
+          createdby: currentAdminUserId || "",
+        };
+
+        const res = await dispatch(eventSchedule(payload)).unwrap();
+        
+        if (res?.statusCode === 200 || res?.statusCode === 1) {
+          toast.success(res.message || "Event scheduled successfully!");
+          resetForm();
+          refreshScheduleList(); 
+          onSuccess();
+        } else {
+          toast.error(res?.message || "Failed to schedule event");
+        }
       }
+    } catch (error) {
+      console.error("Schedule Error:", error);
+      toast.error(error?.message || `Failed to ${isEditMode ? 'update' : 'schedule'} event`);
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    console.error("Schedule Error:", error);
-    toast.error(error?.message || `Failed to ${isEditMode ? 'update' : 'schedule'} event`);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
+
   const handleEdit = async (schedule) => {
     try {
       setLoading(true);
@@ -184,10 +182,7 @@ const handleSubmit = async (e) => {
       const scheduleData = res?.userEvent?.[0];
       
       if (scheduleData) {
-        console.log("Schedule data from API:", scheduleData);
-        
-        const statusMap = { 1: "Active", 2: "Completed", 0: "Cancelled" };
-        const status = statusMap[scheduleData.Status] || "Active";
+        const status = scheduleData.Status === 1 ? "Active" : "Completed";
         
         setScheduleData({
           title: scheduleData.Title || "",
@@ -446,7 +441,7 @@ const handleSubmit = async (e) => {
               type="checkbox"
               name="status"
               id="status"
-              checked={scheduleData.status === "Completed"}
+              checked={scheduleData.status === "Active"} 
               onChange={handleChange}
               className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
