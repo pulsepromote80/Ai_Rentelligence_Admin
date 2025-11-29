@@ -118,7 +118,7 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
     return `${parts[0]}:${parts[1]}:00`;
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   if (!validateForm()) return;
   setLoading(true);
@@ -136,19 +136,17 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
         createdby: currentAdminUserId || "",
       };
 
-
       const res = await dispatch(eventSchedule(payload)).unwrap();
       
       if (res?.statusCode === 200 || res?.statusCode === 1) {
         toast.success(res.message || "Event schedule updated successfully!");
         resetForm();
-        refreshScheduleList();
+        refreshScheduleList(); 
         onSuccess();
       } else {
         toast.error(res?.message || "Failed to update event schedule");
       }
     } else {
-      
       const payload = {
         id: 0,
         status: 0, 
@@ -163,7 +161,7 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
       if (res?.statusCode === 200 || res?.statusCode === 1) {
         toast.success(res.message || "Event scheduled successfully!");
         resetForm();
-        refreshScheduleList();
+        refreshScheduleList(); 
         onSuccess();
       } else {
         toast.error(res?.message || "Failed to schedule event");
@@ -176,7 +174,6 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
     setLoading(false);
   }
 };
-
   const handleEdit = async (schedule) => {
     try {
       setLoading(true);
