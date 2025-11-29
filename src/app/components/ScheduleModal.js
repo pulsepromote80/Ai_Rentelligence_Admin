@@ -1,201 +1,26 @@
-// import React, { useState } from 'react';
-// import { useDispatch } from 'react-redux';
-// import { eventSchedule,getEventById } from '@/app/redux/eventSlice';
-// import { toast } from 'react-toastify';
-// import { getAdminUserId } from '@/app/pages/api/auth';
-
-// const ScheduleModal = ({ event, onClose, onSuccess }) => {
-//   const dispatch = useDispatch();
-//   const [scheduleData, setScheduleData] = useState({
-//     tittle: '',
-//     time: ''
-//   });
-//   const [loading, setLoading] = useState(false);
-//   const [errors, setErrors] = useState({});
-
-//   const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setScheduleData(prev => ({
-//       ...prev,
-//       [name]: value
-//     }));
-    
-//     if (errors[name]) {
-//       setErrors(prev => ({ ...prev, [name]: "" }));
-//     }
-//   };
-
-//   const validateForm = () => {
-//     const newErrors = {};
-    
-//     if (!scheduleData.tittle.trim()) newErrors.tittle = "Title is required";
-//     if (!scheduleData.time.trim()) newErrors.time = "Time is required";
-    
-//     setErrors(newErrors);
-//     return Object.keys(newErrors).length === 0;
-//   };
-
-//   // Format time to proper API format
-//   const formatTimeForAPI = (timeString) => {
-//     if (!timeString) return '';
-    
-//     const timeParts = timeString.split(':');
-//     if (timeParts.length >= 2) {
-//       return `${timeParts[0]}:${timeParts[1]}:00`;
-//     }
-    
-//     return timeString;
-//   };
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-    
-//     if (!validateForm()) return;
-
-//     setLoading(true);
-
-//     try {
-//       const currentAdminUserId = getAdminUserId();
-      
-//       const dataToSubmit = {
-//         tittle: scheduleData.tittle,
-//         time: formatTimeForAPI(scheduleData.time), 
-//         eventMasterID: event?.EventMasterID,
-//         createdby: currentAdminUserId || ""
-//       };
-
-//       console.log('Submitting schedule data:', dataToSubmit);
-
-//       const response = await dispatch(eventSchedule(dataToSubmit)).unwrap();
-      
-//       console.log('Schedule response:', response);
-      
-//       if (response && (response.statusCode === 200 || response.statusCode === 1)) {
-//         toast.success(response.message || "Event scheduled successfully!");
-//         onSuccess(); // Success callback call करें
-//       } else {
-//         toast.error(response?.message || "Failed to schedule event");
-//       }
-//     } catch (error) {
-//       console.error("Schedule Error:", error);
-      
-//       if (error.statusCode === 200 || error.statusCode === 1) {
-//         toast.success(error.message || "Event scheduled successfully!");
-//         onSuccess();
-//       } else {
-//         toast.error(error?.message || error?.toString() || "Failed to schedule event");
-//       }
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleBack = () => {
-//     setScheduleData({ tittle: '', time: '' });
-//     setErrors({});
-//     onClose();
-//   };
-
-//   return (
-//     <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg">
-//       {/* Header */}
-//       <div className="flex items-center justify-between p-6 border-b">
-//         <div className="flex items-center space-x-4">
-//           {/* <button
-//             onClick={handleBack}
-//             className="p-2 text-gray-500 transition-colors rounded-full hover:text-gray-700 hover:bg-gray-100"
-//             title="Back to Events"
-//           >
-//             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-//             </svg>
-//           </button> */}
-//           <div>
-//             <h1 className="text-2xl font-bold text-gray-900">Schedule Event</h1>
-//             <p className="text-gray-600">Create a new schedule for: {event?.Tittle}</p>
-//           </div>
-//         </div>
-//       </div>
-
-//       {/* Form */}
-//       <form onSubmit={handleSubmit} className="p-6 space-y-6">
-//         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-//           <div>
-//             <label className="block mb-2 text-sm font-medium text-gray-700">
-//               Schedule Title *
-//             </label>
-//             <input
-//               type="text"
-//               name="tittle"
-//               placeholder="Enter schedule title"
-//               value={scheduleData.tittle}
-//               onChange={handleChange}
-//               className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//             />
-//             {errors.tittle && <p className="mt-1 text-sm text-red-500">{errors.tittle}</p>}
-//           </div>
-
-//           <div>
-//             <label className="block mb-2 text-sm font-medium text-gray-700">
-//               Schedule Time *
-//             </label>
-//             <input
-//               type="time"
-//               name="time"
-//               value={scheduleData.time}
-//               onChange={handleChange}
-//               className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-//               step="1"
-//             />
-//             {errors.time && <p className="mt-1 text-sm text-red-500">{errors.time}</p>}
-//             <p className="mt-1 text-xs text-gray-500">
-//               Time format: HH:mm:ss (e.g., {scheduleData.time ? `${scheduleData.time}:00` : '14:30:00'})
-//             </p>
-//           </div>
-//         </div>
-
-     
-
-//         {/* Action Buttons */}
-//         <div className="flex gap-3 pt-6 border-t">
-//           <button
-//             type="submit"
-//             disabled={loading}
-//             className="px-6 py-3 text-white bg-blue-500 rounded-md hover:bg-blue-600 disabled:bg-blue-300"
-//           >
-//             {loading ? 'Scheduling...' : 'Schedule Event'}
-//           </button>
-//           <button
-//             type="button"
-//             onClick={handleBack}
-//             className="px-6 py-3 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
-//           >
-//             Cancel
-//           </button>
-//         </div>
-//       </form>
-//     </div>
-//   );
-// };
-
-// export default ScheduleModal;
 
 "use client";
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { eventSchedule, getEventById } from "@/app/redux/eventSlice";
+import { eventSchedule, getEventById, editScheduleById } from "@/app/redux/eventSlice";
 import { toast } from "react-toastify";
 import { getAdminUserId } from "@/app/pages/api/auth";
 
 const ScheduleModal = ({ event, onClose, onSuccess }) => {
   const dispatch = useDispatch();
-  const [scheduleData, setScheduleData] = useState({ title: "", time: "" });
+  const [scheduleData, setScheduleData] = useState({ 
+    title: "", 
+    time: "", 
+    status: "Active" 
+  });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [eventSchedules, setEventSchedules] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingScheduleId, setEditingScheduleId] = useState(null);
 
   // ✅ Fetch event details and schedule list
   useEffect(() => {
@@ -212,12 +37,10 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
               CreatedDate: item.CreatedDate,
               ScheduleStatus: item.ScheduleStatus,
               EventScheduleMasterId: item.EventScheduleMasterId,
+              Id: item.Id,
             }));
-            
-            
             setEventSchedules(schedules);
           } else {
-           
             setEventSchedules([]);
           }
         })
@@ -228,7 +51,6 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
     }
   }, [event?.EventMasterID, dispatch]);
 
-
   const filteredData = eventSchedules.filter(schedule =>
     Object.values(schedule).some(value =>
       value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -238,7 +60,6 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
   const formatTimeForDisplay = (timeString) => {
     if (!timeString) return "—";
@@ -275,8 +96,11 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setScheduleData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setScheduleData((prev) => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? (checked ? "Completed" : "Active") : value 
+    }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -295,16 +119,42 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-    setLoading(true);
+  e.preventDefault();
+  if (!validateForm()) return;
+  setLoading(true);
 
-    try {
-      const currentAdminUserId = getAdminUserId();
+  try {
+    const currentAdminUserId = getAdminUserId();
+    
+    if (isEditMode && editingScheduleId) {
       const payload = {
+        id: editingScheduleId,
+        status: scheduleData.status === "Completed" ? 1 : 0, 
+        eventMasterID: event?.EventMasterID,
         tittle: scheduleData.title,
         time: formatTimeForAPI(scheduleData.time),
+        createdby: currentAdminUserId || "",
+      };
+
+
+      const res = await dispatch(eventSchedule(payload)).unwrap();
+      
+      if (res?.statusCode === 200 || res?.statusCode === 1) {
+        toast.success(res.message || "Event schedule updated successfully!");
+        resetForm();
+        refreshScheduleList();
+        onSuccess();
+      } else {
+        toast.error(res?.message || "Failed to update event schedule");
+      }
+    } else {
+      
+      const payload = {
+        id: 0,
+        status: 0, 
         eventMasterID: event?.EventMasterID,
+        tittle: scheduleData.title,
+        time: formatTimeForAPI(scheduleData.time),
         createdby: currentAdminUserId || "",
       };
 
@@ -312,44 +162,92 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
       
       if (res?.statusCode === 200 || res?.statusCode === 1) {
         toast.success(res.message || "Event scheduled successfully!");
-        
-        if (event?.EventMasterID) {
-          dispatch(getEventById(event.EventMasterID))
-            .unwrap()
-            .then((refreshRes) => {
-              const refreshedList = refreshRes?.data?.userEvent;
-              if (Array.isArray(refreshedList)) {
-                const schedules = refreshedList.map(item => ({
-                  Title: item.Title,
-                  Time: item.Time,
-                  Createdby: item.Createdby,
-                  CreatedDate: item.CreatedDate,
-                  ScheduleStatus: item.ScheduleStatus,
-                  EventScheduleMasterId: item.EventScheduleMasterId,
-                }));
-                setEventSchedules(schedules);
-                setCurrentPage(1); 
-              }
-            });
-        }
-        
-        setScheduleData({ title: "", time: "" });
+        resetForm();
+        refreshScheduleList();
         onSuccess();
       } else {
         toast.error(res?.message || "Failed to schedule event");
       }
+    }
+  } catch (error) {
+    console.error("Schedule Error:", error);
+    toast.error(error?.message || `Failed to ${isEditMode ? 'update' : 'schedule'} event`);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  const handleEdit = async (schedule) => {
+    try {
+      setLoading(true);
+      
+      const numericId = schedule.Id;
+      
+      const res = await dispatch(editScheduleById(numericId)).unwrap();
+      const scheduleData = res?.userEvent?.[0];
+      
+      if (scheduleData) {
+        console.log("Schedule data from API:", scheduleData);
+        
+        const statusMap = { 1: "Active", 2: "Completed", 0: "Cancelled" };
+        const status = statusMap[scheduleData.Status] || "Active";
+        
+        setScheduleData({
+          title: scheduleData.Title || "",
+          time: scheduleData.Time ? scheduleData.Time.substring(0, 5) : "",
+          status: status
+        });
+        
+        setIsEditMode(true);
+        setEditingScheduleId(numericId);
+        toast.success("Schedule loaded for editing");
+      } else {
+        toast.error("No schedule data found in response");
+      }
     } catch (error) {
-      console.error("Schedule Error:", error);
-      toast.error(error?.message || "Failed to schedule event");
+      console.error("Edit Fetch Error:", error);
+      toast.error(error?.message || "Failed to load schedule for editing");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleBack = () => {
-    setScheduleData({ title: "", time: "" });
+  const resetForm = () => {
+    setScheduleData({ title: "", time: "", status: "Active" });
     setErrors({});
+    setIsEditMode(false);
+    setEditingScheduleId(null);
+  };
+
+  const handleBack = () => {
+    resetForm();
     onClose();
+  };
+
+  const refreshScheduleList = () => {
+    if (event?.EventMasterID) {
+      dispatch(getEventById(event.EventMasterID))
+        .unwrap()
+        .then((refreshRes) => {
+          const refreshedList = refreshRes?.data?.userEvent;
+          if (Array.isArray(refreshedList)) {
+            const schedules = refreshedList.map(item => ({
+              Title: item.Title,
+              Time: item.Time,
+              Createdby: item.Createdby,
+              CreatedDate: item.CreatedDate,
+              ScheduleStatus: item.ScheduleStatus,
+              EventScheduleMasterId: item.EventScheduleMasterId,
+              Id: item.Id,
+            }));
+            setEventSchedules(schedules);
+            setCurrentPage(1);
+          }
+        })
+        .catch((err) => {
+          console.error("Refresh Error:", err);
+        });
+    }
   };
 
   const Pagination = () => {
@@ -500,12 +398,14 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
             </svg>
           </button>
           <div>
-            <h1 className="text-xl font-bold">Schedule Event</h1>
+            <h1 className="text-xl font-bold">
+              {isEditMode ? "Edit Schedule" : "Schedule Event"}
+            </h1>
           </div>
         </div>
       </div>
 
-      {/* ✅ Schedule Form - Reduced spacing */}
+      {/* ✅ Schedule Form */}
       <form onSubmit={handleSubmit} className="p-4 space-y-4 border-b border-gray-200 bg-gray-50">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
@@ -543,14 +443,45 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
           </div>
         </div>
 
+        {isEditMode && (
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              name="status"
+              id="status"
+              checked={scheduleData.status === "Completed"}
+              onChange={handleChange}
+              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label htmlFor="status" className="text-sm font-medium text-gray-700">
+              Active
+            </label>
+          </div>
+        )}
+
         <div className="flex gap-3 pt-2">
           <button
             type="submit"
             disabled={loading}
             className="px-4 py-2 text-sm font-medium text-white transition-colors bg-green-600 rounded-md hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed"
           >
-            {loading ? "Scheduling..." : "Schedule Event"}
+            {loading 
+              ? (isEditMode ? "Updating..." : "Scheduling...") 
+              : (isEditMode ? "Update Event" : "Schedule Event")
+            }
           </button>
+          
+          {isEditMode && (
+            <button
+              type="button"
+              onClick={resetForm}
+              disabled={loading}
+              className="px-4 py-2 text-sm font-medium text-gray-700 transition-colors bg-yellow-200 rounded-md hover:bg-yellow-300 disabled:bg-yellow-100 disabled:cursor-not-allowed"
+            >
+              Cancel Edit
+            </button>
+          )}
+          
           <button
             type="button"
             onClick={handleBack}
@@ -585,6 +516,9 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
                 <thead className="bg-gradient-to-r from-blue-600 to-blue-700">
                   <tr>
                     <th className="px-4 py-3 text-xs font-semibold tracking-wider text-center text-white uppercase">
+                      Action
+                    </th>
+                    <th className="px-4 py-3 text-xs font-semibold tracking-wider text-center text-white uppercase">
                       S.No.
                     </th>
                     <th className="px-4 py-3 text-xs font-semibold tracking-wider text-center text-white uppercase">
@@ -607,6 +541,18 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
                       key={schedule.EventScheduleMasterId} 
                       className="transition-colors hover:bg-blue-50"
                     >
+                      <td className="px-4 py-3 text-sm text-center whitespace-nowrap">
+                        <button
+                          onClick={() => handleEdit(schedule)}
+                          disabled={loading}
+                          className="p-2 text-blue-600 transition-colors rounded-full hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Edit Schedule"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </button>
+                      </td>
                       <td className="px-4 py-3 text-sm font-medium text-center text-gray-900 whitespace-nowrap">
                         {indexOfFirstRow + index + 1}
                       </td>
@@ -640,9 +586,9 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
                   className="p-3 bg-white border border-gray-200 rounded-lg shadow-sm"
                 >
                   <div className="space-y-2">
-                    <div className="flex justify-between">
+                    <div className="flex items-center justify-between">
                       <span className="text-sm font-medium text-gray-600">S.No.:</span>
-                      <span className="text-sm font-medium text-gray-900">{indexOfFirstRow + index + 1}</span>
+                      <span className="text-sm font-medium text-gray-900">{indexOfFirstRow + index}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-sm font-medium text-gray-600">Title:</span>
@@ -663,6 +609,18 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
                       >
                         {schedule.ScheduleStatus || "Active"}
                       </span>
+                    </div>
+                    <div className="flex justify-end pt-2">
+                      <button
+                        onClick={() => handleEdit(schedule)}
+                        disabled={loading}
+                        className="flex items-center gap-1 px-3 py-1 text-xs text-blue-600 transition-colors bg-blue-100 rounded-md hover:bg-blue-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Edit
+                      </button>
                     </div>
                   </div>
                 </div>

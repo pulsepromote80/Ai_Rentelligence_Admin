@@ -11,7 +11,8 @@ export const API_ENDPOINTS = {
   CLOSE_EVENT_MASTER: "/Event/closeEventMaster",
   ADD_EVENT_PRE_IMAGES: "/Event/addEventPreImages",
   GET_EVENT_IMAGES_BY_EMID: "/Event/getEventImagesbyEMID",
-  DELETE_EVENT_IMAGES: "/Event/deleteEventImages"
+  DELETE_EVENT_IMAGES: "/Event/deleteEventImages",
+  EDIT_SCHEDULE_BY_ID: "/Event/editScheduleByID"
 };
 
 
