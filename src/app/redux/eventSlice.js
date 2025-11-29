@@ -143,6 +143,21 @@ export const getEventImagesByEMID = createAsyncThunk(
     }
   }
 );
+export const editScheduleById = createAsyncThunk(
+  "event/editScheduleById",
+  async (Id, { rejectWithValue }) => {
+    try {
+      const endpoint = `${API_ENDPOINTS.EDIT_SCHEDULE_BY_ID}?Id=${Id}`;
+      const response = await getRequest(endpoint);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || "Failed to fetch schedule"
+      );
+    }
+  }
+);
+
 
 
 const eventSlice = createSlice({
@@ -154,7 +169,8 @@ const eventSlice = createSlice({
     data: [],
     selectedEvent: null,
     Bookingdetails: null,
-    eventImages: []
+    eventImages: [],
+    selectedSchedule: null
   },
   reducers: {
     clearError: (state) => {
@@ -287,6 +303,18 @@ const eventSlice = createSlice({
         state.eventImages = action.payload || [];
       })
       .addCase(getEventImagesByEMID.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+       .addCase(editScheduleById.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(editScheduleById.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedSchedule = action.payload || null;
+      })
+      .addCase(editScheduleById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

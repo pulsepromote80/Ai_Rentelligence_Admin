@@ -534,8 +534,6 @@ const RentRequest = () => {
                 draggable: true,
             })
             
-            // Refresh data after approval
-            handleRefresh()
         } catch (error) {
             console.error('Approve error:', error)
             toast.error('Failed to approve request', {
@@ -574,8 +572,6 @@ const RentRequest = () => {
                 draggable: true,
             })
             
-            // Refresh data after rejection
-            handleRefresh()
         } catch (error) {
             console.error('Reject error:', error)
             toast.error('Failed to reject request', {
