@@ -54,7 +54,6 @@ const ScheduleModal = ({ event, onClose, onSuccess }) => {
       value?.toString().toLowerCase().includes(searchTerm.toLowerCase())
     )
   );
-
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
