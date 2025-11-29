@@ -785,17 +785,16 @@ const Event = () => {
   }, [loading, formData.Status])
 
   if (showScheduleForm) {
-    return (
-      <ScheduleModal
-        event={selectedEvent}
-        onClose={() => setShowScheduleForm(false)}
-        onSuccess={() => {
-          setShowScheduleForm(false)
-          dispatch(getevent())
-        }}
-      />
-    )
-  }
+  return (
+    <ScheduleModal
+      event={selectedEvent}
+      onClose={() => setShowScheduleForm(false)}
+      onSuccess={() => {
+        dispatch(getevent())
+      }}
+    />
+  )
+}
 
   return (
     <div className="max-w-full mx-auto bg-white rounded-lg">
