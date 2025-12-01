@@ -23,7 +23,7 @@ const Table = ({
   const [rowsPerPage, setRowsPerPage] = useState(5)
 
   useEffect(() => {
-    setSortedData(data)
+    setSortedData(Array.isArray(data) ? data : [])
   }, [data])
 
   const sortData = (key) => {
@@ -161,7 +161,7 @@ const Table = ({
                   key={col.key}
                   className="px-6 py-4 text-sm text-center border border-gray-200"
                 >
-                  {renderCell(col, row)}
+                  {renderCell(col, row, idx)}
                 </td>
               ))}
             </tr>
@@ -201,7 +201,7 @@ const Table = ({
                   <span className="font-semibold text-gray-600">
                     {col.label}:
                   </span>{' '}
-                  <span className="text-gray-800">{renderCell(col, row)}</span>
+                  <span className="text-gray-800">{renderCell(col, row, index)}</span>
                 </div>
               ))}
               {(onEdit || onDelete || onAddImage) && (
@@ -249,17 +249,22 @@ const Table = ({
     </div>
   )
 }
-const renderCategoryName = (value) => {
-  if (!value) return '';
-  return (
-    <div className="max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap" title={value}>
-      {value}
-    </div>
-  );
-};
 
-const renderCell = (col, row) => {
+
+const renderCell = (col, row, idx) => {
+  const renderCategoryName = (value) => {
+    if (!value) return '';
+    return (
+      <div className="max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap" title={value}>
+        {value}
+      </div>
+    );
+  };
+
   const value = row[col.key]
+  if (col.key === 'S No') {
+    return idx + 1;
+  }
   if (col.key === 'name') {
     return renderCategoryName(value);
   }
