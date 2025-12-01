@@ -66,6 +66,7 @@ export const Columns = [
   { key: 'Location', label: 'Location' },
   { key: 'EventStartDate', label: 'Event Start Date' },
    { key: 'EndStartDate', label: 'Event End Date' },
+    { key: 'MultipleSeatbook', label: 'Multiple Seat Book' },
   { key: 'EventStatus', label: 'Event Status', 
   render: (value) => {
     const getStatusClass = (status) => {

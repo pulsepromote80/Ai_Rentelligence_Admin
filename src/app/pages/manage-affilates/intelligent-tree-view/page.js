@@ -120,20 +120,7 @@ const CustomNode = ({ nodeDatum, toggleNode }) => {
 
  const handleCopyClick = () => {
    const nodeData = {
-     name: nodeDatum.name,
-     sponsor: nodeDatum.attributes?.sponsor || "None",
-     downline: nodeDatum.attributes?.downline || 0,
-     team: nodeDatum.attributes?.team || 0,
-     email: nodeDatum.attributes?.email || "",
-     regDate: nodeDatum.attributes?.regDate || "",
-     urank: nodeDatum.attributes?.urank || "",
-     teamBusiness: nodeDatum.attributes?.teamBusiness || 0,
-     activeTeam: nodeDatum.attributes?.activeTeam || 0,
-     directBusiness: nodeDatum.attributes?.directBusiness || 0,
-     topupDate: nodeDatum.attributes?.topupDate || "",
-     totalTeam: nodeDatum.attributes?.totalTeam || 0,
-     mobile: nodeDatum.attributes?.mobile || "",
-     uLvl: nodeDatum.attributes?.uLvl || 0,
+     Username:nodeDatum.loginid
    };
 
 

@@ -1,4 +1,6 @@
+
 'use client'
+
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -39,6 +41,7 @@ const Event = () => {
     EventURL: '', 
     EventPrice: '',
     Status: 1,
+    MultipleSeatbook: 0,
   })
   const [eventImage, setEventImage] = useState(null)
   const [existingImageUrl, setExistingImageUrl] = useState('')
@@ -145,39 +148,131 @@ const Event = () => {
     return date
   }
 
-  const TimeRangeInput = ({ value, onChange, placeholder, name }) => {
+  const TimeRangeInput = ({ value, onChange, placeholder, name, isReadOnlyEndTime = false }) => {
     const [startTime, setStartTime] = useState('')
     const [endTime, setEndTime] = useState('')
+    const [endTimeReadonly, setEndTimeReadonly] = useState(false)
+    const [minEndTime, setMinEndTime] = useState('')
+
+    // Calculate minimum end time (start time + 1 minute)
+    const calculateMinEndTime = (startTime24H) => {
+      if (!startTime24H) return ''
+      
+      const [hours, minutes] = startTime24H.split(':').map(Number)
+      
+      let newMinutes = minutes + 1
+      let newHours = hours
+      
+      if (newMinutes >= 60) {
+        newHours += 1
+        newMinutes = 0
+      }
+      
+      if (newHours >= 24) {
+        newHours = 0
+      }
+      
+      return `${newHours.toString().padStart(2, '0')}:${newMinutes.toString().padStart(2, '0')}`
+    }
 
     useEffect(() => {
       if (value) {
         const { startTime: parsedStart, endTime: parsedEnd } = parseTimeRange(value)
-        setStartTime(formatTimeTo24H(parsedStart))
-        setEndTime(formatTimeTo24H(parsedEnd))
+        const start24H = formatTimeTo24H(parsedStart)
+        const end24H = formatTimeTo24H(parsedEnd)
+        
+        setStartTime(start24H)
+        setEndTime(end24H)
+        
+        // Set minimum end time for validation
+        if (start24H) {
+          setMinEndTime(calculateMinEndTime(start24H))
+        }
       } else {
         setStartTime('')
         setEndTime('')
+        setMinEndTime('')
       }
     }, [value])
 
     const handleStartTimeChange = (e) => {
       const newStartTime = e.target.value
       setStartTime(newStartTime)
-      if (newStartTime && endTime) {
+      
+      if (newStartTime) {
+        // Set minimum end time for validation
+        const minTime = calculateMinEndTime(newStartTime)
+        setMinEndTime(minTime)
+        
+        // Clear end time when start time changes
+        setEndTime('')
+        
+        // If end time was readonly, make it editable
+        if (endTimeReadonly) {
+          setEndTimeReadonly(false)
+        }
+        
+        // Don't auto-set end time, let user select it
+      } else {
+        // If start time is cleared, reset everything
+        setEndTime('')
+        setMinEndTime('')
+        setEndTimeReadonly(false)
+      }
+      
+      // Update parent form with start time only
+      if (newStartTime) {
         const formattedStart = formatTimeToAMPM(newStartTime)
-        const formattedEnd = formatTimeToAMPM(endTime)
-        onChange(`${formattedStart} to ${formattedEnd}`)
+        onChange(`${formattedStart} to `) // End time empty
+      } else {
+        onChange('')
       }
     }
 
     const handleEndTimeChange = (e) => {
       const newEndTime = e.target.value
+      
+      // Validate that end time is after start time
+      if (startTime && newEndTime) {
+        const start = new Date(`2000-01-01T${startTime}`)
+        const end = new Date(`2000-01-01T${newEndTime}`)
+        
+        if (end <= start) {
+          // If end time is before or equal to start time, show error
+          toast.error(`End time must be after ${formatTimeToAMPM(startTime)}`)
+          return
+        }
+      }
+      
       setEndTime(newEndTime)
+      
       if (startTime && newEndTime) {
         const formattedStart = formatTimeToAMPM(startTime)
         const formattedEnd = formatTimeToAMPM(newEndTime)
         onChange(`${formattedStart} to ${formattedEnd}`)
+      } else if (startTime && !newEndTime) {
+        const formattedStart = formatTimeToAMPM(startTime)
+        onChange(`${formattedStart} to `)
       }
+    }
+
+    // Reset button handler
+    const handleReset = () => {
+      setStartTime('')
+      setEndTime('')
+      setMinEndTime('')
+      setEndTimeReadonly(false)
+      onChange('')
+    }
+
+    // Function to check if a time is disabled (before start time)
+    const isTimeDisabled = (time) => {
+      if (!startTime || !time) return false
+      
+      const start = new Date(`2000-01-01T${startTime}`)
+      const check = new Date(`2000-01-01T${time}`)
+      
+      return check <= start
     }
 
     return (
@@ -188,20 +283,39 @@ const Event = () => {
             value={startTime}
             onChange={handleStartTimeChange}
             className="flex-1 p-3 border border-gray-300 rounded-md"
+            placeholder="Start time"
           />
           <span className="text-gray-500">to</span>
           <input
             type="time"
             value={endTime}
             onChange={handleEndTimeChange}
-            className="flex-1 p-3 border border-gray-300 rounded-md"
+            min={minEndTime} // HTML5 min attribute to prevent selecting times before this
+            className={`flex-1 p-3 border border-gray-300 rounded-md ${
+              !startTime ? 'bg-gray-100 cursor-not-allowed' : ''
+            }`}
+            placeholder="End time"
+            disabled={!startTime} // Disable until start time is selected
+            title={!startTime ? "Please select start time first" : `Select time after ${formatTimeToAMPM(startTime)}`}
           />
+          <button
+            type="button"
+            onClick={handleReset}
+            className="p-3 text-gray-600 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
+            title="Reset times"
+          >
+            ✕
+          </button>
         </div>
+        {startTime && !endTime && (
+          <p className="text-xs text-gray-500">
+            Please select an end time after {formatTimeToAMPM(startTime)}
+          </p>
+        )}
       </div>
     )
   }
 
-  // ✅ Get today's date in YYYY-MM-DD format
   const getTodayDate = () => {
     return new Date().toISOString().split('T')[0]
   }
@@ -231,6 +345,7 @@ const Event = () => {
       EventURL: '', 
       EventPrice: '',
       Status: 1,
+      MultipleSeatbook: 0, 
     })
     setEventImage(null)
     setExistingImageUrl('')
@@ -276,6 +391,20 @@ const Event = () => {
     setSelectedEvent(row)
     setShowScheduleForm(true)
   }, [])
+
+  // ✅ Handle MultipleSeatbook checkbox change
+  const handleMultipleSeatbookChange = (e) => {
+    const isChecked = e.target.checked
+    setFormData((prev) => ({
+      ...prev,
+      MultipleSeatbook: isChecked ? 1 : 0,
+    }))
+    
+    // Clear error if exists
+    if (errors.MultipleSeatbook) {
+      setErrors((prev) => ({ ...prev, MultipleSeatbook: '' }))
+    }
+  }
 
   const updatedColumns = useMemo(() => {
     return Columns.map((col) => {
@@ -434,10 +563,6 @@ const Event = () => {
     if (!safeTrim(formData.Tittle)) newErrors.Tittle = 'Title is required.'
     if (!safeTrim(formData.EventType))
       newErrors.EventType = 'Event Type is required.'
-    if (!safeTrim(formData.EventStartDate))
-      newErrors.EventStartDate = 'Event Start Date is required.'
-    if (!safeTrim(formData.EndStartDate))
-      newErrors.EndStartDate = 'End Date is required.'
     if (!safeTrim(formData.AvailableSeats))
       newErrors.AvailableSeats = 'Available Seats is required.'
     if (!safeTrim(formData.Location))
@@ -568,6 +693,11 @@ const Event = () => {
       }
     }
 
+    // ✅ MultipleSeatbook validation (optional - if you want to make it required)
+    // if (formData.MultipleSeatbook === undefined || formData.MultipleSeatbook === null) {
+    //   newErrors.MultipleSeatbook = 'Multiple Seat Booking status is required'
+    // }
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -606,6 +736,7 @@ const Event = () => {
       EventURL: formData.EventURL, 
       EventPrice: formData.EventPrice,
       Status: formData.Status.toString(),
+      MultipleSeatbook: formData.MultipleSeatbook.toString(), // ✅ Add here
     }
 
     if (editMode) {
@@ -679,44 +810,92 @@ const Event = () => {
     }
   }
 
+  // const handleEdit = (event) => {
+  //   const statusValue =
+  //     event.Status === 0 || event.Status === 1 ? event.Status : 1
+
+  //   setFormData({
+  //     Tittle: event.Tittle || event.title || '',
+  //     EventType: event.EventType || event.eventType || '',
+  //     EventStartDate: event.EventStartDate || event.eventStartDate || '',
+  //     EndStartDate: event.EndStartDate || event.endStartDate || '',
+  //     AvailableSeats: event.AvailableSeats || event.availableSeats || '',
+  //     Location: event.Location || event.location || '',
+  //     EventMode: event.EventMode || event.eventMode || '',
+  //     AccessType: event.AccessType || event.accessType || '',
+  //     SessionsTime: event.SessionsTime || event.sessionsTime || '',
+  //     SessionsTimeOne: event.SessionsTimeOne || event.sessionsTimeOne || '',
+  //     SessionsTimeTwo: event.SessionsTimeTwo || event.sessionsTimeTwo || '',
+  //     SessionSeats: event.SessionSeats || event.sessionSeats || '',
+  //     SessionOneSeats: event.SessionOneSeats || event.sessionOneSeats || '',
+  //     SessionTwoSeats: event.SessionTwoSeats || event.sessionTwoSeats || '',
+  //     Description: event.Description || event.description || '',
+  //     EventURL: event.EventURL || event.eventURL || '', 
+  //     EventPrice: event.EventPrice || event.eventPrice || '',
+  //     Status: statusValue,
+  //     MultipleSeatbook: event.MultipleSeatbook || event.multipleSeatbook || 0, // ✅ Add here
+  //   })
+
+  //   setEditEventId(event.EventMasterID || event.Id || event.eventMasterID)
+  //   setEditMode(true)
+  //   setShowForm(true)
+
+  //   if (event.Image || event.image) {
+  //     const imageUrl = event.Image || event.image
+  //     setExistingImageUrl(imageUrl)
+  //     setEventImage(imageUrl)
+  //   } else {
+  //     setExistingImageUrl('')
+  //     setEventImage(null)
+  //   }
+  // }
   const handleEdit = (event) => {
-    const statusValue =
-      event.Status === 0 || event.Status === 1 ? event.Status : 1
+  const statusValue =
+    event.Status === 0 || event.Status === 1 ? event.Status : 1
 
-    setFormData({
-      Tittle: event.Tittle || event.title || '',
-      EventType: event.EventType || event.eventType || '',
-      EventStartDate: event.EventStartDate || event.eventStartDate || '',
-      EndStartDate: event.EndStartDate || event.endStartDate || '',
-      AvailableSeats: event.AvailableSeats || event.availableSeats || '',
-      Location: event.Location || event.location || '',
-      EventMode: event.EventMode || event.eventMode || '',
-      AccessType: event.AccessType || event.accessType || '',
-      SessionsTime: event.SessionsTime || event.sessionsTime || '',
-      SessionsTimeOne: event.SessionsTimeOne || event.sessionsTimeOne || '',
-      SessionsTimeTwo: event.SessionsTimeTwo || event.sessionsTimeTwo || '',
-      SessionSeats: event.SessionSeats || event.sessionSeats || '',
-      SessionOneSeats: event.SessionOneSeats || event.sessionOneSeats || '',
-      SessionTwoSeats: event.SessionTwoSeats || event.sessionTwoSeats || '',
-      Description: event.Description || event.description || '',
-      EventURL: event.EventURL || event.eventURL || '', 
-      EventPrice: event.EventPrice || event.eventPrice || '',
-      Status: statusValue,
-    })
-
-    setEditEventId(event.EventMasterID || event.Id || event.eventMasterID)
-    setEditMode(true)
-    setShowForm(true)
-
-    if (event.Image || event.image) {
-      const imageUrl = event.Image || event.image
-      setExistingImageUrl(imageUrl)
-      setEventImage(imageUrl)
-    } else {
-      setExistingImageUrl('')
-      setEventImage(null)
-    }
+  // ✅ Handle MultipleSeatbook value conversion
+  let multipleSeatbookValue = 0
+  if (event.MultipleSeatbook === "Allow" || event.MultipleSeatbook === 1) {
+    multipleSeatbookValue = 1
+  } else if (event.MultipleSeatbook === "Not Allow" || event.MultipleSeatbook === 0) {
+    multipleSeatbookValue = 0
   }
+
+  setFormData({
+    Tittle: event.Tittle || event.title || '',
+    EventType: event.EventType || event.eventType || '',
+    EventStartDate: event.EventStartDate || event.eventStartDate || '',
+    EndStartDate: event.EndStartDate || event.endStartDate || '',
+    AvailableSeats: event.AvailableSeats || event.availableSeats || '',
+    Location: event.Location || event.location || '',
+    EventMode: event.EventMode || event.eventMode || '',
+    AccessType: event.AccessType || event.accessType || '',
+    SessionsTime: event.SessionsTime || event.sessionsTime || '',
+    SessionsTimeOne: event.SessionsTimeOne || event.sessionsTimeOne || '',
+    SessionsTimeTwo: event.SessionsTimeTwo || event.sessionsTimeTwo || '',
+    SessionSeats: event.SessionSeats || event.sessionSeats || '',
+    SessionOneSeats: event.SessionOneSeats || event.sessionOneSeats || '',
+    SessionTwoSeats: event.SessionTwoSeats || event.sessionTwoSeats || '',
+    Description: event.Description || event.description || '',
+    EventURL: event.EventURL || event.eventURL || '', 
+    EventPrice: event.EventPrice || event.eventPrice || '',
+    Status: statusValue,
+    MultipleSeatbook: multipleSeatbookValue, // ✅ Updated value
+  })
+
+  setEditEventId(event.EventMasterID || event.Id || event.eventMasterID)
+  setEditMode(true)
+  setShowForm(true)
+
+  if (event.Image || event.image) {
+    const imageUrl = event.Image || event.image
+    setExistingImageUrl(imageUrl)
+    setEventImage(imageUrl)
+  } else {
+    setExistingImageUrl('')
+    setEventImage(null)
+  }
+}
 
   const handleDelete = (event) => {
     setEventToDelete(event)
@@ -854,7 +1033,7 @@ const Event = () => {
           {/* ✅ Date fields with min attribute set to today's date */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-              <label className="block mb-2 font-medium">Event Start Date <span className="text-red-500">*</span></label>
+              <label className="block mb-2 font-medium">Event Start Date</label>
               <input
                 type="date"
                 name="EventStartDate"
@@ -869,7 +1048,7 @@ const Event = () => {
             </div>
 
             <div>
-              <label className="block mb-2 font-medium">Event End Date <span className="text-red-500">*</span></label>
+              <label className="block mb-2 font-medium">Event End Date</label>
               <input
                 type="date"
                 name="EndStartDate"
@@ -992,6 +1171,9 @@ const Event = () => {
               )}
             </div>
           </div>
+
+          {/* ✅ Multiple Seat Booking Checkbox */}
+          
 
           {/* ✅ Session Time Fields with Time Range Input */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -1119,9 +1301,25 @@ const Event = () => {
                 <p className="mt-1 text-sm text-red-500">{errors.eventImage}</p>
               )}
             </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  name="MultipleSeatbook"
+                  checked={formData.MultipleSeatbook === 1}
+                  onChange={handleMultipleSeatbookChange}
+                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <span className="font-medium text-gray-700">Enable Multiple Seat Booking</span>
+              </label>
+              <p className="mt-1 text-xs text-gray-500">
+                If checked, users can book multiple seats at once
+              </p>
+            </div>
+          </div>
           </div>
 
-          {/* ✅ Total session seats error message */}
           {errors.totalSessionSeats && (
             <div className="p-3 border border-red-200 rounded-md bg-red-50">
               <p className="text-sm text-red-500">{errors.totalSessionSeats}</p>

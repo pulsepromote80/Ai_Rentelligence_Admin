@@ -495,7 +495,7 @@ const WithdrawalRequest = () => {
         await dispatch(
           UpIncomeWithdReqStatusAdmin({
             authLoginId: selectedRequest.authLoginId,
-            id: selectedRequest.id, // Use the correct field name
+            id: selectedRequest.id, 
             rfstatus: 1,
             remark: 'Approved by admin',
           }),
@@ -533,7 +533,7 @@ const WithdrawalRequest = () => {
         await dispatch(
           UpIncomeWithdReqStatusAdmin({
             authLoginId: selectedRequest.authLoginId,
-            id: selectedRequest.id, // Use the correct field name
+            id: selectedRequest.id, 
             rfstatus: 2,
             remark: remark,
           }),
