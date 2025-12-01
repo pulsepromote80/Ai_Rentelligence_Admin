@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   GET_SCHEDULE_BY_EID:"/Event/getScheduleByEID",
   GET_ALL_USER_EVENT_BOOKING_MASTER:"/Event/getAllUserEventbookingMaster",
   CLOSE_EVENT_MASTER: "/Event/closeEventMaster",
+  GET_CLOSED_EVENT_MASTER: "/Event/getClosedEveMaster",
   ADD_EVENT_PRE_IMAGES: "/Event/addEventPreImages",
   GET_EVENT_IMAGES_BY_EMID: "/Event/getEventImagesbyEMID",
   DELETE_EVENT_IMAGES: "/Event/deleteEventImages",

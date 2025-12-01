@@ -99,6 +99,20 @@ export const closeEventMaster = createAsyncThunk(
   }
 );
 
+export const getClosedEventMaster = createAsyncThunk(
+  'event/getClosedEventMaster',
+  async ({ fromDate, toDate, loginId }, { rejectWithValue }) => {
+    try {
+      const response = await postRequest(API_ENDPOINTS.GET_CLOSED_EVENT_MASTER, { fromDate, toDate, loginId });
+      return response;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || 'Failed to fetch closed events'
+      );
+    }
+  }
+);
+
 export const addEventPreImages = createAsyncThunk(
   'event/addEventPreImages',
   async ({ EventMasterID, formData }, { rejectWithValue }) => {
@@ -158,8 +172,6 @@ export const editScheduleById = createAsyncThunk(
   }
 );
 
-
-
 const eventSlice = createSlice({
   name: "event",
   initialState: {
@@ -170,7 +182,8 @@ const eventSlice = createSlice({
     selectedEvent: null,
     Bookingdetails: null,
     eventImages: [],
-    selectedSchedule: null
+    selectedSchedule: null,
+    closedEvents: []
   },
   reducers: {
     clearError: (state) => {
@@ -315,6 +328,18 @@ const eventSlice = createSlice({
         state.selectedSchedule = action.payload || null;
       })
       .addCase(editScheduleById.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getClosedEventMaster.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getClosedEventMaster.fulfilled, (state, action) => {
+        state.loading = false;
+        state.closedEvents = action.payload?.data || action.payload || [];
+      })
+      .addCase(getClosedEventMaster.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
