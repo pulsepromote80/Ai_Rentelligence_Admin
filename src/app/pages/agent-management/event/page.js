@@ -64,6 +64,13 @@ const Event = () => {
     { value: 'Hybrid Event', label: 'Hybrid Event' },
     { value: 'Online Event', label: 'Online Event' },
     { value: 'Offline Event', label: 'Offline Event' },
+    { value: 'Online Webinar', label: 'Online Webinar' },
+    { value: 'Offline Webinar ', label: 'Offline Webinar ' },
+    { value: 'Online Conference', label: 'Online Conference' },
+    { value: 'Offline Conference', label: 'Offline Conference' },
+    { value: 'Online Workshop ', label: 'Online Workshop' },
+    { value: 'Offline Workshop', label: 'Offline Workshop' },
+    { value: 'Award Ceremony', label: 'Award Ceremony' },
   ]
 
  

@@ -1,7 +1,8 @@
+
 'use client'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { closeEventMaster } from '@/app/redux/eventSlice'
+import { closeEventMaster, getEventById } from '@/app/redux/eventSlice'
 import Table from '@/app/common/datatable'
 import { Columns } from '@/app/constants/event-constant'
 import Loading from '@/app/common/loading'
@@ -12,16 +13,51 @@ import { toast } from 'react-toastify'
 const ClosedEvents = () => {
   const dispatch = useDispatch()
   const { closeData, loading, eventImages } = useSelector((state) => state.event)
-  console.log("eventImages----->", eventImages);
 
   const [showUpload, setShowUpload] = useState(false)
   const [selectedEvent, setSelectedEvent] = useState(null)
-  //console.log("selected", selectedEvent);
   const [images, setImages] = useState([])
   const [videos, setVideos] = useState([])
   const [imagePreviews, setImagePreviews] = useState([])
   const [videoPreviews, setVideoPreviews] = useState([])
   const [imageErrors, setImageErrors] = useState([])
+  const [showScheduleModal, setShowScheduleModal] = useState(false)
+  const [eventSchedules, setEventSchedules] = useState([])
+  const [isLoadingSchedules, setIsLoadingSchedules] = useState(false)
+
+  const handleSchedule = (row) => {
+    setSelectedEvent(row)
+    setShowScheduleModal(true)
+    setIsLoadingSchedules(true)
+    setEventSchedules([])
+
+    if (row.EventMasterID) {
+      dispatch(getEventById(row.EventMasterID))
+        .unwrap()
+        .then((res) => {
+          const userEventList = res?.data?.userEvent
+
+          if (Array.isArray(userEventList) && userEventList.length > 0) {
+            setEventSchedules(userEventList)
+            toast.success(`Schedules fetched successfully!`)
+          } else {
+            setEventSchedules([])
+            toast.info("No schedules found for this event")
+          }
+        })
+        .catch((err) => {
+          console.error("Fetch Error:", err)
+          toast.error(err?.message || "Failed to fetch event schedules")
+          setEventSchedules([])
+        })
+        .finally(() => {
+          setIsLoadingSchedules(false)
+        })
+    } else {
+      toast.error("Event ID not found")
+      setIsLoadingSchedules(false)
+    }
+  }
 
   const handleActionClick = (row) => {
     setSelectedEvent(row)
@@ -70,41 +106,191 @@ const ClosedEvents = () => {
     }))
   }, [closeData?.data?.event])
 
-  const columns = useMemo(() => [
-    {
-      key: 'action',
-      label: 'Action',
-      render: (value, row) => (
-        <button
-          className="flex items-center gap-2 text-blue-500 hover:text-blue-700"
-          title="Add"
-          onClick={() => handleActionClick(row)}
-        >
-          {/* SVG Icon */}
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-          </svg>
+  const customColumns = useMemo(() => {
+    const filteredColumns = Columns.filter(col => col.key !== 'schedule')
 
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M21 5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5zm-11 4a2 2 0 110 4 2 2 0 010-4zm10 10H4v-2l3-3 2 2 5-5 7 7v1z" />
-          </svg>
-
-          {/* Video icon (SVG) */}
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M17 10.5V7a2 2 0 00-2-2H5A2 2 0 003 7v10a2 2 0 002 2h10a2 2 0 002-2v-3.5l4 4v-11l-4 4z" />
-          </svg>
-        </button>
-
-      )
-    },
-    ...Columns
-  ], [])
+    return [
+      {
+        key: 'action',
+        label: 'Action',
+        render: (value, row) => (
+          <button
+            className="flex items-center gap-2 text-blue-500 hover:text-blue-700"
+            title="Add Media"
+            onClick={() => handleActionClick(row)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M21 5a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5zm-11 4a2 2 0 110 4 2 2 0 010-4zm10 10H4v-2l3-3 2 2 5-5 7 7v1z" />
+            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17 10.5V7a2 2 0 00-2-2H5A2 2 0 003 7v10a2 2 0 002 2h10a2 2 0 002-2v-3.5l4 4v-11l-4 4z" />
+            </svg>
+          </button>
+        )
+      },
+      // Add schedule column with the handleSchedule function
+      {
+        key: 'schedule',
+        label: 'Event Schedule',
+        render: (value, row) => (
+          <button
+            className="p-2 text-blue-500 transition-colors rounded-full hover:text-blue-700 hover:bg-blue-50"
+            onClick={() => handleSchedule(row)}
+            title="View Event Schedule"
+          >
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+          </button>
+        )
+      },
+      ...filteredColumns
+    ]
+  }, [])
 
   return (
     <div className="max-w-full mx-auto bg-white rounded-lg">
+      {showScheduleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+          <div className="relative w-full max-w-4xl mx-auto mt-20 bg-white rounded-lg shadow-lg">
+            <div className="flex items-center justify-between p-4 border-b md:p-6">
+              <div className="pr-4">
+                <h3 className="text-lg font-semibold text-gray-800 md:text-xl">
+                  Event Schedule Details
+                </h3>
+                <p className="text-xs text-gray-600 md:text-sm">
+                  Event: {selectedEvent?.Tittle}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowScheduleModal(false)}
+                className="flex-shrink-0 p-2 text-gray-500 transition-colors rounded-full hover:text-gray-700 hover:bg-gray-100"
+                aria-label="Close modal"
+              >
+                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-4 md:p-6 max-h-[70vh] md:max-h-[60vh] overflow-y-auto">
+              {isLoadingSchedules ? (
+                <div className="flex flex-col items-center justify-center py-8 md:py-12">
+                  <div className="w-10 h-10 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+                  <p className="mt-4 text-sm text-gray-600 md:text-base">Loading event schedules...</p>
+                </div>
+              ) : eventSchedules.length > 0 ? (
+                <div className="overflow-x-auto ">
+                  <div className="block md:hidden">
+                    {eventSchedules.map((schedule, index) => (
+                      <div key={index} className="p-4 mb-4 border border-gray-200 rounded-lg">
+                        <div className="flex items-start justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-500">S.No.</span>
+                          <span className="font-medium">{index + 1}</span>
+                        </div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-500">Title</span>
+                          <span className="font-medium text-right">{schedule.Title}</span>
+                        </div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-500">Time</span>
+                          <span>{schedule.Time}</span>
+                        </div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-500">Created Date</span>
+                          <span className="text-sm">{schedule.CreatedDate}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-500">Status</span>
+                          <span className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${schedule.ScheduleStatus?.toLowerCase() === 'open'
+                              ? 'bg-green-100 text-green-800'
+                              : schedule.ScheduleStatus?.toLowerCase() === 'closed'
+                                ? 'bg-gray-100 text-gray-800'
+                                : 'bg-yellow-100 text-yellow-800'
+                            }`}>
+                            {schedule.ScheduleStatus}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Desktop Table View */}
+                  <div className="hidden md:block">
+                    <table className="w-full border border-gray-300 rounded-lg">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">S.No.</th>
+                          <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">Title</th>
+                          <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">Time</th>
+                          <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">Created Date</th>
+                          <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {eventSchedules.map((schedule, index) => (
+                          <tr key={index} className="transition-colors hover:bg-gray-50">
+                            <td className="px-4 py-3 text-sm border">{index + 1}</td>
+                            <td className="px-4 py-3 text-sm font-medium border">{schedule.Title}</td>
+                            <td className="px-4 py-3 text-sm border">{schedule.Time}</td>
+                            <td className="px-4 py-3 text-sm border">{schedule.CreatedDate}</td>
+                            <td className="px-4 py-3 text-sm border">
+                              <span className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${schedule.ScheduleStatus?.toLowerCase() === 'open'
+                                  ? 'bg-green-100 text-green-800'
+                                  : schedule.ScheduleStatus?.toLowerCase() === 'closed'
+                                    ? 'bg-gray-100 text-gray-800'
+                                    : 'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                {schedule.ScheduleStatus}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-8 text-center md:py-12">
+                  <div className="inline-flex items-center justify-center w-12 h-12 mb-3 text-gray-400 bg-gray-100 rounded-full md:w-16 md:h-16">
+                    <svg className="w-6 h-6 md:w-8 md:h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </div>
+                  <h4 className="mb-2 text-base font-medium text-gray-700 md:text-lg">No Schedules Found</h4>
+                  <p className="text-sm text-gray-500 md:text-base">There are no schedules available for this event.</p>
+                </div>
+              )}
+            </div>
+            <div className="flex justify-end p-4 border-t md:p-6">
+              <button
+                onClick={() => setShowScheduleModal(false)}
+                className="w-full px-4 py-2 text-sm text-white transition-colors bg-blue-600 rounded-lg hover:bg-blue-700 md:w-auto md:px-6 md:py-2 md:text-base"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showUpload && selectedEvent ? (
         <div className="p-4">
-          <h3 className="text-lg font-semibold mb-4">Upload Media for Event: {selectedEvent.Tittle}</h3>
+          <h3 className="mb-4 text-lg font-semibold">Upload Media for Event: {selectedEvent.Tittle}</h3>
           <div className="mb-4">
             <label className="block mb-2 font-medium">Select Images</label>
             <input
@@ -115,17 +301,15 @@ const ClosedEvents = () => {
                 const selectedImages = Array.from(e.target.files)
                 const errors = []
 
-                // Validate maximum number of files
                 if (selectedImages.length > 10) {
                   errors.push('You can select a maximum of 10 images.')
                 }
 
-                // Validate file types and sizes
                 selectedImages.forEach((file, index) => {
                   if (!file.type.startsWith('image/')) {
                     errors.push(`File ${index + 1}: Only image files are allowed.`)
                   }
-                  if (file.size > 5 * 1024 * 1024) { // 5MB
+                  if (file.size > 5 * 1024 * 1024) {
                     errors.push(`File ${index + 1}: File size must be less than 5MB.`)
                   }
                 })
@@ -146,7 +330,7 @@ const ClosedEvents = () => {
             {imageErrors.length > 0 && (
               <div className="mt-2">
                 {imageErrors.map((error, index) => (
-                  <p key={index} className="text-red-500 text-sm">{error}</p>
+                  <p key={index} className="text-sm text-red-500">{error}</p>
                 ))}
               </div>
             )}
@@ -169,11 +353,11 @@ const ClosedEvents = () => {
 
           {imagePreviews.length > 0 && (
             <div className="mb-8">
-              <h4 className="font-medium mb-2">Image Previews:</h4>
+              <h4 className="mb-2 font-medium">Image Previews:</h4>
               <div className="grid grid-cols-4 gap-2">
                 {imagePreviews.map((url, index) => (
                   <div key={index} className="relative">
-                    <img src={url} alt={`Image Preview ${index}`} className="w-full h-20 object-cover rounded" />
+                    <img src={url} alt={`Image Preview ${index}`} className="object-cover w-full h-20 rounded" />
                   </div>
                 ))}
               </div>
@@ -181,10 +365,10 @@ const ClosedEvents = () => {
           )}
           {videoPreviews.length > 0 && (
             <div className="mb-8">
-              <h4 className="font-medium mb-2">Video Previews:</h4>
+              <h4 className="mb-2 font-medium">Video Previews:</h4>
               <div className="grid grid-cols-4 gap-2">
                 {videoPreviews.map((url, index) => (
-                  <video key={index} src={url} className="w-full h-20 object-cover rounded" controls />
+                  <video key={index} src={url} className="object-cover w-full h-20 rounded" controls />
                 ))}
               </div>
             </div>
@@ -200,7 +384,7 @@ const ClosedEvents = () => {
                 setImagePreviews([])
                 setVideoPreviews([])
               }}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
             >
               Submit
             </button>
@@ -212,7 +396,7 @@ const ClosedEvents = () => {
                 setImagePreviews([])
                 setVideoPreviews([])
               }}
-              className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+              className="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600"
               disabled={loading}
             >
               Cancel
@@ -220,11 +404,11 @@ const ClosedEvents = () => {
           </div>
           {eventImages?.event?.filter(item => item.EventImages).length > 0 && (
             <div className="mb-4">
-              <h4 className="font-medium mb-2">Existing Images:</h4>
+              <h4 className="mb-2 font-medium">Existing Images:</h4>
               <div className="grid grid-cols-4 gap-8">
                 {eventImages?.event?.filter(item => item.EventImages).map((image, index) => (
                   <div key={index} className="relative">
-                    <img src={image.EventImages} alt={`Existing Image ${index}`} className="w-full h-40 object-cover rounded" />
+                    <img src={image.EventImages} alt={`Existing Image ${index}`} className="object-cover w-full h-40 rounded" />
                     <button
                       onClick={async () => {
                         try {
@@ -235,7 +419,7 @@ const ClosedEvents = () => {
                           toast.error(`Delete failed: ${error}`);
                         }
                       }}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                      className="absolute flex items-center justify-center w-5 h-5 text-xs text-white bg-red-500 rounded-full top-1 right-1 hover:bg-red-600"
                       title="Delete image"
                     >
                       ×
@@ -248,11 +432,11 @@ const ClosedEvents = () => {
 
           {eventImages?.event?.filter(item => item.EventVideos).length > 0 && (
             <div className="mb-8">
-              <h4 className="font-medium mb-2">Existing Videos:</h4>
+              <h4 className="mb-2 font-medium">Existing Videos:</h4>
               <div className="grid grid-cols-4 gap-8">
                 {eventImages?.event?.filter(item => item.EventVideos).map((video, index) => (
                   <div key={index} className="relative">
-                    <video src={video?.EventVideos} className="w-full h-40 object-cover rounded" controls />
+                    <video src={video?.EventVideos} className="object-cover w-full h-40 rounded" controls />
                     <button
                       onClick={async () => {
                         try {
@@ -263,7 +447,7 @@ const ClosedEvents = () => {
                           toast.error(`Delete failed: ${error}`);
                         }
                       }}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600"
+                      className="absolute flex items-center justify-center w-5 h-5 text-xs text-white bg-red-500 rounded-full top-1 right-1 hover:bg-red-600"
                       title="Delete video"
                     >
                       ×
@@ -281,7 +465,7 @@ const ClosedEvents = () => {
 
           {!loading && (
             <Table
-              columns={columns}
+              columns={customColumns}
               data={tableData}
               loading={loading}
               title={'Closed Events'}
