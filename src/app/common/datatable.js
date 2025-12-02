@@ -4,6 +4,7 @@ import ImagePopup from '../pages/image-popup/page'
 import Link from 'next/link'
 import Loading from '@/app/common/loading'
 import { MdEdit, MdDelete } from 'react-icons/md'
+import { FiSearch } from 'react-icons/fi'
 
 const Table = ({
   columns,
@@ -67,13 +68,18 @@ const Table = ({
             </h2>
           )}
         </div>
-        <input
-          type="text"
-          placeholder="Search..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full p-2 border rounded-md sm:w-64 border-customBlue focus:outline-none focus:border-customBlue"
-        />
+        <div className="flex">
+          <div className="relative">
+            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border rounded-l-md sm:w-64 border-customBlue focus:outline-none focus:border-customBlue"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Desktop Table View */}
@@ -305,6 +311,19 @@ const renderCell = (col, row, idx) => {
           {'*'.repeat(value?.length || 0)}
         </span>
       </div>
+    )
+  }
+  if (col.key === 'Status') {
+    return (
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+          value?.toLowerCase() === 'closed'
+            ? 'bg-red-500 text-white'
+            : 'bg-gray-200 text-gray-800'
+        }`}
+      >
+        {value}
+      </span>
     )
   }
   if (col.render) return col.render(value, row)
