@@ -70,13 +70,13 @@ const Table = ({
         </div>
         <div className="flex">
           <div className="relative">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <FiSearch className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
             <input
               type="text"
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-l-md sm:w-64 border-customBlue focus:outline-none focus:border-customBlue"
+              className="w-full py-2 pl-10 pr-4 border rounded-l-md sm:w-64 border-customBlue focus:outline-none focus:border-customBlue"
             />
           </div>
         </div>
@@ -90,11 +90,11 @@ const Table = ({
     </div>
   ) : (
     <>
-      <table className="min-w-full border border-gray-200 shadow-lg rounded-xl overflow-hidden">
+      <table className="min-w-full overflow-hidden border border-gray-200 shadow-lg rounded-xl">
         <thead>
           <tr className="bg-blue-600">
             {(onEdit || onDelete) && (
-              <th className="px-6 py-3 text-white text-center border border-gray-200">
+              <th className="px-6 py-3 text-center text-white border border-gray-200">
                 Actions
               </th>
             )}
@@ -256,7 +256,6 @@ const Table = ({
   )
 }
 
-
 const renderCell = (col, row, idx) => {
   const renderCategoryName = (value) => {
     if (!value) return '';
@@ -267,7 +266,8 @@ const renderCell = (col, row, idx) => {
     );
   };
 
-  const value = row[col.key]
+  const value = row[col.key];
+  
   if (col.key === 'S No') {
     return idx + 1;
   }
@@ -302,35 +302,41 @@ const renderCell = (col, row, idx) => {
     )
   }
   if (col.key === 'password') {
+    const passValue = value || '';
+    const passString = typeof passValue === 'string' ? passValue : String(passValue);
+    
     return (
       <div className="relative flex items-center justify-center w-full h-full group">
         <span className="absolute transition-opacity duration-200 opacity-0 group-hover:opacity-100">
-          {value}
+          {passString}
         </span>
         <span className="transition-opacity duration-200 opacity-100 group-hover:opacity-0">
-          {'*'.repeat(value?.length || 0)}
+          {'*'.repeat(passString.length)}
         </span>
       </div>
     )
   }
   if (col.key === 'Status') {
+    const statusValue = value || '';
+    const statusString = typeof statusValue === 'string' ? statusValue : String(statusValue);
+    
     return (
       <span
         className={`px-2 py-1 rounded-full text-xs font-semibold ${
-          value?.toLowerCase() === 'closed'
+          statusString.toLowerCase() === 'closed'
             ? 'bg-red-500 text-white'
             : 'bg-gray-200 text-gray-800'
         }`}
       >
-        {value}
+        {statusString}
       </span>
     )
   }
   if (col.render) return col.render(value, row)
-  return value
+  
+  return value !== null && value !== undefined ? String(value) : '';
 }
 
-// Pagination Component
 const Pagination = ({
   currentPage,
   rowsPerPage,

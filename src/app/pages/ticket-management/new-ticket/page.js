@@ -18,7 +18,6 @@ const NewTicket = () => {
   const dispatch = useDispatch()
   const { tickets, error, ticketDetails, userReplyCount } = useSelector((state) => state.ticket)
 
-  console.log("ReplyCount----->", userReplyCount);
 
   const [showReplyBox, setShowReplyBox] = useState(false)
   const [replyMessage, setReplyMessage] = useState('')
@@ -92,7 +91,7 @@ const NewTicket = () => {
                     Reply
                   </button>
                   {userReplyCount[row.TicketId] > 0 && (
-                    <span className="absolute -top-3 right-5 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute flex items-center justify-center w-5 h-5 text-xs text-white bg-red-500 rounded-full -top-3 right-5">
                       {userReplyCount[row.TicketId]}
                     </span>
                   )}
@@ -214,7 +213,7 @@ const NewTicket = () => {
                     dispatch(clearTicketDetails())
                     setShowPopup(false)
                   }}
-                  className="text-gray-500 hover:text-red-500 text-xl leading-none font-bold"
+                  className="text-xl font-bold leading-none text-gray-500 hover:text-red-500"
                 >
                   &times;
                 </button>
@@ -229,7 +228,7 @@ const NewTicket = () => {
                       {ticket.UserID || '-'}
                     </p>
                   </div>
-                  <div className=" flex flex-col items-end">
+                  <div className="flex flex-col items-end ">
                     <p className="text-[10px] text-gray-500">Date</p>
                     <p className="text-xs font-semibold text-gray-800">
                       {ticket.CreatedDate}
@@ -242,7 +241,7 @@ const NewTicket = () => {
                       {ticket.UserName || '-'}
                     </p>
                   </div>
-                  <div className=" flex flex-col items-end">
+                  <div className="flex flex-col items-end ">
                     <p className="text-[10px] text-gray-500">Type</p>
                     <p className="text-xs font-semibold text-gray-800">
                       {ticket.TicketType || '-'}
@@ -255,7 +254,7 @@ const NewTicket = () => {
                       {ticket.Subject || '-'}
                     </p>
                   </div>
-                  <div className=" flex flex-col items-end">
+                  <div className="flex flex-col items-end ">
                     <p className="text-[10px] text-gray-500">Status</p>
                     <p
                       className={`flex items-center gap-1 text-xs font-semibold ${ticket.StatusType === 'Open' ? 'text-green-600' : 'text-red-600'}`}
@@ -283,7 +282,7 @@ const NewTicket = () => {
 
               {/* Conversation Section */}
               <div className="flex-1 px-3 pb-2">
-                <h3 className="font-semibold text-gray-700 text-xs mb-2">
+                <h3 className="mb-2 text-xs font-semibold text-gray-700">
                   Conversation
                 </h3>
                 <div className="h-[28vh] overflow-y-auto space-y-2 p-2 bg-gray-100 dark:bg-[#0b141a] rounded-md scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600">
@@ -371,10 +370,10 @@ const NewTicket = () => {
                 </div>
 
                 {closeError && (
-                  <div className="mt-1 text-red-500 text-xs">{closeError}</div>
+                  <div className="mt-1 text-xs text-red-500">{closeError}</div>
                 )}
                 {closeSuccess && (
-                  <div className="mt-1 text-green-600 text-xs">
+                  <div className="mt-1 text-xs text-green-600">
                     {closeSuccess}
                   </div>
                 )}
