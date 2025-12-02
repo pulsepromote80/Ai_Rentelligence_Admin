@@ -1,4 +1,0 @@
-- [x] Modify datatable.js to display serial numbers for 'S No' column
-- [x] Move renderCell and renderCategoryName inside Table component
-- [x] Update renderCell to accept idx and handle 'S No' as idx + 1
-- [x] Update renderCell calls in desktop and mobile views to pass idx
