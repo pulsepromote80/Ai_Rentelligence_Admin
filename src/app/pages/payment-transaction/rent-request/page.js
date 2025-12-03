@@ -1,3 +1,4 @@
+
 'use client'
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -490,7 +491,8 @@ const RentRequest = () => {
             transHash: txHash,
           }),
         )
-         setProcessedRequests(prev => new Set([...prev, row.AuthLogin]));
+        // ✅ FIXED: Use row.id instead of row.AuthLogin
+        setProcessedRequests(prev => new Set([...prev, row.id]));
         toast.success('USDT Transaction Approved Successfully!')
       }
     } catch (error) {
@@ -522,7 +524,8 @@ const RentRequest = () => {
                     remark: 'Approved by admin',
                 }),
             )
-            setProcessedRequests(prev => new Set([...prev, selectedRequest.authLoginId]));
+            // ✅ FIXED: Use selectedRequest.id instead of selectedRequest.authLoginId
+            setProcessedRequests(prev => new Set([...prev, selectedRequest.id]));
             setApprovePopupOpen(false)
             setSelectedRequest({ authLoginId: null, id: null })
             toast.success('Approved Successfully!', {
@@ -559,7 +562,8 @@ const RentRequest = () => {
                     remark: remark,
                 }),
             )
-            setProcessedRequests(prev => new Set([...prev, selectedRequest.authLoginId]));
+            // ✅ FIXED: Use selectedRequest.id instead of selectedRequest.authLoginId
+            setProcessedRequests(prev => new Set([...prev, selectedRequest.id]));
             setRejectPopupOpen(false)
             setSelectedRequest({ authLoginId: null, id: null })
             setRemark('')
@@ -889,19 +893,19 @@ const RentRequest = () => {
                         <td className="px-4 py-3 font-medium border td-wrap-text">
                             <button
                               className={`px-4 py-3 font-medium rounded-full td-wrap-text ${
-                                processedRequests.has(row.AuthLogin)
+                                processedRequests.has(row.id)
                                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                   : 'bg-green-100 hover:bg-green-200'
                               }`}
                               onClick={() => handleApproveUSDTClick(row)}
                               disabled={
-                                processedRequests.has(row.AuthLogin) ||
+                                processedRequests.has(row.id) ||
                                 !account ||
                                 chainId !== BSC_CHAIN_ID ||
                                 isSending
                               }
                               title={
-                                processedRequests.has(row.AuthLogin)
+                                processedRequests.has(row.id)
                                   ? 'Already processed'
                                   : !account
                                     ? 'Connect wallet first'
@@ -910,7 +914,7 @@ const RentRequest = () => {
                                       : ''
                               }
                             >
-                              {processedRequests.has(row.AuthLogin) 
+                              {processedRequests.has(row.id) 
                                 ? 'Approved USDT' 
                                 : 'Approve USDT'}
                             </button>
@@ -919,15 +923,15 @@ const RentRequest = () => {
                             <div className="flex items-center justify-center gap-1">
                                 <button
                                   className={`px-4 py-3 rounded-full ${
-                                    processedRequests.has(row.AuthLogin)
+                                    processedRequests.has(row.id)
                                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                       : 'text-blue-500 bg-green-100 hover:text-blue-700 hover:bg-green-200'
                                   }`}
                                   onClick={() => handleApproveClick(row.AuthLogin, row.id)}
-                                  disabled={processedRequests.has(row.AuthLogin)}
-                                  title={processedRequests.has(row.AuthLogin) ? 'Already processed' : ''}
+                                  disabled={processedRequests.has(row.id)}
+                                  title={processedRequests.has(row.id) ? 'Already processed' : ''}
                                 >
-                                  {processedRequests.has(row.AuthLogin) ? 'Approved' : 'Approve'}
+                                  {processedRequests.has(row.id) ? 'Approved' : 'Approve'}
                                 </button>
                             </div>
                           </td>
@@ -975,15 +979,15 @@ const RentRequest = () => {
                         <td className="px-4 py-3 font-medium border td-wrap-text">
                           <button
                             className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                              processedRequests.has(row.AuthLogin)
+                              processedRequests.has(row.id)
                                 ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                 : 'bg-red-100 hover:bg-red-200'
                             }`}
                             onClick={() => handleRejectClick(row.AuthLogin, row.id)}
-                            disabled={processedRequests.has(row.AuthLogin)}
-                            title={processedRequests.has(row.AuthLogin) ? 'Already processed' : 'Reject request'}
+                            disabled={processedRequests.has(row.id)}
+                            title={processedRequests.has(row.id) ? 'Already processed' : 'Reject request'}
                           >
-                            {processedRequests.has(row.AuthLogin) ? 'Rejected' : 'Reject'}
+                            {processedRequests.has(row.id) ? 'Rejected' : 'Reject'}
                           </button>
                         </td>
                       </tr>

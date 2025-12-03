@@ -330,7 +330,7 @@ const renderCell = (col, row, idx) => {
       >
         {statusString}
       </span>
-    )
+    ) 
   }
   if (col.render) return col.render(value, row)
   

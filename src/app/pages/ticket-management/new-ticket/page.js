@@ -82,7 +82,7 @@ const NewTicket = () => {
                   <button
                     className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none"
                     onClick={(e) => {
-                      e.stopPropagation() // Prevent row click
+                      e.stopPropagation() 
                       dispatch(updateUserReplyCount({ URID: row.URID, TicketId: row.TicketId }))
                       dispatch(getAllTicketByTicketId(row.TicketId))
                       setShowPopup(true)

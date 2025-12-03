@@ -15,6 +15,6 @@ export const Columns = [
     { id: 'UserID', label: 'User ID' },
     { id: 'UserName', label: 'Name' },
     { id: 'Subject', label: 'Subject' },
-    { id: 'Status', label: 'Status' },
+    { id: 'StatusType', label: 'Status' },
     { id: 'action', label: 'Action' },
 ];
