@@ -187,11 +187,11 @@ const WithdrawalRequest = () => {
   }
 
   const totalRelease =
-    hasSearched && withdrawRequestData?.unApWithIncome? withdrawRequestData.unApWithIncome.reduce(
+    hasSearched && withdrawRequestData?.unApWithIncome ? withdrawRequestData.unApWithIncome.reduce(
       (sum, txn) => sum + (Number(txn.Release) || 0),
       0
-    ) 
-    : 0
+    )
+      : 0
 
   // Switch to BSC network
   const switchToBSCNetwork = async () => {
@@ -466,9 +466,9 @@ const WithdrawalRequest = () => {
             transHash: txHash,
           }),
         )
-        setProcessedRequests(prev => new Set([...prev, row.AuthLogin]));
+        setProcessedRequests(prev => new Set([...prev, row.Id]));
         toast.success('USDT Transaction Approved Successfully!')
-        
+
       }
     } catch (error) {
       console.error('Error approving USDT:', error)
@@ -482,25 +482,24 @@ const WithdrawalRequest = () => {
     }
   }
 
-  // Fixed: Properly set selected request with both authLoginId and id
   const handleRejectClick = (authLoginId, id) => {
-    setSelectedRequest({ authLoginId, id })
-    setRejectPopupOpen(true)
-  }
+    setSelectedRequest({ authLoginId, id });
+    setRejectPopupOpen(true);
+  };
 
   // Fixed: Include id in the approve request - CORRECTED FIELD NAME
   const handleApprove = async () => {
-    if (selectedRequest.authLoginId && selectedRequest.id) {
+    if (selectedRequest.id) {
       try {
         await dispatch(
           UpIncomeWithdReqStatusAdmin({
             authLoginId: selectedRequest.authLoginId,
-            id: selectedRequest.id, 
+            id: selectedRequest.id,
             rfstatus: 1,
             remark: 'Approved by admin',
           }),
         )
-        setProcessedRequests(prev => new Set([...prev, selectedRequest.authLoginId]));
+        setProcessedRequests(prev => new Set([...prev, selectedRequest.id]));
         setApprovePopupOpen(false)
         setSelectedRequest({ authLoginId: null, id: null })
         toast.success('Approved Successfully!', {
@@ -511,7 +510,7 @@ const WithdrawalRequest = () => {
           pauseOnHover: true,
           draggable: true,
         })
-        
+
       } catch (error) {
         console.error('Approve error:', error)
         toast.error('Failed to approve request', {
@@ -528,20 +527,24 @@ const WithdrawalRequest = () => {
 
   // Fixed: Include id in the reject request - CORRECTED FIELD NAME
   const handleReject = async () => {
-    if (selectedRequest.authLoginId && selectedRequest.id && remark.trim()) {
+    // Use lowercase 'id' consistently
+    if (selectedRequest?.id && remark?.trim()) {
       try {
         await dispatch(
           UpIncomeWithdReqStatusAdmin({
             authLoginId: selectedRequest.authLoginId,
-            id: selectedRequest.id, 
+            id: selectedRequest.id,
             rfstatus: 2,
-            remark: remark,
+            remark: remark.trim(),
           }),
-        )
-        setProcessedRequests(prev => new Set([...prev, selectedRequest.authLoginId]));
-        setRejectPopupOpen(false)
-        setSelectedRequest({ authLoginId: null, id: null })
-        setRemark('')
+        );
+
+        // Use lowercase 'id' here too
+        setProcessedRequests(prev => new Set([...prev, selectedRequest.id]));
+        setRejectPopupOpen(false);
+        setSelectedRequest({ authLoginId: null, id: null });
+        setRemark('');
+
         toast.success('Rejected Successfully!', {
           position: 'top-right',
           autoClose: 3000,
@@ -549,23 +552,21 @@ const WithdrawalRequest = () => {
           closeOnClick: true,
           pauseOnHover: true,
           draggable: true,
-        })
-        
+        });
+
       } catch (error) {
-        console.error('Reject error:', error)
-        toast.error('Failed to reject request', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        })
+        console.error('Reject error:', error);
+        toast.error('Failed to reject request');
       }
     } else {
-      toast.error('Please enter a remark for rejection')
+      // Better error messages
+      if (!selectedRequest?.id) {
+        toast.error('No request selected. Please try again.');
+      } else if (!remark?.trim()) {
+        toast.error('Please enter a remark for rejection');
+      }
     }
-  }
+  };
 
   const handleCancel = () => {
     setApprovePopupOpen(false)
@@ -664,11 +665,10 @@ const WithdrawalRequest = () => {
             <button
               onClick={connectWallet}
               disabled={isConnecting}
-              className={`px-4 py-2 text-sm font-semibold text-white rounded-xl shadow transition ${
-                isConnecting
+              className={`px-4 py-2 text-sm font-semibold text-white rounded-xl shadow transition ${isConnecting
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700'
-              }`}
+                }`}
             >
               {isConnecting ? 'Connecting…' : 'Connect to BSC'}
             </button>
@@ -865,20 +865,19 @@ const WithdrawalRequest = () => {
 
                           <td className="px-4 py-3 font-medium border td-wrap-text">
                             <button
-                              className={`px-4 py-3 font-medium rounded-full td-wrap-text ${
-                                processedRequests.has(row.AuthLogin)
+                              className={`px-4 py-3 font-medium rounded-full td-wrap-text ${processedRequests.has(row.Id)
                                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                   : 'bg-green-100 hover:bg-green-200'
-                              }`}
+                                }`}
                               onClick={() => handleApproveUSDTClick(row)}
                               disabled={
-                                processedRequests.has(row.AuthLogin) ||
+                                processedRequests.has(row.Id) ||
                                 !account ||
                                 chainId !== BSC_CHAIN_ID ||
                                 isSending
                               }
                               title={
-                                processedRequests.has(row.AuthLogin)
+                                processedRequests.has(row.Id)
                                   ? 'Already processed'
                                   : !account
                                     ? 'Connect wallet first'
@@ -887,27 +886,23 @@ const WithdrawalRequest = () => {
                                       : ''
                               }
                             >
-                              {processedRequests.has(row.AuthLogin) 
-                                ? 'Approved USDT' 
+                              {processedRequests.has(row.Id)
+                                ? 'Approved USDT'
                                 : 'Approve USDT'}
                             </button>
                           </td>
-
                           <td className="px-4 py-3 font-medium border td-wrap-text">
                             <div className="flex items-center justify-center gap-1">
                               <button
-                                className={`px-4 py-3 rounded-full ${
-                                  processedRequests.has(row.AuthLogin)
+                                className={`px-4 py-3 rounded-full ${processedRequests.has(row.Id)
                                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                     : 'text-blue-500 bg-green-100 hover:text-blue-700 hover:bg-green-200'
-                                }`}
-                                onClick={() =>
-                                  handleApproveClick(row.AuthLogin, row.Id) // CORRECTED: Changed from row.ID to row.Id
-                                }
-                                disabled={processedRequests.has(row.AuthLogin)}
-                                title={processedRequests.has(row.AuthLogin) ? 'Already processed' : ''}
+                                  }`}
+                                onClick={() => handleApproveClick(row.AuthLogin, row.Id)}
+                                disabled={processedRequests.has(row.Id)}
+                                title={processedRequests.has(row.Id) ? 'Already processed' : ''}
                               >
-                                {processedRequests.has(row.AuthLogin) ? 'Approved' : 'Approve'}
+                                {processedRequests.has(row.Id) ? 'Approved' : 'Approve'}
                               </button>
                             </div>
                           </td>
@@ -960,16 +955,15 @@ const WithdrawalRequest = () => {
                           </td>
                           <td className="px-4 py-3 border td-wrap-text">
                             <button
-                              className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                                processedRequests.has(row.AuthLogin)
+                              className={`px-3 py-1 text-xs font-semibold rounded-full ${processedRequests.has(row.Id)
                                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                   : 'bg-red-100 hover:bg-red-200'
-                              }`}
-                              onClick={() => handleRejectClick(row.AuthLogin, row.Id)} // CORRECTED: Changed from row.ID to row.Id
-                              disabled={processedRequests.has(row.AuthLogin)}
-                              title={processedRequests.has(row.AuthLogin) ? 'Already processed' : 'Reject request'}
+                                }`}
+                              onClick={() => handleRejectClick(row.AuthLogin, row.Id)}
+                              disabled={processedRequests.has(row.Id)}
+                              title={processedRequests.has(row.Id) ? 'Already processed' : 'Reject request'}
                             >
-                              {processedRequests.has(row.AuthLogin) ? 'Rejected' : 'Reject'}
+                              {processedRequests.has(row.Id) ? 'Rejected' : 'Reject'}
                             </button>
                           </td>
                         </tr>
@@ -1078,14 +1072,15 @@ const WithdrawalRequest = () => {
         </div>
       )}
 
-      {/* Reject Popup Modal */}
       {rejectPopupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
           <div className="w-full max-w-sm p-6 bg-white rounded-lg shadow-lg">
+
             <div className="mb-4 text-lg font-semibold text-gray-800">
               Do you want to reject AuthLoginID{' '}
-              <span className="text-blue-600">{selectedRequest.authLoginId}</span>?
+              <span className="text-blue-600">{selectedRequest?.authLoginId || 'N/A'}</span>?
             </div>
+
             <div className="mb-4">
               <label className="block mb-2 text-sm font-medium text-gray-700">
                 Remark (Required)
@@ -1099,10 +1094,12 @@ const WithdrawalRequest = () => {
                 required
               />
             </div>
+
             <div className="flex justify-end gap-4">
               <button
                 onClick={handleReject}
-                className={`px-4 py-2 font-semibold text-white rounded ${!remark.trim() ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'}`}
+                className={`px-4 py-2 font-semibold text-white rounded ${!remark.trim() ? 'bg-gray-400 cursor-not-allowed' : 'bg-red-600 hover:bg-red-700'
+                  }`}
                 disabled={!remark.trim()}
               >
                 Submit
