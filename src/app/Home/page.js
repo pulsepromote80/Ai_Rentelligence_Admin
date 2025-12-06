@@ -7,7 +7,6 @@ import { FaRobot,FaArrowRight } from "react-icons/fa"
 export default function Home() {
   return (
     <div className="flex items-center justify-center p-6 bg-gradient-to-b from-indigo-50 to-purple-50">
-
       {/* Card with hover animation */}
       <div className="flex flex-col items-center w-full max-w-3xl gap-6 p-8 text-center transition-all duration-500 transform bg-white shadow-2xl rounded-3xl hover:scale-105 hover:shadow-3xl animate-fadeIn ">
         {/* Robot Icon with bounce animation */}
