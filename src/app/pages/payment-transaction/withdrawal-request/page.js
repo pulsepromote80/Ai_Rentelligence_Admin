@@ -756,21 +756,44 @@ const WithdrawalRequest = () => {
         <div className="flex items-end space-x-4">
           <button
             onClick={handleSearch}
-            className="flex items-center gap-2 px-5 py-2 text-white transition bg-blue-600 shadow rounded-xl hover:bg-blue-700"
+            disabled={loading}
+            className={`flex items-center gap-2 px-5 py-2 text-white shadow rounded-xl transition ${
+              loading
+                ? 'bg-blue-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
           >
-            <FaSearch className="w-4 h-4" /> Search
+            {loading ? (
+              <>
+                <FaSyncAlt className="w-4 h-4 animate-spin" /> Searching...
+              </>
+            ) : (
+              <>
+                <FaSearch className="w-4 h-4" /> Search
+              </>
+            )}
           </button>
           <button
             onClick={handleExport}
-            className="flex items-center gap-2 px-5 py-2 text-white transition bg-green-600 shadow rounded-xl hover:bg-green-700"
+            disabled={loading}
+            className={`flex items-center gap-2 px-5 py-2 text-white shadow rounded-xl transition ${
+              loading
+                ? 'bg-green-400 cursor-not-allowed'
+                : 'bg-green-600 hover:bg-green-700'
+            }`}
           >
             <FaFileExcel className="w-4 h-4" /> Export
           </button>
           <button
             onClick={handleRefresh}
-            className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+            disabled={loading}
+            className={`flex items-center gap-2 px-5 py-2 text-white shadow rounded-xl transition ${
+              loading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-gray-600 hover:bg-gray-700'
+            }`}
           >
-            <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" /> Refresh
+            <FaSyncAlt className={`w-4 h-4 ${loading ? 'animate-spin' : 'animate-spin-on-hover'}`} /> Refresh
           </button>
         </div>
       </div>

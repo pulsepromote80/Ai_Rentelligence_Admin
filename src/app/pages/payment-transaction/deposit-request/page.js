@@ -348,10 +348,20 @@ const DepositRequest = () => {
       <div className="flex items-center justify-start mt-3 space-x-4 col-span-full">
         <button
           onClick={handleSearch}
-          className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
+          disabled={loading}
+          className={`flex items-center gap-2 px-6 py-2 font-semibold text-white transition rounded-lg shadow ${loading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
         >
-          <Search className="w-5 h-5" />
-          Search
+          {loading ? (
+            <>
+              <RefreshCcw className="w-5 h-5 animate-spin" />
+              Searching...
+            </>
+          ) : (
+            <>
+              <Search className="w-5 h-5" />
+              Search
+            </>
+          )}
         </button>
 
         <button

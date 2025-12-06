@@ -20,6 +20,7 @@ import {
   FaSearch,
   FaFileExcel,
   FaSyncAlt,
+  FaSpinner,
 } from 'react-icons/fa'
 
 const RentRequest = () => {
@@ -50,6 +51,7 @@ const RentRequest = () => {
   const [toDate, setToDate] = useState('')
   const [userError, setUserError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
+  const [isSearching, setIsSearching] = useState(false)
   const [processedRequests, setProcessedRequests] = useState(new Set())
   const [selectedRequest, setSelectedRequest] = useState({ authLoginId: null, id: null })
 
@@ -101,15 +103,20 @@ const RentRequest = () => {
   }, [userId, dispatch])
 
   
-  const handleSearch = () => {
+  const handleSearch = async () => {
+    setIsSearching(true)
     const payload = {
       authLogin: userId || '',
       fromDate: formatDate(fromDate) || '',
       toDate: formatDate(toDate) || '',
     }
 
-    dispatch(getRentWallet(payload))
-    setHasSearched(true)
+    try {
+      await dispatch(getRentWallet(payload))
+      setHasSearched(true)
+    } finally {
+      setIsSearching(false)
+    }
   }
 
   const handleExport = () => {
@@ -791,9 +798,19 @@ const RentRequest = () => {
           <div className="flex items-end space-x-4">
             <button
               onClick={handleSearch}
-              className="flex items-center gap-2 px-5 py-2 text-white transition bg-blue-600 shadow rounded-xl hover:bg-blue-700"
+              disabled={isSearching}
+              className={`flex items-center gap-2 px-5 py-2 text-white shadow rounded-xl transition ${
+                isSearching
+                  ? 'bg-blue-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700'
+              }`}
             >
-              <FaSearch className="w-4 h-4" /> Search
+              {isSearching ? (
+                <FaSpinner className="w-4 h-4 animate-spin" />
+              ) : (
+                <FaSearch className="w-4 h-4" />
+              )}
+              {isSearching ? 'Searching...' : 'Search'}
             </button>
             <button
               onClick={handleExport}

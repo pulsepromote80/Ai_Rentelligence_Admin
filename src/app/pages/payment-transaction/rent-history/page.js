@@ -256,9 +256,20 @@ const RentWallet = () => {
         <div className="flex items-end space-x-4">
           <button
             onClick={handleSearch}
-            className="flex items-center gap-2 px-5 py-2 text-white transition bg-blue-600 shadow rounded-xl hover:bg-blue-700"
+            disabled={loading}
+            className={`flex items-center gap-2 px-5 py-2 text-white transition shadow rounded-xl ${
+              loading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
           >
-            <FaSearch className="w-4 h-4" /> Search
+            {loading ? (
+              'Searching...'
+            ) : (
+              <>
+                <FaSearch className="w-4 h-4" /> Search
+              </>
+            )}
           </button>
           <button
             onClick={handleExport}
