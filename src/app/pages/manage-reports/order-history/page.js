@@ -8,12 +8,14 @@ import { saveAs } from "file-saver";
 import { Search, FileSpreadsheet } from "lucide-react";
 import { Calendar, User, UserCircle2 } from "lucide-react";
 import { FaSyncAlt } from "react-icons/fa";
+import Spinner from "@/app/common/spinner";
 
 const OrderHistory = () => {
   const dispatch = useDispatch();
   const LeaseStatementData = useSelector(
     (state) => state.adminMaster?.LeaseStatementData?.data || []
   );
+  const loading = useSelector((state) => state.adminMaster?.loading || false);
   const productList = useSelector((state) => state.product?.data ?? []);
 
   const [fromDate, setFromDate] = useState("");
@@ -38,7 +40,7 @@ const OrderHistory = () => {
   };
 
   const totalPrice =
-    hasSearched && LeaseStatementData? LeaseStatementData.reduce((sum, txn) => sum + (txn.Rkprice || 0), 0) :0 
+    hasSearched && LeaseStatementData ? LeaseStatementData.reduce((sum, txn) => sum + (txn.Rkprice || 0), 0) : 0
 
 
   useEffect(() => {
@@ -128,23 +130,23 @@ const OrderHistory = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center justify-between gap-4">
-        <h6 className="heading" style={{paddingBottom:"0px"}}>Order History</h6>
-        <div className="flex items-center justify-between gap-4">
-          <p className="font-semibold text-green-600">
-            Total Price : ${Number(totalPrice).toFixed(2)}
-          </p>
+          <h6 className="heading" style={{ paddingBottom: "0px" }}>Order History</h6>
+          <div className="flex items-center justify-between gap-4">
+            <p className="font-semibold text-green-600">
+              Total Price : ${Number(totalPrice).toFixed(2)}
+            </p>
+          </div>
         </div>
-      </div>
-          <button
+        <button
           onClick={handleExport}
           className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700"
         >
           <FileSpreadsheet className="w-5 h-5" />
           Export Excel
         </button>
- </div>
+      </div>
       {/* Filters */}
-       <div className="grid grid-cols-1 gap-6 mt-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-6 mt-4 md:grid-cols-2 lg:grid-cols-4">
         {/* From Date */}
         <div className="relative">
           <label className="block mb-1 text-sm font-semibold text-blue-700">
@@ -234,29 +236,30 @@ const OrderHistory = () => {
             />
           </div>
         </div>
-         <div className="flex items-end gap-4 justify-space-between">
-        <button
-          onClick={handleSearch}
-          className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
-        >
-          <Search className="w-5 h-5" />
-          Search
-        </button>
-         <button
-          onClick={handleRefresh}
-          className=" flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
-        >
-          <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
-          Refresh
-        </button>
-      </div> 
+        <div className="flex items-end gap-4 justify-space-between">
+          <button
+            onClick={handleSearch}
+            disabled={loading}
+            className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? <Spinner size={5} color="text-white" /> : <Search className="w-5 h-5" />}
+            {loading ? "Searching..." : "Search"}
+          </button>
+          <button
+            onClick={handleRefresh}
+            className=" flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+          >
+            <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Action Buttons */}
-   
+
       {/* Transactions Table */}
       {hasSearched && LeaseStatementData?.length > 0 && (
-           <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
+        <div className="mt-6 overflow-hidden bg-white border border-gray-200 shadow-2xl rounded-2xl">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-center text-gray-700 border-collapse">
               {/* Table Header */}
@@ -282,8 +285,8 @@ const OrderHistory = () => {
                   <tr
                     key={index}
                     className={`transition-colors duration-200 ${index % 2 === 0
-                        ? "bg-blue-50 hover:bg-blue-100"
-                        : "bg-white hover:bg-blue-50"
+                      ? "bg-blue-50 hover:bg-blue-100"
+                      : "bg-white hover:bg-blue-50"
                       }`}
                   >
                     <td className="px-2 py-2 td-wrap-text border">
@@ -342,8 +345,8 @@ const OrderHistory = () => {
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className={`px-3 py-1 rounded-lg border transition-colors ${currentPage === 1
-                    ? "text-gray-400 border-gray-200"
-                    : "text-blue-600 border-gray-300 hover:bg-blue-50"
+                  ? "text-gray-400 border-gray-200"
+                  : "text-blue-600 border-gray-300 hover:bg-blue-50"
                   }`}
               >
                 ‹
@@ -352,8 +355,8 @@ const OrderHistory = () => {
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
                 className={`px-3 py-1 rounded-lg border transition-colors ${currentPage === totalPages
-                    ? "text-gray-400 border-gray-200"
-                    : "text-blue-600 border-gray-300 hover:bg-blue-50"
+                  ? "text-gray-400 border-gray-200"
+                  : "text-blue-600 border-gray-300 hover:bg-blue-50"
                   }`}
               >
                 ›

@@ -6,6 +6,7 @@ import { getProductList } from '@/app/redux/productSlice';
 import ImagePopup from "@/app/pages/image-popup/page";
 import Select from 'react-select';
 import { toast } from 'react-toastify';
+import { selectLoading } from '../../sidebar/sidebar-selectors';
 
 const LeaseAgentPage = () => {
   const dispatch = useDispatch();
@@ -13,6 +14,7 @@ const LeaseAgentPage = () => {
   const { data: productData } = useSelector((state) => state.product ?? {});
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [loading, setLoading] = useState(false);
 
   // Form states
   const [selectedAgent, setSelectedAgent] = useState(null);
@@ -68,9 +70,9 @@ const LeaseAgentPage = () => {
 
   const tableData = Array.isArray(rechargeTransactionData?.data)
     ? rechargeTransactionData?.data?.map((item, idx) => ({
-        srNo: idx + 1,
-        ...item,
-      }))
+      srNo: idx + 1,
+      ...item,
+    }))
     : rechargeTransactionData?.data && typeof rechargeTransactionData?.data === 'object'
       ? [{ srNo: 1, ...rechargeTransactionData?.data }]
       : [];
@@ -83,15 +85,15 @@ const LeaseAgentPage = () => {
   // Options for dropdowns
   const agentOptions = Array.isArray(productData)
     ? [...productData]
-        .sort((a, b) => {
-          const priceA = Number(a?.price ?? 0);
-          const priceB = Number(b?.price ?? 0);
-          if (Number.isNaN(priceA) && Number.isNaN(priceB)) return 0;
-          if (Number.isNaN(priceA)) return 1;
-          if (Number.isNaN(priceB)) return -1;
-          return priceA - priceB;
-        })
-        .map((product) => ({
+      .sort((a, b) => {
+        const priceA = Number(a?.price ?? 0);
+        const priceB = Number(b?.price ?? 0);
+        if (Number.isNaN(priceA) && Number.isNaN(priceB)) return 0;
+        if (Number.isNaN(priceA)) return 1;
+        if (Number.isNaN(priceB)) return -1;
+        return priceA - priceB;
+      })
+      .map((product) => ({
         value: product.productId, // Using productId as unique identifier
         label: `${product.productName} - ${product.price}`,
         icon: product?.image || product?.productImage || product?.imageUrl || product?.icon || null,
@@ -168,6 +170,8 @@ const LeaseAgentPage = () => {
       return;
     }
 
+    setLoading(true);
+
     // Call getRechargeTransactionAdmin API
     const rechargePayload = {
       urid: usernameData.urid,
@@ -198,425 +202,424 @@ const LeaseAgentPage = () => {
     setPackageType(null);
     setUseridError('');
     dispatch(clearUsernameData());
+    setLoading(false);
   };
 
   return (
-   <div className="p-8 mx-auto mt-0 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
+    <div className="p-8 mx-auto mt-0 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
 
-<h6
-  className="heading"
-  style={{
-    borderBottom: "1px solid #daebed",
-    marginBottom: "15px",
-  }}
->
-  Lease Agent Management
-</h6>
-
-{/* Form Section */}
-<div className="p-6 mb-8 bg-white border border-blue-100 shadow-lg rounded-xl">
-  <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-    {/* Agent List DDL */}
-    <div>
-      <label className="block mb-1 text-sm font-medium text-gray-600">Agent List</label>
-      <Select
-        options={agentOptions}
-        value={selectedAgent}
-        onChange={setSelectedAgent}
-        placeholder="Select Agent - Price"
-        classNamePrefix="select"
-        className="select-drop-dwon"
-        components={{ Option: OptionWithIcon, SingleValue: SingleValueWithIcon }}
-        styles={{
-          control: (provided, state) => ({
-            ...provided,
-            minHeight: "47px",
-            height: "47px",
-            borderRadius: "0.75rem",
-            borderWidth: "1px",
-            borderColor: state.isFocused ? "#3b82f6" : "#e5e7eb",
-            boxShadow: state.isFocused ? "0 0 0 1px #3b82f6" : "none",
-            backgroundColor: "#f9fafb",
-            "&:hover": {
-              borderColor: "#3b82f6",
-            },
-          }),
-          valueContainer: (provided) => ({
-            ...provided,
-            height: "48px",
-            padding: "0 8px",
-            display: "flex",
-            alignItems: "center",
-          }),
-          input: (provided) => ({
-            ...provided,
-            margin: "0px",
-            padding: "0px",
-            color: "#000",
-          }),
-          indicatorsContainer: (provided) => ({
-            ...provided,
-            height: "48px",
-          }),
-          singleValue: (provided) => ({
-            ...provided,
-            display: "flex",
-            alignItems: "center",
-            color: "#000",
-          }),
-          placeholder: (provided) => ({
-            ...provided,
-            color: "#9ca3af",
-          }),
-          menu: (provided) => ({
-            ...provided,
-            backgroundColor: "#fff",
-            border: "1px solid #d1d5db",
-            borderRadius: "0.75rem",
-            zIndex: 20,
-          }),
-          option: (provided, state) => ({
-            ...provided,
-            backgroundColor: state.isSelected
-              ? "#3b82f6"
-              : state.isFocused
-                ? "#f3f4f6"
-                : "transparent",
-            color: state.isSelected ? "#fff" : "#374151",
-            "&:active": {
-              backgroundColor: "#e5e7eb",
-            },
-          }),
+      <h6
+        className="heading"
+        style={{
+          borderBottom: "1px solid #daebed",
+          marginBottom: "15px",
         }}
-        isSearchable
-      />
-    </div>
-
-
-
-    {/* Duration Hr DDL */}
-    <div>
-      <label className="block mb-1 text-sm font-medium text-gray-600">Duration Hr</label>
-      <Select
-        options={durationOptions}
-        value={durationHr}
-        onChange={setDurationHr}
-        placeholder="Select Hours"
-        classNamePrefix="select"
-        className="select-drop-dwon"
-        styles={{
-          control: (provided, state) => ({
-            ...provided,
-            minHeight: "47px",
-            height: "47px",
-            borderRadius: "0.75rem",
-            borderWidth: "1px",
-            borderColor: state.isFocused ? "#3b82f6" : "#e5e7eb",
-            boxShadow: state.isFocused ? "0 0 0 1px #3b82f6" : "none",
-            backgroundColor: "#f9fafb",
-            "&:hover": {
-              borderColor: "#3b82f6",
-            },
-          }),
-          valueContainer: (provided) => ({
-            ...provided,
-            height: "48px",
-            padding: "0 8px",
-            display: "flex",
-            alignItems: "center",
-          }),
-          input: (provided) => ({
-            ...provided,
-            margin: "0px",
-            padding: "0px",
-            color: "#000",
-          }),
-          indicatorsContainer: (provided) => ({
-            ...provided,
-            height: "48px",
-          }),
-          singleValue: (provided) => ({
-            ...provided,
-            display: "flex",
-            alignItems: "center",
-            color: "#000",
-          }),
-          placeholder: (provided) => ({
-            ...provided,
-            color: "#9ca3af",
-          }),
-          menu: (provided) => ({
-            ...provided,
-            backgroundColor: "#fff",
-            border: "1px solid #d1d5db",
-            borderRadius: "0.75rem",
-            zIndex: 20,
-          }),
-          option: (provided, state) => ({
-            ...provided,
-            backgroundColor: state.isSelected
-              ? "#3b82f6"
-              : state.isFocused
-                ? "#f3f4f6"
-                : "transparent",
-            color: state.isSelected ? "#fff" : "#374151",
-            "&:active": {
-              backgroundColor: "#e5e7eb",
-            },
-          }),
-        }}
-        isSearchable
-      />
-    </div>
-
-    {/* Enter Userid */}
-    <div>
-      <label className="block mb-1 text-sm font-medium text-gray-600">Enter Userid</label>
-      <input
-        type="text"
-        className={`w-full px-4 py-3 text-sm border rounded-xl bg-gray-50 focus:outline-none focus:ring-2 ${useridError
-            ? "border-red-400 focus:ring-red-300"
-            : "border-gray-200 focus:ring-blue-300"
-          }`}
-        value={userid}
-        onChange={handleUseridChange}
-        placeholder="Enter User ID"
-      />
-      {useridError && (
-        <div className="mt-2 text-xs text-red-500">{useridError}</div>
-      )}
-      {usernameData && usernameData.name && (
-        <div className="mt-2 text-xs text-green-600">{usernameData.name}</div>
-      )}
-    </div>
-
-    {/* Package Type DDL */}
-    <div>
-      <label className="block mb-1 text-sm font-medium text-gray-600">Package Type</label>
-      <Select
-        options={packageOptions}
-        value={packageType}
-        onChange={setPackageType}
-        placeholder="Select Package"
-        classNamePrefix="select"
-        className="select-drop-dwon"
-        styles={{
-          control: (provided, state) => ({
-            ...provided,
-            minHeight: "47px",
-            height: "47px",
-            borderRadius: "0.75rem",
-            borderWidth: "1px",
-            borderColor: state.isFocused ? "#3b82f6" : "#e5e7eb",
-            boxShadow: state.isFocused ? "0 0 0 1px #3b82f6" : "none",
-            backgroundColor: "#f9fafb",
-            "&:hover": {
-              borderColor: "#3b82f6",
-            },
-          }),
-          valueContainer: (provided) => ({
-            ...provided,
-            height: "48px",
-            padding: "0 8px",
-            display: "flex",
-            alignItems: "center",
-          }),
-          input: (provided) => ({
-            ...provided,
-            margin: "0px",
-            padding: "0px",
-            color: "#000",
-          }),
-          indicatorsContainer: (provided) => ({
-            ...provided,
-            height: "48px",
-          }),
-          singleValue: (provided) => ({
-            ...provided,
-            display: "flex",
-            alignItems: "center",
-            color: "#000",
-          }),
-          placeholder: (provided) => ({
-            ...provided,
-            color: "#9ca3af",
-          }),
-          menu: (provided) => ({
-            ...provided,
-            backgroundColor: "#fff",
-            border: "1px solid #d1d5db",
-            borderRadius: "0.75rem",
-            zIndex: 20,
-          }),
-          option: (provided, state) => ({
-            ...provided,
-            backgroundColor: state.isSelected
-              ? "#3b82f6"
-              : state.isFocused
-                ? "#f3f4f6"
-                : "transparent",
-            color: state.isSelected ? "#fff" : "#374151",
-            "&:active": {
-              backgroundColor: "#e5e7eb",
-            },
-          }),
-        }}
-        isSearchable
-      />
-    </div>
-
-    {/* Submit Button */}
-    <div className="flex justify-end md:col-span-2 lg:col-span-4">
-      <button
-        type="submit"
-        className="px-6 py-3 text-sm font-semibold text-white transition-all rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
       >
-        Submit
-      </button>
-    </div>
-  </form>
-</div>
+        Lease Agent Management
+      </h6>
 
- 
-  <div className="mt-2 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
-    <table className="min-w-full border border-gray-200 rounded-xl">
-      {/* Table Head */}
-      <thead className="sticky top-0 z-10 text-white bg-gradient-to-r from-blue-600 to-blue-800">
-        <tr>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">S.No.</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">IMAGE</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">LOGIN</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">NAME</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">SUB TITLE</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">TITLE</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Price</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Total Return</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Weekly Return</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Date</th>
-          <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Duration (Months)</th>
-        </tr>
-      </thead>
+      {/* Form Section */}
+      <div className="p-6 mb-8 bg-white border border-blue-100 shadow-lg rounded-xl">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {/* Agent List DDL */}
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-600">Agent List</label>
+            <Select
+              options={agentOptions}
+              value={selectedAgent}
+              onChange={setSelectedAgent}
+              placeholder="Select Agent - Price"
+              classNamePrefix="select"
+              className="select-drop-dwon"
+              components={{ Option: OptionWithIcon, SingleValue: SingleValueWithIcon }}
+              styles={{
+                control: (provided, state) => ({
+                  ...provided,
+                  minHeight: "47px",
+                  height: "47px",
+                  borderRadius: "0.75rem",
+                  borderWidth: "1px",
+                  borderColor: state.isFocused ? "#3b82f6" : "#e5e7eb",
+                  boxShadow: state.isFocused ? "0 0 0 1px #3b82f6" : "none",
+                  backgroundColor: "#f9fafb",
+                  "&:hover": {
+                    borderColor: "#3b82f6",
+                  },
+                }),
+                valueContainer: (provided) => ({
+                  ...provided,
+                  height: "48px",
+                  padding: "0 8px",
+                  display: "flex",
+                  alignItems: "center",
+                }),
+                input: (provided) => ({
+                  ...provided,
+                  margin: "0px",
+                  padding: "0px",
+                  color: "#000",
+                }),
+                indicatorsContainer: (provided) => ({
+                  ...provided,
+                  height: "48px",
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  display: "flex",
+                  alignItems: "center",
+                  color: "#000",
+                }),
+                placeholder: (provided) => ({
+                  ...provided,
+                  color: "#9ca3af",
+                }),
+                menu: (provided) => ({
+                  ...provided,
+                  backgroundColor: "#fff",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "0.75rem",
+                  zIndex: 20,
+                }),
+                option: (provided, state) => ({
+                  ...provided,
+                  backgroundColor: state.isSelected
+                    ? "#3b82f6"
+                    : state.isFocused
+                      ? "#f3f4f6"
+                      : "transparent",
+                  color: state.isSelected ? "#fff" : "#374151",
+                  "&:active": {
+                    backgroundColor: "#e5e7eb",
+                  },
+                }),
+              }}
+              isSearchable
+            />
+          </div>
 
-      {/* Table Body */}
-      <tbody>
-        {paginatedData.length === 0 ? (
-          <tr className='transition-colors duration-200 bg-blue-50 hover:bg-blue-100'>
-            <td colSpan={11} className="px-2 py-2 text-center border td-wrap-text">
-              No Data Found
-            </td>
-          </tr>
-        ) : (
-          paginatedData.map((row, idx) => (
-            <tr
-              key={idx}
-              className={`${
-                idx % 2 === 0 ? "transition-colors duration-200 bg-white hover:bg-blue-50" : "bg-white"
-              } hover:bg-blue-100 transition`}
+
+
+          {/* Duration Hr DDL */}
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-600">Duration Hr</label>
+            <Select
+              options={durationOptions}
+              value={durationHr}
+              onChange={setDurationHr}
+              placeholder="Select Hours"
+              classNamePrefix="select"
+              className="select-drop-dwon"
+              styles={{
+                control: (provided, state) => ({
+                  ...provided,
+                  minHeight: "47px",
+                  height: "47px",
+                  borderRadius: "0.75rem",
+                  borderWidth: "1px",
+                  borderColor: state.isFocused ? "#3b82f6" : "#e5e7eb",
+                  boxShadow: state.isFocused ? "0 0 0 1px #3b82f6" : "none",
+                  backgroundColor: "#f9fafb",
+                  "&:hover": {
+                    borderColor: "#3b82f6",
+                  },
+                }),
+                valueContainer: (provided) => ({
+                  ...provided,
+                  height: "48px",
+                  padding: "0 8px",
+                  display: "flex",
+                  alignItems: "center",
+                }),
+                input: (provided) => ({
+                  ...provided,
+                  margin: "0px",
+                  padding: "0px",
+                  color: "#000",
+                }),
+                indicatorsContainer: (provided) => ({
+                  ...provided,
+                  height: "48px",
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  display: "flex",
+                  alignItems: "center",
+                  color: "#000",
+                }),
+                placeholder: (provided) => ({
+                  ...provided,
+                  color: "#9ca3af",
+                }),
+                menu: (provided) => ({
+                  ...provided,
+                  backgroundColor: "#fff",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "0.75rem",
+                  zIndex: 20,
+                }),
+                option: (provided, state) => ({
+                  ...provided,
+                  backgroundColor: state.isSelected
+                    ? "#3b82f6"
+                    : state.isFocused
+                      ? "#f3f4f6"
+                      : "transparent",
+                  color: state.isSelected ? "#fff" : "#374151",
+                  "&:active": {
+                    backgroundColor: "#e5e7eb",
+                  },
+                }),
+              }}
+              isSearchable
+            />
+          </div>
+
+          {/* Enter Userid */}
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-600">Enter Userid</label>
+            <input
+              type="text"
+              className={`w-full px-4 py-3 text-sm border rounded-xl bg-gray-50 focus:outline-none focus:ring-2 ${useridError
+                ? "border-red-400 focus:ring-red-300"
+                : "border-gray-200 focus:ring-blue-300"
+                }`}
+              value={userid}
+              onChange={handleUseridChange}
+              placeholder="Enter User ID"
+            />
+            {useridError && (
+              <div className="mt-2 text-xs text-red-500">{useridError}</div>
+            )}
+            {usernameData && usernameData.name && (
+              <div className="mt-2 text-xs text-green-600">{usernameData.name}</div>
+            )}
+          </div>
+
+          {/* Package Type DDL */}
+          <div>
+            <label className="block mb-1 text-sm font-medium text-gray-600">Package Type</label>
+            <Select
+              options={packageOptions}
+              value={packageType}
+              onChange={setPackageType}
+              placeholder="Select Package"
+              classNamePrefix="select"
+              className="select-drop-dwon"
+              styles={{
+                control: (provided, state) => ({
+                  ...provided,
+                  minHeight: "47px",
+                  height: "47px",
+                  borderRadius: "0.75rem",
+                  borderWidth: "1px",
+                  borderColor: state.isFocused ? "#3b82f6" : "#e5e7eb",
+                  boxShadow: state.isFocused ? "0 0 0 1px #3b82f6" : "none",
+                  backgroundColor: "#f9fafb",
+                  "&:hover": {
+                    borderColor: "#3b82f6",
+                  },
+                }),
+                valueContainer: (provided) => ({
+                  ...provided,
+                  height: "48px",
+                  padding: "0 8px",
+                  display: "flex",
+                  alignItems: "center",
+                }),
+                input: (provided) => ({
+                  ...provided,
+                  margin: "0px",
+                  padding: "0px",
+                  color: "#000",
+                }),
+                indicatorsContainer: (provided) => ({
+                  ...provided,
+                  height: "48px",
+                }),
+                singleValue: (provided) => ({
+                  ...provided,
+                  display: "flex",
+                  alignItems: "center",
+                  color: "#000",
+                }),
+                placeholder: (provided) => ({
+                  ...provided,
+                  color: "#9ca3af",
+                }),
+                menu: (provided) => ({
+                  ...provided,
+                  backgroundColor: "#fff",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "0.75rem",
+                  zIndex: 20,
+                }),
+                option: (provided, state) => ({
+                  ...provided,
+                  backgroundColor: state.isSelected
+                    ? "#3b82f6"
+                    : state.isFocused
+                      ? "#f3f4f6"
+                      : "transparent",
+                  color: state.isSelected ? "#fff" : "#374151",
+                  "&:active": {
+                    backgroundColor: "#e5e7eb",
+                  },
+                }),
+              }}
+              isSearchable
+            />
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex justify-end md:col-span-2 lg:col-span-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="px-6 py-3 text-sm font-semibold text-white transition-all rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <td className="px-2 py-2 text-center border td-wrap-text">{row.srNo}</td>
-              <td className="px-2 py-2 text-center border td-wrap-text">
-                {row.image ? (
-                  <img
-                    src={row.image}
-                    alt="Product"
-                    className="object-cover w-10 h-10 mx-auto rounded"
-                  />
-                ) : (
-                  'N/A'
-                )}
-              </td>
-              <td className="px-2 py-2 text-center border td-wrap-text">{submittedUserid || row.URID || 'N/A'}</td>
-              <td className="px-2 py-2 text-center border td-wrap-text">{submittedName || 'N/A'}</td>
-              <td className="px-2 py-2 text-center border td-wrap-text">{row.subName || 'N/A'}</td>
-              <td className="px-2 py-2 text-center border td-wrap-text">{row.ProductName || 'N/A'}</td>
-              <td className="px-2 py-2 text-center border td-wrap-text">${row.Rkprice || 'N/A'}</td>
-              <td className="px-2 py-2 text-center border td-wrap-text">${row.TotalReturn || 'N/A'}</td>
-              <td className="px-2 py-2 text-center border td-wrap-text">${row.WeeklyReturn || 'N/A'}</td>
-              <td className="px-2 py-2 text-center border td-wrap-text">{formatDate(row.RDate)}</td>
-              <td className="px-2 py-2 text-center border td-wrap-text">{row.DurationOnMonth || 'N/A'}</td>
-            </tr>
-          ))
-        )}
-      </tbody>
-    </table>
-
-    {/* Pagination */}
-    {tableData.length > 0 && (
-      <div className="flex items-center justify-between px-4 py-3">
-        {/* Rows per page */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Rows per page:</span>
-          <select
-            value={rowsPerPage}
-            onChange={(e) => {
-              setRowsPerPage(Number(e.target.value));
-              setCurrentPage(1);
-            }}
-            className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-          >
-            <option value="10">10</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-          </select>
-        </div>
-
-        {/* Showing items */}
-        <div className="text-sm text-gray-600">
-          {startItem}-{endItem} of {tableData.length}
-        </div>
-
-        {/* Pagination buttons */}
-        <div className="flex items-center gap-2 ml-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className={`p-1 rounded ${
-              currentPage === 1
-                ? "text-gray-400 cursor-not-allowed"
-                : "text-blue-600 hover:text-blue-800"
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className={`p-1 rounded ${
-              currentPage === totalPages
-                ? "text-gray-400 cursor-not-allowed"
-                : "text-blue-600 hover:text-blue-800"
-            }`}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-5 h-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </button>
-        </div>
+              {loading ? "Loading..." : "Submit"}
+            </button>
+          </div>
+        </form>
       </div>
-    )}
-  </div>
-</div>
+
+
+      <div className="mt-2 overflow-x-auto border border-blue-100 shadow-lg rounded-xl bg-white/90">
+        <table className="min-w-full border border-gray-200 rounded-xl">
+          {/* Table Head */}
+          <thead className="sticky top-0 z-10 text-white bg-gradient-to-r from-blue-600 to-blue-800">
+            <tr>
+              <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">S.No.</th>
+              <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">IMAGE</th>
+              <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">LOGIN</th>
+              <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">NAME</th>
+              <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">SUB TITLE</th>
+              <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">TITLE</th>
+              <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Price</th>
+              <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Total Return</th>
+              <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Weekly Return</th>
+              <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Date</th>
+              <th className="px-4 py-3 text-sm font-semibold text-center border th-wrap-text">Duration (Months)</th>
+            </tr>
+          </thead>
+
+          {/* Table Body */}
+          <tbody>
+            {paginatedData.length === 0 ? (
+              <tr className='transition-colors duration-200 bg-blue-50 hover:bg-blue-100'>
+                <td colSpan={11} className="px-2 py-2 text-center border td-wrap-text">
+                  No Data Found
+                </td>
+              </tr>
+            ) : (
+              paginatedData.map((row, idx) => (
+                <tr
+                  key={idx}
+                  className={`${idx % 2 === 0 ? "transition-colors duration-200 bg-white hover:bg-blue-50" : "bg-white"
+                    } hover:bg-blue-100 transition`}
+                >
+                  <td className="px-2 py-2 text-center border td-wrap-text">{row.srNo}</td>
+                  <td className="px-2 py-2 text-center border td-wrap-text">
+                    {row.image ? (
+                      <img
+                        src={row.image}
+                        alt="Product"
+                        className="object-cover w-10 h-10 mx-auto rounded"
+                      />
+                    ) : (
+                      'N/A'
+                    )}
+                  </td>
+                  <td className="px-2 py-2 text-center border td-wrap-text">{submittedUserid || row.URID || 'N/A'}</td>
+                  <td className="px-2 py-2 text-center border td-wrap-text">{submittedName || 'N/A'}</td>
+                  <td className="px-2 py-2 text-center border td-wrap-text">{row.subName || 'N/A'}</td>
+                  <td className="px-2 py-2 text-center border td-wrap-text">{row.ProductName || 'N/A'}</td>
+                  <td className="px-2 py-2 text-center border td-wrap-text">${row.Rkprice || 'N/A'}</td>
+                  <td className="px-2 py-2 text-center border td-wrap-text">${row.TotalReturn || 'N/A'}</td>
+                  <td className="px-2 py-2 text-center border td-wrap-text">${row.WeeklyReturn || 'N/A'}</td>
+                  <td className="px-2 py-2 text-center border td-wrap-text">{formatDate(row.RDate)}</td>
+                  <td className="px-2 py-2 text-center border td-wrap-text">{row.DurationOnMonth || 'N/A'}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+
+        {/* Pagination */}
+        {tableData.length > 0 && (
+          <div className="flex items-center justify-between px-4 py-3">
+            {/* Rows per page */}
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-gray-600">Rows per page:</span>
+              <select
+                value={rowsPerPage}
+                onChange={(e) => {
+                  setRowsPerPage(Number(e.target.value));
+                  setCurrentPage(1);
+                }}
+                className="p-1 mr-3 text-sm border rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+              >
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+              </select>
+            </div>
+
+            {/* Showing items */}
+            <div className="text-sm text-gray-600">
+              {startItem}-{endItem} of {tableData.length}
+            </div>
+
+            {/* Pagination buttons */}
+            <div className="flex items-center gap-2 ml-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className={`p-1 rounded ${currentPage === 1
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-blue-600 hover:text-blue-800"
+                  }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+
+              <button
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className={`p-1 rounded ${currentPage === totalPages
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-blue-600 hover:text-blue-800"
+                  }`}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
 
   );
 };

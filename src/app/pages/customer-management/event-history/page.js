@@ -22,6 +22,7 @@ export default function EventHistory() {
     const [userName, setUserName] = useState('');
     const [userIdError, setUserIdError] = useState('');
     const [userIdSuccess, setUserIdSuccess] = useState('');
+    const [refreshDisabled, setRefreshDisabled] = useState(false);
 
     useEffect(() => {
         const timeoutId = setTimeout(async () => {
@@ -64,12 +65,14 @@ export default function EventHistory() {
     };
 
     const handleRefresh = () => {
+        setRefreshDisabled(true);
         setFromDate(" ");
         setToDate(" ");
         setLoginId('');
         setUserName('');
         setUserIdError('');
         setUserIdSuccess('');
+        setTimeout(() => setRefreshDisabled(false), 1000);
     }
 
     const handleExport = () => {
@@ -178,17 +181,19 @@ export default function EventHistory() {
                     <button
                         onClick={handleSubmit}
                         type="submit"
-                        className="px-4 py-2 flex justify-center gap-2 items-center text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        disabled={loading}
+                        className="px-4 py-2 flex justify-center gap-2 items-center text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                           <FiSearch className="w-4 h-4" />
-                        Search
+                        {loading ? "Loading..." : "Search"}
                     </button>
                     <button
                         onClick={handleRefresh}
-                        className="flex items-center justify-center max-w-md gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+                        disabled={refreshDisabled}
+                        className="flex items-center justify-center max-w-md gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
-                        Refresh
+                        {refreshDisabled ? "Refreshing..." : "Refresh"}
                     </button>
                 </div>
 

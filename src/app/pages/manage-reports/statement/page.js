@@ -26,6 +26,7 @@ const Statement = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [userError, setUserError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const indexOfLastItem = currentPage * entriesPerPage
   const indexOfFirstItem = indexOfLastItem - entriesPerPage
@@ -101,6 +102,7 @@ const Statement = () => {
   // }
 
   const handleSearch = async () => {
+    setLoading(true);
     const payload = {
       authLogin: userId || '',
       transtype: transactionType || '',
@@ -125,6 +127,8 @@ const Statement = () => {
       }
     } catch (err) {
       toast.error("Unexpected error occurred!");
+    } finally {
+      setLoading(false);
     }
 
     setHasSearched(true);
@@ -320,10 +324,11 @@ const Statement = () => {
         <div className="flex items-end">
           <button
             onClick={handleSearch}
-            className="flex items-center justify-center w-full gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
+            disabled={loading}
+            className="flex items-center justify-center w-full gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Search className="w-5 h-5" />
-            Search
+            {loading ? "Loading..." : "Search"}
           </button>
         </div>
 

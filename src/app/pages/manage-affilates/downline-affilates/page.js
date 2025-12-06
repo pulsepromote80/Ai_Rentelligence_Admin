@@ -5,11 +5,13 @@ import { getPersonalTeamList } from "@/app/redux/communitySlice";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { FaSearch, FaFileExcel, FaSyncAlt } from "react-icons/fa";
+import Spinner from "@/app/common/spinner";
 
 const DownlineAffiliates = () => {
   const dispatch = useDispatch();
   const [authLogin, setAuthLogin] = useState("");
   const [searched, setSearched] = useState(false);
+  const [lastSearched, setLastSearched] = useState("");
   const { personalTeamList, loading, error } = useSelector(
     (state) => state.community
   );
@@ -30,6 +32,7 @@ const DownlineAffiliates = () => {
     setErrors({});
     dispatch(getPersonalTeamList({ authLogin }));
     setSearched(true);
+    setLastSearched(authLogin);
     setCurrentPage(1); // reset page on new search
   };
 
@@ -89,53 +92,70 @@ const DownlineAffiliates = () => {
   const paginatedData = data.slice(startIndex, endIndex);
 
   return (
-       <div className="p-8 mx-auto mt-0 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
+    <div className="p-8 mx-auto mt-0 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
       <h6 className="heading">   Downline Affiliates</h6>
-<div className="flex flex-wrap items-end gap-3 mb-6 justify-space-between">
-  {/* Input Field */}
-  <div className="flex flex-col">
-    <label className="block mb-1 text-sm font-semibold text-blue-700">
-      Enter Login ID
-    </label>
-    <input
-      type="text"
-      value={authLogin}
-      onChange={(e) => {
-        setAuthLogin(e.target.value);
-        if (e.target.value === "") setSearched(false);
-      }}
-      placeholder="Enter Login Id"
-      className="h-12 px-4 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
-      style={{ width: "250px" }}
-    />
-    {errors.title && (
-      <div className="mt-1 text-sm text-red-500">{errors.title}</div>
-    )}
-  </div>
+      <div className="flex flex-wrap items-end gap-3 mb-6 justify-space-between">
+        {/* Input Field */}
+        <div className="flex flex-col">
+          <label className="block mb-1 text-sm font-semibold text-blue-700">
+            Enter Login ID
+          </label>
+          <input
+            type="text"
+            value={authLogin}
+            onChange={(e) => {
+              setAuthLogin(e.target.value);
+              if (e.target.value === "") setSearched(false);
+            }}
+            placeholder="Enter Login Id"
+            className="h-12 px-4 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+            style={{ width: "250px" }}
+          />
+          {errors.title && (
+            <div className="mt-1 text-sm text-red-500">{errors.title}</div>
+          )}
+        </div>
 
-  {/* Buttons (Now perfectly aligned with input) */}
-  <button
-    onClick={handleSearch}
-    className="flex items-center justify-center h-12 gap-2 px-5 text-white bg-blue-600 shadow rounded-xl hover:bg-blue-700"
-  >
-    <FaSearch className="w-4 h-4" /> Search
-  </button>
+        {/* Buttons (Now perfectly aligned with input) */}
+        <button
+          onClick={handleSearch}
+          disabled={loading}
+          className={`flex items-center justify-center h-12 gap-2 px-5 text-white shadow rounded-xl ${loading
+            ? "bg-blue-400 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700"
+            }`}
+        >
+          {loading ? (
+            <Spinner size={4} color="text-white" />
+          ) : (
+            <FaSearch className="w-4 h-4" />
+          )}
+          {loading ? "Searching..." : "Search"}
+        </button>
 
-  <button
-    onClick={handleExport}
-    className="flex items-center justify-center h-12 gap-2 px-5 text-white bg-green-600 shadow rounded-xl hover:bg-green-700"
-  >
-    <FaFileExcel className="w-4 h-4" /> Export Excel
-  </button>
+        <button
+          onClick={handleExport}
+          className="flex items-center justify-center h-12 gap-2 px-5 text-white bg-green-600 shadow rounded-xl hover:bg-green-700"
+        >
+          <FaFileExcel className="w-4 h-4" /> Export Excel
+        </button>
 
-  <button
-    onClick={handleRefresh}
-    className="flex items-center justify-center h-12 gap-2 px-5 text-white bg-gray-600 shadow rounded-xl hover:bg-gray-700"
-  >
-    <FaSyncAlt className="w-4 h-4" /> Refresh
-  </button>
-</div>
-
+        <button
+          onClick={handleRefresh}
+          disabled={loading}
+          className={`flex items-center justify-center h-12 gap-2 px-5 text-white shadow rounded-xl ${loading
+            ? "bg-gray-400 cursor-not-allowed"
+            : "bg-gray-600 hover:bg-gray-700"
+            }`}
+        >
+          {loading ? (
+            <Spinner size={4} color="text-white" />
+          ) : (
+            <FaSyncAlt className="w-4 h-4" />
+          )}
+          {loading ? "Refreshing..." : "Refresh"}
+        </button>
+      </div>
 
       {/* Table Section */}
       {searched && (
@@ -154,11 +174,11 @@ const DownlineAffiliates = () => {
             <div className="py-10 text-center text-gray-500">No data found.</div>
           )}
           {data && data.length > 0 && (
-             <div className="overflow-hidden bg-white border border-gray-200 shadow-xl rounded-2xl">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-sm text-center border-collapse">
-            {/* Table Header */}
-            <thead className="text-white bg-blue-600">
+            <div className="overflow-hidden bg-white border border-gray-200 shadow-xl rounded-2xl">
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-sm text-center border-collapse">
+                  {/* Table Header */}
+                  <thead className="text-white bg-blue-600">
                     <tr>
                       {[
                         "Sr.No.",
@@ -213,7 +233,7 @@ const DownlineAffiliates = () => {
                         <td className="px-4 py-3 border td-wrap-text">  {member.monthlyTeam}</td>
                         <td className="px-4 py-3 border td-wrap-text">{member.uLvl}</td>
                         <td className="px-4 py-3 border td-wrap-text">{member.status}</td>
-                      
+
                       </tr>
                     ))}
                   </tbody>
@@ -245,24 +265,22 @@ const DownlineAffiliates = () => {
                     <button
                       onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                       disabled={currentPage === 1}
-                      className={`p-1 rounded ${
-                        currentPage === 1
-                          ? "text-gray-400 cursor-not-allowed"
-                          : "text-blue-600 hover:text-blue-800"
-                      }`}
+                      className={`p-1 rounded ${currentPage === 1
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-blue-600 hover:text-blue-800"
+                        }`}
                     >
-                   ‹ Prev
+                      ‹ Prev
                     </button>
                     <button
                       onClick={() =>
                         setCurrentPage((prev) => Math.min(prev + 1, totalPages))
                       }
                       disabled={currentPage === totalPages}
-                      className={`p-1 rounded ${
-                        currentPage === totalPages
-                          ? "text-gray-400 cursor-not-allowed"
-                          : "text-blue-600 hover:text-blue-800"
-                      }`}
+                      className={`p-1 rounded ${currentPage === totalPages
+                        ? "text-gray-400 cursor-not-allowed"
+                        : "text-blue-600 hover:text-blue-800"
+                        }`}
                     >
                       Next ›
                     </button>

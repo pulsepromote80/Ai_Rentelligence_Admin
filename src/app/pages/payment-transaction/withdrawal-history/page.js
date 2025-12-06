@@ -6,9 +6,9 @@ import { usernameLoginId } from '@/app/redux/adminMasterSlice'
 import { FaCopy } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import * as XLSX from "xlsx";
-import { saveAs } from "file-saver"; import { Search, FileSpreadsheet, RefreshCcw } from 'lucide-react'
+import { Search, FileSpreadsheet, RefreshCcw, Loader2 } from 'lucide-react'
 import { FaCalendarAlt, FaUser, FaIdBadge } from "react-icons/fa";
-import { FaSearch, FaFileExcel, FaSyncAlt,FaFilter } from 'react-icons/fa'
+import { FaSearch, FaFileExcel, FaSyncAlt, FaFilter } from 'react-icons/fa'
 
 const WithdrawalHistory = () => {
   const dispatch = useDispatch();
@@ -159,119 +159,120 @@ const WithdrawalHistory = () => {
       </h6>
 
 
-<div className="grid grid-cols-1 gap-6 mt-0 md:grid-cols-2 lg:grid-cols-5">
-  {/* From Date */}
-  <div>
-    <label className="block mb-1 text-sm font-medium text-blue-800">
-      From Date
-    </label>
-    <div className="relative">
-      <FaCalendarAlt className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
-      <input
-        type="date"
-        value={fromDate}
-        onChange={(e) => setFromDate(e.target.value)}
-        className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
-      />
-    </div>
-  </div>
+      <div className="grid grid-cols-1 gap-6 mt-0 md:grid-cols-2 lg:grid-cols-5">
+        {/* From Date */}
+        <div>
+          <label className="block mb-1 text-sm font-medium text-blue-800">
+            From Date
+          </label>
+          <div className="relative">
+            <FaCalendarAlt className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="date"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+            />
+          </div>
+        </div>
 
-  {/* To Date */}
-  <div>
-    <label className="block mb-1 text-sm font-medium text-blue-800">
-      To Date
-    </label>
-    <div className="relative">
-      <FaCalendarAlt className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
-      <input
-        type="date"
-        value={toDate}
-        onChange={(e) => setToDate(e.target.value)}
-        className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
-      />
-    </div>
-  </div>
+        {/* To Date */}
+        <div>
+          <label className="block mb-1 text-sm font-medium text-blue-800">
+            To Date
+          </label>
+          <div className="relative">
+            <FaCalendarAlt className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="date"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+            />
+          </div>
+        </div>
 
-  {/* User ID */}
-  <div>
-    <label className="block mb-1 text-sm font-medium text-blue-800">
-      User ID
-    </label>
-    <div className="relative">
-      <FaIdBadge className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
-      <input
-        type="text"
-        value={userId}
-        onChange={(e) => setUserId(e.target.value)}
-        className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
-      />
-    </div>
-    {userError && (
-      <p className="mt-1 text-sm text-red-600">{userError}</p>
-    )}
-  </div>
+        {/* User ID */}
+        <div>
+          <label className="block mb-1 text-sm font-medium text-blue-800">
+            User ID
+          </label>
+          <div className="relative">
+            <FaIdBadge className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="text"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+            />
+          </div>
+          {userError && (
+            <p className="mt-1 text-sm text-red-600">{userError}</p>
+          )}
+        </div>
 
-  {/* Username */}
-  <div>
-    <label className="block mb-1 text-sm font-medium text-blue-800 cursor-not-allowed">
-      Username
-    </label>
-    <div className="relative">
-      <FaUser className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
-      <input
-        type="text"
-        value={username}
-        readOnly
-        className="w-full py-2 pl-10 pr-3 bg-gray-100 border border-gray-200 shadow-inner cursor-not-allowed rounded-xl"
-      />
-    </div>
-  </div>
+        {/* Username */}
+        <div>
+          <label className="block mb-1 text-sm font-medium text-blue-800 cursor-not-allowed">
+            Username
+          </label>
+          <div className="relative">
+            <FaUser className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+            <input
+              type="text"
+              value={username}
+              readOnly
+              className="w-full py-2 pl-10 pr-3 bg-gray-100 border border-gray-200 shadow-inner cursor-not-allowed rounded-xl"
+            />
+          </div>
+        </div>
 
-  {/* Status Filter */}
-  
-    <div>
-              <label className="block mb-1 text-sm font-semibold text-blue-700">
-                Status
-              </label>
-              <div className="relative">
-                <FaFilter className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
-                >
-                  <option value="">All Status</option>
-                  <option value="Approved">Approved</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
-              </div>
-            </div>
+        {/* Status Filter */}
 
-  {/* Buttons row */}
-  <div className="flex items-center mt-2 space-x-4 justify-left col-span-full">
-    <button
-      onClick={handleSearch}
-      className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700"
-    >
-      <Search className="w-5 h-5" />
-      Search
-    </button>
-    <button
-      onClick={handleExport}
-      className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700"
-    >
-      <FileSpreadsheet className="w-5 h-5" />
-      Export Excel
-    </button>
-    <button
-      onClick={handleRefresh}
-      className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
-    >
-      <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
-      Refresh
-    </button>
-  </div>
-</div>
+        <div>
+          <label className="block mb-1 text-sm font-semibold text-blue-700">
+            Status
+          </label>
+          <div className="relative">
+            <FaFilter className="absolute text-blue-500 -translate-y-1/2 left-3 top-1/2" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full py-2 pl-10 pr-3 border border-gray-300 shadow-sm rounded-xl focus:ring-2 focus:ring-blue-300 focus:outline-none"
+            >
+              <option value="">All Status</option>
+              <option value="Approved">Approved</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Buttons row */}
+        <div className="flex items-center mt-2 space-x-4 justify-left col-span-full">
+          <button
+            onClick={handleSearch}
+            disabled={loading}
+            className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
+            {loading ? 'Searching...' : 'Search'}
+          </button>
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-green-600 rounded-lg shadow hover:bg-green-700"
+          >
+            <FileSpreadsheet className="w-5 h-5" />
+            Export Excel
+          </button>
+          <button
+            onClick={handleRefresh}
+            className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+          >
+            <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
+            Refresh
+          </button>
+        </div>
+      </div>
 
 
 

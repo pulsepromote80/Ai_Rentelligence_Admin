@@ -8,6 +8,7 @@ import { FaRegFile } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { getNetworkTree } from "@/app/redux/communitySlice";
 import toast from "react-hot-toast";
+import Loading from "@/app/common/loading";
 
 
 const buildTreeData = (data, collapsedNodes) => {
@@ -261,7 +262,7 @@ const CustomNode = ({ nodeDatum, toggleNode }) => {
 
 export default function IntelligentTreeView() {
   const dispatch = useDispatch();
-  const { getNetworkTreeData } = useSelector((state) => state.community);
+  const { getNetworkTreeData, loading } = useSelector((state) => state.community);
 
   const containerRef = useRef(null);
   const [translate, setTranslate] = useState({ x: 400, y: 100 });
@@ -334,9 +335,10 @@ useEffect(() => {
       <div className="flex mt-3">
         <button
           onClick={handleSearch}
-          className="flex items-center justify-center w-full gap-2 px-5 py-2 text-white bg-blue-600 shadow rounded-xl hover:bg-blue-700"
+          disabled={loading}
+          className="flex items-center justify-center w-full gap-2 px-5 py-2 text-white bg-blue-600 shadow rounded-xl hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
         >
-          Search
+          {loading ? "Searching..." : "Search"}
         </button>
       </div>
       </div>
@@ -347,7 +349,9 @@ useEffect(() => {
           ref={containerRef}
           className="flex items-center justify-center w-full h-screen mt-6 bg-gray-100"
         >
-          {treeData && treeData.length > 0 ? (
+          {loading ? (
+            <Loading />
+          ) : treeData && treeData.length > 0 ? (
             <Tree
               data={treeData}
               translate={translate}
