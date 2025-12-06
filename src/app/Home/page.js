@@ -10,7 +10,6 @@ export default function Home() {
 
       {/* Card with hover animation */}
       <div className="flex flex-col items-center w-full max-w-3xl gap-6 p-8 text-center transition-all duration-500 transform bg-white shadow-2xl rounded-3xl hover:scale-105 hover:shadow-3xl animate-fadeIn ">
-        
         {/* Robot Icon with bounce animation */}
         <div className="mb-4 text-6xl text-indigo-500 animate-bounce">
           <FaRobot />
