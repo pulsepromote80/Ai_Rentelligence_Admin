@@ -13,7 +13,6 @@ export default function Home() {
         <div className="mb-4 text-6xl text-indigo-500 animate-bounce">
           <FaRobot />
         </div>
-
         {/* Heading with gradient text */}
         <h1 className="mb-2 text-3xl font-extrabold text-transparent md:text-3xl bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 animate-textFade">
           The Marketplace of Intelligent Agents
