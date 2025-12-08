@@ -133,10 +133,9 @@ const LeaseAgentPage = () => {
     { value: 1, label: 'Zero Pin' },
     { value: 2, label: 'Power' },
     { value: 3, label: 'Adjust Package 50-50' },
-    { value: 4, label: 'Adjust Package 10%-90%' },
-    { value: 5, label: 'Adjust Package 15%-85%' },
-    { value: 6, label: 'Adjust Package 20%-80%' },
-    { value: 7, label: 'Adjust Package 25%-75%' },
+    { value: 4, label: 'Adjust Pack 15% USDT Monthly  3%' },
+    { value: 5, label: 'Adjust Pack  20% USDT Monthly  4%' },
+    { value: 6, label: 'Adjust Pack  25% USDT Monthly  5%' },
   ];
 
   // Form handlers

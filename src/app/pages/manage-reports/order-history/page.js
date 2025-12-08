@@ -27,6 +27,8 @@ const OrderHistory = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [userError, setUserError] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+  const [refreshLoading, setRefreshLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
 
   const indexOfLastItem = currentPage * entriesPerPage;
   const indexOfFirstItem = indexOfLastItem - entriesPerPage;
@@ -66,14 +68,23 @@ const OrderHistory = () => {
     fetchUsername();
   }, [userId, dispatch]);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
+    setSearchLoading(true);
     const payload = {
       authLogin: userId || "",
       productName: selectedProductName || "",
       fromDate: formatDate(fromDate) || "",
       toDate: formatDate(toDate) || "",
     };
-    dispatch(getLeaseStatemtnt(payload));
+
+    try {
+      await dispatch(getLeaseStatemtnt(payload));
+    } catch (err) {
+      console.error("Search failed:", err);
+    } finally {
+      setSearchLoading(false);
+    }
+
     setHasSearched(true);
   };
 
@@ -106,23 +117,30 @@ const OrderHistory = () => {
     saveAs(data, "Transactions.xlsx");
   };
 
-  const handleRefresh = () => {
-    setFromDate("");
-    setToDate("");
-    setSelectedProductName("");
-    setUserId("");
-    setUsername("");
-    setUserError("");
-    setCurrentPage(1);
-    setHasSearched(false);
-
+  const handleRefresh = async () => {
+    setRefreshLoading(true);
     const payload = {
-      authLogin: userId || "",
-      productName: selectedProductName || "",
-      fromDate: formatDate(fromDate) || "",
-      toDate: formatDate(toDate) || "",
+      authLogin: "",
+      productName: "",
+      fromDate: "",
+      toDate: "",
     };
-    dispatch(getLeaseStatemtnt(payload));
+
+    try {
+      await dispatch(getLeaseStatemtnt(payload));
+    } catch (err) {
+      console.error("Refresh failed:", err);
+    } finally {
+      setRefreshLoading(false);
+      setFromDate("");
+      setToDate("");
+      setSelectedProductName("");
+      setUserId("");
+      setUsername("");
+      setUserError("");
+      setCurrentPage(1);
+      setHasSearched(false);
+    }
   };
 
   return (
@@ -239,18 +257,22 @@ const OrderHistory = () => {
         <div className="flex items-end gap-4 justify-space-between">
           <button
             onClick={handleSearch}
-            disabled={loading}
+            disabled={searchLoading}
             className="flex items-center gap-2 px-6 py-2 font-semibold text-white transition bg-blue-600 rounded-lg shadow hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? <Spinner size={5} color="text-white" /> : <Search className="w-5 h-5" />}
-            {loading ? "Searching..." : "Search"}
+            {searchLoading ? <Spinner size={5} color="text-white" /> : <Search className="w-5 h-5" />}
+            {searchLoading ? "Searching..." : "Search"}
           </button>
           <button
-            onClick={handleRefresh}
-            className=" flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+            onClick={(e) => {
+              e.preventDefault();
+              handleRefresh();
+            }}
+            disabled={refreshLoading}
+            className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
-            Refresh
+            <FaSyncAlt className={`w-4 h-4 ${refreshLoading ? 'animate-spin' : 'animate-spin-on-hover'}`} />
+            {refreshLoading ? "Refreshing..." : "Refresh"}
           </button>
         </div>
       </div>

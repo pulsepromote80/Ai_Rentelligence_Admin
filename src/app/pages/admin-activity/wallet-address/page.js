@@ -7,6 +7,7 @@ import {
   generateWalletAddress,
   getAllWalletAddress,
 } from '@/app/redux/adminMangeUserSlice'
+import Spinner from '@/app/common/spinner'
 
 const WalletAddress = () => {
   const [quantity, setQuantity] = useState(0)
@@ -83,10 +84,13 @@ const WalletAddress = () => {
         </div>
         <button
           type="submit"
-          className="w-full px-4 py-2 font-semibold text-white transition-all duration-200 rounded-lg shadow bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800"
+          className="w-full px-4 py-2 font-semibold text-white transition-all duration-200 rounded-lg shadow bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={loading}
         >
-          {loading ? 'Generating...' : 'Generate Address'}
+          {loading ? <div className="flex items-center justify-center">
+              <Spinner />
+              <span className="ml-2">Generating...</span>
+            </div>: 'Generate Address'}
         </button>
       </form>
       {error && (

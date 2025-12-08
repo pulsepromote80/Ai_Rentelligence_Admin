@@ -7,6 +7,7 @@ import { Eye, EyeOff, User, Mail, Phone, Lock } from "lucide-react";
 import { toast } from "react-toastify";
 import { clearError, registerUser } from "@/app/redux/authSlice";
 import Loading from "@/app/common/loading";
+import Spinner from "@/app/common/spinner";
 import {
   isValidEmail,
   isValidMobile,
@@ -264,7 +265,14 @@ const AdminRegistration = () => {
               registrationComplete ? "opacity-70 cursor-not-allowed" : ""
             }`}
           >
-            Create Account
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <Spinner size={4} color="text-white" />
+                <span>Creating Account...</span>
+              </div>
+            ) : (
+              "Create Account"
+            )}
           </button>
         </form>
       </div>
