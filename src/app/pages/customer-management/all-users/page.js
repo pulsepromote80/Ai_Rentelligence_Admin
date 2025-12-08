@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addAdminManageUser } from '@/app/redux/adminMangeUserSlice';
+import { addAdminManageUser, clearSearchData } from '@/app/redux/adminMangeUserSlice';
 import { toast } from 'react-toastify';
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver';
@@ -117,6 +117,7 @@ const AllUsers = () => {
 
   const handleRefresh = () => {
     setIsRefreshing(true);
+    dispatch(clearSearchData());
     const emptyForm = {
       authLogin: "",
       fname: "",
@@ -332,7 +333,7 @@ const AllUsers = () => {
           </button>
           <button
             onClick={handleRefresh}
-            disabled={loading || isRefreshing}
+            disabled={ isRefreshing}
             className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FaSyncAlt className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : 'animate-spin-on-hover'}`} />{isRefreshing ? "Refreshing.." : " Refresh"}

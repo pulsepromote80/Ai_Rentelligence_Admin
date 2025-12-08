@@ -27,6 +27,7 @@ const Statement = () => {
   const [userError, setUserError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [refreshLoading, setRefreshLoading] = useState(false)
 
   const indexOfLastItem = currentPage * entriesPerPage
   const indexOfFirstItem = indexOfLastItem - entriesPerPage
@@ -166,23 +167,42 @@ const Statement = () => {
     saveAs(data, 'Transactions.xlsx')
   }
 
-  const handleRefresh = () => {
-    setFromDate('')
-    setToDate('')
-    setUserId('')
-    setUsername('')
-    setUserError('')
-    setCurrentPage(1)
-    setHasSearched(false)
+  const handleRefresh = async () => {
+    setRefreshLoading(true)
     const payload = {
-      authLogin: userId || '',
-      transtype: transactionType || '',
-      fromDate: formatDate(fromDate) || '',
-      toDate: formatDate(toDate) || '',
-      wtype: getWalletType(selectedWallet),
+      authLogin: '',
+      transtype: '',
+      fromDate: '',
+      toDate: '',
+      wtype: 0,
     }
 
-    dispatch(getAccStatemtnt(payload))
+    try {
+      const resultAction = await dispatch(getAccStatemtnt(payload))
+
+      if (getAccStatemtnt.fulfilled.match(resultAction)) {
+        const res = resultAction.payload
+
+        if (res?.statusCode !== 200) {
+          toast.error(res?.message || "Something went wrong!")
+        } else {
+          toast.success("Data refreshed successfully!")
+        }
+      } else if (getAccStatemtnt.rejected.match(resultAction)) {
+        toast.error(resultAction.payload || "API Request Failed!")
+      }
+    } catch (err) {
+      toast.error("Unexpected error occurred!")
+    } finally {
+      setRefreshLoading(false)
+      setFromDate('')
+      setToDate('')
+      setUserId('')
+      setUsername('')
+      setUserError('')
+      setCurrentPage(1)
+      setHasSearched(false)
+    }
   }
 
   return (
@@ -336,10 +356,11 @@ const Statement = () => {
         <div className="flex items-end">
           <button
             onClick={handleRefresh}
-            className="flex items-center justify-center w-full gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+            disabled={refreshLoading}
+            className="flex items-center justify-center w-full gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
-            Refresh
+            <FaSyncAlt className={`w-4 h-4 ${refreshLoading ? 'animate-spin' : 'animate-spin-on-hover'}`} />
+            {refreshLoading ? "Refreshing..." : "Refresh"}
           </button>
         </div>
       </div>

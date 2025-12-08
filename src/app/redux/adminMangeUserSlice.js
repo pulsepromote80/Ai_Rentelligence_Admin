@@ -65,6 +65,11 @@ export const getAllWalletAddress = createAsyncThunk(
     allWalletData:null
   },
   reducers: {
+    clearSearchData: (state) => {
+      state.searchData = null;
+      state.loading = false;
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -111,5 +116,7 @@ export const getAllWalletAddress = createAsyncThunk(
     }
   }
 );
+
+export const { clearSearchData } = adminManageUserSlice.actions;
 
 export default adminManageUserSlice.reducer;
