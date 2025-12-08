@@ -3,10 +3,9 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { usernameLoginId, clearUsernameData, getRechargeTransactionAdmin } from '@/app/redux/adminMasterSlice';
 import { getProductList } from '@/app/redux/productSlice';
-import ImagePopup from "@/app/pages/image-popup/page";
+import Spinner from '@/app/common/spinner';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
-import { selectLoading } from '../../sidebar/sidebar-selectors';
 
 const LeaseAgentPage = () => {
   const dispatch = useDispatch();
