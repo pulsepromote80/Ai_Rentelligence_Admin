@@ -5,6 +5,7 @@ import { getdirectMember } from "@/app/redux/communitySlice";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { FaSearch, FaFileExcel, FaSyncAlt } from "react-icons/fa";
+import Spinner from "@/app/common/spinner";
 
 export default function Affiliate() {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ export default function Affiliate() {
   const [loginId, setLoginId] = useState("");
   const [searched, setSearched] = useState(false);
   const [errors, setErrors] = useState({});
+  const [refreshLoading, setRefreshLoading] = useState(false);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,9 +74,13 @@ export default function Affiliate() {
 
   // Refresh
   const handleRefresh = () => {
-    setLoginId("");
-    setSearched(false);
-    setCurrentPage(1);
+    setRefreshLoading(true);
+    setTimeout(() => {
+      setLoginId("");
+      setSearched(false);
+      setCurrentPage(1);
+      setRefreshLoading(false);
+    }, 1000); // Simulate loading time
   };
 
   // Pagination calculation
@@ -110,9 +116,10 @@ export default function Affiliate() {
         <div className="flex">
           <button
             onClick={handleSearch}
-            className="flex items-center justify-center w-full gap-2 px-5 py-2 text-white bg-blue-600 shadow rounded-xl hover:bg-blue-700"
+            disabled={loading}
+            className="flex items-center justify-center w-full gap-2 px-5 py-2 text-white bg-blue-600 shadow rounded-xl hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <FaSearch className="w-4 h-4" /> Search
+            {loading ? <Spinner size={4} color="text-white" /> : <FaSearch className="w-4 h-4" />} Search
           </button>
         </div>
 
@@ -130,9 +137,10 @@ export default function Affiliate() {
         <div className="flex">
           <button
             onClick={handleRefresh}
-            className="flex items-center justify-center w-full gap-2 px-5 py-2 text-white bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+            disabled={refreshLoading}
+            className="flex items-center justify-center w-full gap-2 px-5 py-2 text-white bg-gray-600 shadow rounded-xl hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <FaSyncAlt className="w-4 h-4" /> Refresh
+            {refreshLoading ? <Spinner size={4} color="text-white" /> : <FaSyncAlt className="w-4 h-4" />} Refresh
           </button>
         </div>
       </div>

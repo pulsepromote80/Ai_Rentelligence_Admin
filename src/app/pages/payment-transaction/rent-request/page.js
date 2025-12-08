@@ -52,6 +52,7 @@ const RentRequest = () => {
   const [userError, setUserError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
   const [isSearching, setIsSearching] = useState(false)
+  const [isRefreshing, setIsRefreshing] = useState(false)
   const [processedRequests, setProcessedRequests] = useState(new Set())
   const [selectedRequest, setSelectedRequest] = useState({ authLoginId: null, id: null })
 
@@ -154,21 +155,26 @@ const RentRequest = () => {
     saveAs(data, 'Transactions.xlsx')
   }
 
-  const handleRefresh = () => {
-  setFromDate('')
-  setToDate('')
-  setUserId('')
-  setUsername('')
-  setUserError('')
-  setCurrentPage(1)
-  setHasSearched(false)
-  
-  dispatch(getRentWallet({
-    authLogin: '',
-    fromDate: '',
-    toDate: ''
-  }))
-}
+  const handleRefresh = async () => {
+    setIsRefreshing(true)
+    setFromDate('')
+    setToDate('')
+    setUserId('')
+    setUsername('')
+    setUserError('')
+    setCurrentPage(1)
+    setHasSearched(false)
+
+    try {
+      await dispatch(getRentWallet({
+        authLogin: '',
+        fromDate: '',
+        toDate: ''
+      }))
+    } finally {
+      setIsRefreshing(false)
+    }
+  }
   // Function to fetch BSC wallet balance
   const fetchWalletBalances = async (accountAddress) => {
     try {
@@ -820,9 +826,19 @@ const RentRequest = () => {
             </button>
             <button
               onClick={handleRefresh}
-              className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+              disabled={isRefreshing}
+              className={`flex items-center gap-2 px-5 py-2 text-white shadow rounded-xl transition ${
+                isRefreshing
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-gray-600 hover:bg-gray-700'
+              }`}
             >
-              <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" /> Refresh
+              {isRefreshing ? (
+                <FaSpinner className="w-4 h-4 animate-spin" />
+              ) : (
+                <FaSyncAlt className="w-4 h-4" />
+              )}
+              {isRefreshing ? 'Refreshing...' : 'Refresh'}
             </button>
           </div>
         </div>

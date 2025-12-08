@@ -17,6 +17,7 @@ import {
   FaSyncAlt,
   FaFilter
 } from 'react-icons/fa'
+import Spinner from '@/app/common/spinner'
 
 const RentWallet = () => {
   const dispatch = useDispatch()
@@ -33,6 +34,7 @@ const RentWallet = () => {
   const [userError, setUserError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
   const [statusFilter, setStatusFilter] = useState("")
+  const [refreshLoading, setRefreshLoading] = useState(false)
 
   const formatDate = (dateString) => {
     if (!dateString) return ''
@@ -110,7 +112,8 @@ const RentWallet = () => {
     saveAs(data, 'Transactions.xlsx')
   }
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
+    setRefreshLoading(true)
     setFromDate('')
     setToDate('')
     setUserId('')
@@ -119,6 +122,10 @@ const RentWallet = () => {
     setStatusFilter('')
     setCurrentPage(1)
     setHasSearched(false)
+    // Simulate loading delay
+    setTimeout(() => {
+      setRefreshLoading(false)
+    }, 1000) // 1 second delay
   }
 
 
@@ -279,9 +286,22 @@ const RentWallet = () => {
           </button>
           <button
             onClick={handleRefresh}
-            className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+            disabled={refreshLoading}
+            className={`flex items-center gap-2 px-5 py-2 text-white transition shadow rounded-xl ${
+              refreshLoading
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-gray-600 hover:bg-gray-700'
+            }`}
           >
-            <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" /> Refresh
+            {refreshLoading ? (
+              <>
+                <FaSyncAlt className="w-4 h-4 animate-spin" /> Refreshing...
+              </>
+            ) : (
+              <>
+                <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" /> Refresh
+              </>
+            )}
           </button>
         </div>
       </div>

@@ -16,6 +16,7 @@ import DeletePopup from '@/app/common/utils/delete-popup'
 import { eventData, eventLoading } from './event-selectors'
 import { getAdminUserId } from '@/app/pages/api/auth'
 import ScheduleModal from '@/app/components/ScheduleModal'
+import Spinner from '@/app/common/spinner'
 
 const Event = () => {
   const dispatch = useDispatch()
@@ -1363,14 +1364,14 @@ const Event = () => {
           <div className="flex gap-2 pt-4">
             <button
               type="submit"
-              className={`px-6 py-2 text-white rounded-md ${
-                formData.Status === 1 
-                  ? 'bg-green-600 hover:bg-green-700' 
+              className={`px-6 py-2 text-white rounded-md flex items-center gap-2 ${
+                formData.Status === 1
+                  ? 'bg-green-600 hover:bg-green-700'
                   : 'bg-gray-600 hover:bg-gray-700'
               }`}
               disabled={loading || isSessionSeatsExceeded}
             >
-              {editMode ? publishButtonText : submitButtonText}
+              {loading && <Spinner size={4} color="text-white" />} {editMode ? publishButtonText : submitButtonText}
             </button>
             <button
               type="button"

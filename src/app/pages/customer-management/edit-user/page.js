@@ -8,6 +8,7 @@ import {
 import { updateUser, getAllCountry } from '@/app/redux/authSlice'
 import { toast } from 'react-toastify'
 import Select from 'react-select'
+import Spinner from '@/app/common/spinner'
 
 const CountryOption = ({ innerProps, data, isFocused }) => (
   <div
@@ -114,49 +115,49 @@ const EditUser = () => {
     }
   }, [usernameError])
 
-  
- useEffect(() => {
-  if (usernameData) {
-    setFields({
-      name: usernameData.name || '',
-      fName: usernameData.fName || '',
-      lName: usernameData.lName || '',
-      email: usernameData.email || '',
-      address: usernameData.address || '',
-      mobile: usernameData.mobile || '',
-      countryid: usernameData.countryId || 0,
-      walletBep20: usernameData.walletBep20 || '',
-    });
 
-    // Country data setup with flag from getAllCountryData
-    if (usernameData.country_Name && getAllCountryData?.data) {
-      // Find the country in getAllCountryData by name to get the flag
-      const countryFromList = getAllCountryData.data.find(
-        country => country.country_Name?.toLowerCase() === usernameData.country_Name?.toLowerCase()
-      );
+  useEffect(() => {
+    if (usernameData) {
+      setFields({
+        name: usernameData.name || '',
+        fName: usernameData.fName || '',
+        lName: usernameData.lName || '',
+        email: usernameData.email || '',
+        address: usernameData.address || '',
+        mobile: usernameData.mobile || '',
+        countryid: usernameData.countryId || 0,
+        walletBep20: usernameData.walletBep20 || '',
+      });
 
-      const countryOption = {
-        value: usernameData.countryId,
-        label: usernameData.country_Name,
-        countryFlag: countryFromList?.countryFlag || '', // Get flag from country list
-        countryCode: usernameData.phonecode,
-      };
-      
-      setSelectedCountry(countryOption);
-      setCountryCode(usernameData.phonecode);
-    } else if (usernameData.country_Name) {
-      // Fallback if getAllCountryData is not available yet
-      const countryOption = {
-        value: usernameData.countryId,
-        label: usernameData.country_Name,
-        countryFlag: '', // No flag available
-        countryCode: usernameData.phonecode,
-      };
-      setSelectedCountry(countryOption);
-      setCountryCode(usernameData.phonecode);
+      // Country data setup with flag from getAllCountryData
+      if (usernameData.country_Name && getAllCountryData?.data) {
+        // Find the country in getAllCountryData by name to get the flag
+        const countryFromList = getAllCountryData.data.find(
+          country => country.country_Name?.toLowerCase() === usernameData.country_Name?.toLowerCase()
+        );
+
+        const countryOption = {
+          value: usernameData.countryId,
+          label: usernameData.country_Name,
+          countryFlag: countryFromList?.countryFlag || '', // Get flag from country list
+          countryCode: usernameData.phonecode,
+        };
+
+        setSelectedCountry(countryOption);
+        setCountryCode(usernameData.phonecode);
+      } else if (usernameData.country_Name) {
+        // Fallback if getAllCountryData is not available yet
+        const countryOption = {
+          value: usernameData.countryId,
+          label: usernameData.country_Name,
+          countryFlag: '', // No flag available
+          countryCode: usernameData.phonecode,
+        };
+        setSelectedCountry(countryOption);
+        setCountryCode(usernameData.phonecode);
+      }
     }
-  }
-}, [usernameData, getAllCountryData]);
+  }, [usernameData, getAllCountryData]);
   useEffect(() => {
     if (updateUserData && updateUserData.statusCode === 200) {
       toast.success(updateUserData.message || 'User updated successfully!')
@@ -306,8 +307,8 @@ const EditUser = () => {
               <input
                 type="text"
                 className={`w-full px-4 py-3 text-sm border rounded-xl bg-gray-50 focus:outline-none focus:ring-2 ${userIdError
-                    ? "border-red-400 focus:ring-red-300"
-                    : "border-gray-200 focus:ring-purple-300"
+                  ? "border-red-400 focus:ring-red-300"
+                  : "border-gray-200 focus:ring-purple-300"
                   }`}
                 value={authLogin}
                 onChange={handleUserIdChange}
@@ -526,10 +527,13 @@ const EditUser = () => {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-3 text-sm font-semibold text-white transition-all rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
+                  className="w-full py-3 text-sm font-semibold text-white transition-all rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
-                  {loading ? "Updating..." : "Update Profile"}
+                  {loading ? <div className="flex items-center justify-center gap-2">
+                    <Spinner size={4} color="text-white" />
+                    <span>Updating...</span>
+                  </div> : "Update Profile"}
                 </button>
               </div>
             </form>

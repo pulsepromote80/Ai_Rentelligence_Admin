@@ -3,10 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { usernameLoginId, blockUserByAdmin } from '@/app/redux/adminMasterSlice';
 import { toast } from 'react-toastify';
+import Spinner from '@/app/common/spinner';
+
 
 const BlockUser = () => {
   const dispatch = useDispatch();
-  const { usernameData, blockUserData, loading, error } = useSelector((state) => state.adminMaster);
+  const { usernameData, loading, error } = useSelector((state) => state.adminMaster);
   const [authLogin, setAuthLogin] = useState('');
   const [touched, setTouched] = useState(false);
   const [errors, setErrors] = useState({});
@@ -99,11 +101,10 @@ const BlockUser = () => {
               </label>
               <input
                 type="text"
-                className={`w-full px-4 py-3 text-sm border rounded-xl bg-gray-50 focus:outline-none focus:ring-2 ${
-                  errors.authLogin || errors.title
-                    ? 'border-red-400 focus:ring-red-300'
-                    : 'border-gray-200 focus:ring-blue-300'
-                }`}
+                className={`w-full px-4 py-3 text-sm border rounded-xl bg-gray-50 focus:outline-none focus:ring-2 ${errors.authLogin || errors.title
+                  ? 'border-red-400 focus:ring-red-300'
+                  : 'border-gray-200 focus:ring-blue-300'
+                  }`}
                 value={authLogin}
                 onChange={handleUserIdChange}
                 onBlur={handleBlurOrFetch}
@@ -142,10 +143,13 @@ const BlockUser = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full py-3 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 transition-all"
+            className="w-full py-3 text-sm font-semibold text-white rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             disabled={loading || !!errors.authLogin}
           >
-            {loading ? 'Blocking...' : 'Block User'}
+            {loading ? <div className="flex items-center justify-center gap-2">
+              <Spinner size={4} color="text-white" />
+              <span>Blocking...</span>
+            </div> : 'Block User'}
           </button>
         </form>
 

@@ -6,6 +6,7 @@ import {
   ChangeAdminSponser,
 } from '@/app/redux/adminMasterSlice'
 import { toast } from 'react-toastify'
+import Spinner from '@/app/common/spinner'
 
 const ChangeSponser = () => {
   const dispatch = useDispatch()
@@ -207,19 +208,17 @@ const ChangeSponser = () => {
                   placeholder="Sponsor Name"
                 />
               </div>
-           <div className="flex items-center gap-2">
-  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-    <input
-      type="checkbox"
-      checked={lvlopen === 1}
-      onChange={(e) => setLvlopen(e.target.checked ? 1 : 0)}
-      className="text-purple-600 focus:ring-purple-500"
-    />
-    Level Open
-  </label>
-</div>
-
-
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                  <input
+                    type="checkbox"
+                    checked={lvlopen === 1}
+                    onChange={(e) => setLvlopen(e.target.checked ? 1 : 0)}
+                    className="text-purple-600 focus:ring-purple-500"
+                  />
+                  Level Open
+                </label>
+              </div>
 
             </div>
           )}
@@ -227,10 +226,13 @@ const ChangeSponser = () => {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full py-3 mt-6 text-lg font-semibold text-white rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full py-3 mt-6 text-lg font-semibold text-white rounded-lg bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!!errors.authLogin}
           >
-            {loading ? 'Processing...' : 'Submit'}
+            {loading ? <div className="flex items-center justify-center gap-2">
+              <Spinner size={4} color="text-white" />
+              <span>Processing...</span>
+            </div> : 'Submit'}
           </button>
         </form>
 

@@ -9,6 +9,7 @@ import Image from "next/image";
 import { categoryData, categoryLoading } from "./category-selectors";
 import DeletePopup from '@/app/common/utils/delete-popup';
 import { limitToCharacters, validateRequiredField } from '@/app/common/utils/validationHelpers';
+import Spinner from '@/app/common/spinner';
 
 const Category = () => {
   const dispatch = useDispatch();
@@ -157,7 +158,6 @@ const Category = () => {
         )}
       </div>
 
-
       {/* Form */}
       {showForm && (
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -201,9 +201,10 @@ const Category = () => {
           <div className="flex gap-2">
             <button
               type="submit"
-              className="px-4 py-2 text-white rounded-md bg-submit-btn hover:bg-green-700"
+              className="px-4 py-2 text-white rounded-md bg-submit-btn hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               disabled={loading}
             >
+              {loading && <Spinner size={4} color="text-white" />}
               {submitButtonText}
             </button>
             <button

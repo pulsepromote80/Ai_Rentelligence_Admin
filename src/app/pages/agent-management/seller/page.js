@@ -13,6 +13,7 @@ import {
 import { toast } from 'react-toastify'
 import DeletePopup from '@/app/common/utils/delete-popup'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import Spinner from '@/app/common/spinner'
 
 const INITIAL_FORM_DATA = {
   name: '',
@@ -426,9 +427,10 @@ const SellerPage = () => {
           <div className="flex gap-2 mt-4">
             <button
               type="submit"
-              className="px-4 py-2 text-white rounded bg-submit-btn hover:bg-green-600"
+              disabled={loading}
+              className="px-4 py-2 text-white rounded bg-submit-btn disabled:opacity-50 disabled:cursor-not-allowed hover:bg-green-600 flex gap-2 items-center justify-center"
             >
-              {editMode ? 'Update' : 'Submit'}
+              {loading ? <><Spinner size={4} /> {editMode ? 'Updating...' : 'Submitting...'}</> : (editMode ? 'Update' : 'Submit')}
             </button>
             <button
               type="button"

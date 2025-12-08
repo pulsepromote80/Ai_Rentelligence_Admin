@@ -15,6 +15,7 @@ const CreditDebitFund = () => {
   });
   const [filteredTypes, setFilteredTypes] = useState([]);
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
   const dispatch = useDispatch();
   const { data: walletData, loading, error} = useSelector((state) => state.adminManageFund);
  
@@ -106,6 +107,7 @@ const CreditDebitFund = () => {
   // };
 const handleSubmit = async (e) => {
   e.preventDefault();
+  setSubmitting(true);
   let newErrors = {};
   if (!form.loginId.trim()) newErrors.loginId = 'UserId is required';
   if (!form.wallet) newErrors.wallet = 'Select Wallet is required';
@@ -168,6 +170,8 @@ const handleSubmit = async (e) => {
     });
   } catch (err) {
     toast.error(err?.message || 'Failed to add fund.');
+  } finally {
+    setSubmitting(false);
   }
 };
   return (
@@ -350,7 +354,7 @@ const handleSubmit = async (e) => {
           </div>
         </>
       )}
-    </div>
+    </div> 
 
     {/* Status Messages */}
     {loading && <div className="mt-4 text-center text-blue-600 animate-pulse">Loading wallet details...</div>}
@@ -359,10 +363,10 @@ const handleSubmit = async (e) => {
     {/* Submit Button */}
     <button
       type="submit"
-      disabled={!!errors.authLogin}
-      className="w-full py-3 mt-6 text-lg font-bold text-white shadow rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      disabled={!!errors.authLogin || submitting}
+      className="w-full py-3 mt-6 text-lg font-bold text-white shadow rounded-xl bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      Submit
+      {submitting ? 'Submitting...' : 'Submit'}
     </button>
   </form>
 </div>

@@ -127,13 +127,24 @@ const sellerSlice = createSlice({
         state.error = action.payload
         state.loading = false
       })
+      .addCase(addSeller.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
       .addCase(addSeller.fulfilled, (state, action) => {
+        state.loading = false
         state.sellers.push(action.payload)
       })
       .addCase(addSeller.rejected, (state, action) => {
+        state.loading = false
         state.error = action.payload
       })
+      .addCase(updateSeller.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
       .addCase(updateSeller.fulfilled, (state, action) => {
+        state.loading = false
         const updatedSeller = action.payload
         if (!updatedSeller || !updatedSeller.sellerId) return
         const index = state.sellers.findIndex(
@@ -142,6 +153,7 @@ const sellerSlice = createSlice({
         if (index !== -1) state.sellers[index] = updatedSeller
       })
       .addCase(updateSeller.rejected, (state, action) => {
+        state.loading = false
         state.error = action.payload
       })
       .addCase(deleteSeller.fulfilled, (state, action) => {

@@ -14,6 +14,7 @@ import ProductMetaTag from '../main-product/product-metaTag/page'
 import Tiptap from '@/app/common/rich-text-editor'
 import { AiOutlinePlusCircle } from "react-icons/ai";
 import { set } from 'react-hook-form'
+import Spinner from '@/app/common/spinner'
 
 const AddProduct = ({ onClose, productId }) => {
   const dispatch = useDispatch()
@@ -55,13 +56,12 @@ const AddProduct = ({ onClose, productId }) => {
   const [similarProductData, setSimilarProductData] = useState(null);
   const [image, setImage] = useState(null);
   const [showSpecificationEditor, setShowSpecificationEditor] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     dispatch(fetchActiveCategoryList())
     dispatch(fetchActiveSellerList())
   }, [dispatch])
-
-
 
 useEffect(() => {
   if (!price || price.trim() === "") {
@@ -307,6 +307,8 @@ useEffect(() => {
   const handleSubmit = async () => {
     if (!validateForm()) return
 
+    setIsLoading(true);
+
     const productData = {
       title,
       subTitle,
@@ -367,6 +369,8 @@ useEffect(() => {
 
     } catch (error) {
       toast.error(error?.message || 'Failed to add product');
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -957,9 +961,17 @@ useEffect(() => {
             </button>
             <button
               onClick={handleSubmit}
-              className="px-4 py-2 text-white rounded-md bg-submit-btn hover:bg-green-700"
+              disabled={isLoading}
+              className={`px-4 py-2 text-white rounded-md flex items-center gap-2 ${isLoading ? 'bg-gray-500 cursor-not-allowed' : 'bg-submit-btn hover:bg-green-700'}`}
             >
-              Submit
+              {isLoading ? (
+                            <>
+                                <Spinner size={4} color="text-white" />
+                                <span className="ml-2">Submitting...</span>
+                            </>
+                        ) : (
+                            'Submit'
+                        )}
             </button>
           </div>
         </div>

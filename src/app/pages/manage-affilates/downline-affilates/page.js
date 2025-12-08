@@ -16,6 +16,7 @@ const DownlineAffiliates = () => {
     (state) => state.community
   );
   const [errors, setErrors] = useState({});
+  const [refreshLoading, setRefreshLoading] = useState(false);
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -76,9 +77,13 @@ const DownlineAffiliates = () => {
 
   // 🔄 Refresh
   const handleRefresh = () => {
-    setAuthLogin("");
-    setSearched(false);
-    setCurrentPage(1);
+    setRefreshLoading(true);
+    setTimeout(() => {
+      setAuthLogin("");
+      setSearched(false);
+      setCurrentPage(1);
+      setRefreshLoading(false);
+    }, 1000); // Simulate loading time
   };
 
   const data = Array.isArray(personalTeamList)
@@ -142,18 +147,10 @@ const DownlineAffiliates = () => {
 
         <button
           onClick={handleRefresh}
-          disabled={loading}
-          className={`flex items-center justify-center h-12 gap-2 px-5 text-white shadow rounded-xl ${loading
-            ? "bg-gray-400 cursor-not-allowed"
-            : "bg-gray-600 hover:bg-gray-700"
-            }`}
+          disabled={refreshLoading}
+          className="flex items-center justify-center h-12 gap-2 px-5 text-white bg-gray-600 shadow rounded-xl hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? (
-            <Spinner size={4} color="text-white" />
-          ) : (
-            <FaSyncAlt className="w-4 h-4" />
-          )}
-          {loading ? "Refreshing..." : "Refresh"}
+          {refreshLoading ? <Spinner size={4} color="text-white" /> : <FaSyncAlt className="w-4 h-4" />} Refresh
         </button>
       </div>
 
