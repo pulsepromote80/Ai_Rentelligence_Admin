@@ -7,6 +7,7 @@ import { Columns } from '@/app/constants/event-constant'
 import Loading from '@/app/common/loading'
 import { addEventPreImages, deleteEventImages, getEventImagesByEMID } from '@/app/redux/eventSlice'
 import { toast } from 'react-toastify'
+import Spinner from '@/app/common/spinner'
 
 const ClosedEvents = () => {
   const dispatch = useDispatch()
@@ -161,112 +162,112 @@ const ClosedEvents = () => {
   return (
     <div className="max-w-full mx-auto bg-white rounded-lg">
       {showScheduleModal && selectedEvent ? (
-        
+
         <div className="p-4">
-  <div className="flex flex-col mb-6 md:flex-row md:items-center md:justify-between">
-    <div className="mb-4 md:mb-0">
-      <h3 className="text-xl font-bold text-gray-800">Event Schedule Details</h3>
-      <p className="text-gray-600">Event: {selectedEvent.Tittle}</p>
-    </div>
-    <button
-      onClick={() => setShowScheduleModal(false)}
-      className="self-start px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg md:self-center hover:bg-blue-700"
-    >
-      ← Back to Events
-    </button>
-  </div>
-
-  <div className="bg-white border rounded-lg shadow">
-    <div className="p-4">
-      {isLoadingSchedules ? (
-        <div className="flex flex-col items-center justify-center py-12">
-          <div className="w-12 h-12 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
-          <p className="mt-4 text-gray-600">Loading event schedules...</p>
-        </div>
-      ) : eventSchedules.length > 0 ? (
-        <div className="overflow-x-auto">
-          <div className="block md:hidden">
-            {eventSchedules.map((schedule, index) => (
-              <div key={index} className="p-4 mb-4 border border-gray-200 rounded-lg">
-                <div className="flex items-start justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-500">S.No.</span>
-                  <span className="font-medium">{index + 1}</span>
-                </div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-500">Title</span>
-                  <span className="font-medium text-right">{schedule.Title}</span>
-                </div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-500">Time</span>
-                  <span>{schedule.Time}</span>
-                </div>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-500">Created Date</span>
-                  <span className="text-sm">{schedule.CreatedDate}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-500">Status</span>
-                  <span className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${schedule.ScheduleStatus?.toLowerCase() === 'open'
-                      ? 'bg-green-100 text-green-800'
-                      : schedule.ScheduleStatus?.toLowerCase() === 'closed'
-                        ? 'bg-gray-100 text-gray-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                    }`}>
-                    {schedule.ScheduleStatus}
-                  </span>
-                </div>
-              </div>
-            ))}
+          <div className="flex flex-col mb-6 md:flex-row md:items-center md:justify-between">
+            <div className="mb-4 md:mb-0">
+              <h3 className="text-xl font-bold text-gray-800">Event Schedule Details</h3>
+              <p className="text-gray-600">Event: {selectedEvent.Tittle}</p>
+            </div>
+            <button
+              onClick={() => setShowScheduleModal(false)}
+              className="self-start px-4 py-2 text-white transition-colors bg-blue-600 rounded-lg md:self-center hover:bg-blue-700"
+            >
+              ← Back to Events
+            </button>
           </div>
 
-          <div className="hidden md:block">
-            <table className="w-full border border-gray-300 rounded-lg">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">S.No.</th>
-                  <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">Title</th>
-                  <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">Time</th>
-                  <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">Created Date</th>
-                  <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {eventSchedules.map((schedule, index) => (
-                  <tr key={index} className="transition-colors hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm border">{index + 1}</td>
-                    <td className="px-4 py-3 text-sm font-medium border">{schedule.Title}</td>
-                    <td className="px-4 py-3 text-sm border">{schedule.Time}</td>
-                    <td className="px-4 py-3 text-sm border">{schedule.CreatedDate}</td>
-                    <td className="px-4 py-3 text-sm border">
-                      <span className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${schedule.ScheduleStatus?.toLowerCase() === 'open'
-                          ? 'bg-green-100 text-green-800'
-                          : schedule.ScheduleStatus?.toLowerCase() === 'closed'
-                            ? 'bg-gray-100 text-gray-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                        {schedule.ScheduleStatus}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="bg-white border rounded-lg shadow">
+            <div className="p-4">
+              {isLoadingSchedules ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="w-12 h-12 border-4 border-blue-500 rounded-full border-t-transparent animate-spin"></div>
+                  <p className="mt-4 text-gray-600">Loading event schedules...</p>
+                </div>
+              ) : eventSchedules.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <div className="block md:hidden">
+                    {eventSchedules.map((schedule, index) => (
+                      <div key={index} className="p-4 mb-4 border border-gray-200 rounded-lg">
+                        <div className="flex items-start justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-500">S.No.</span>
+                          <span className="font-medium">{index + 1}</span>
+                        </div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-500">Title</span>
+                          <span className="font-medium text-right">{schedule.Title}</span>
+                        </div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-500">Time</span>
+                          <span>{schedule.Time}</span>
+                        </div>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-gray-500">Created Date</span>
+                          <span className="text-sm">{schedule.CreatedDate}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm font-medium text-gray-500">Status</span>
+                          <span className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${schedule.ScheduleStatus?.toLowerCase() === 'open'
+                            ? 'bg-green-100 text-green-800'
+                            : schedule.ScheduleStatus?.toLowerCase() === 'closed'
+                              ? 'bg-gray-100 text-gray-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                            }`}>
+                            {schedule.ScheduleStatus}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="hidden md:block">
+                    <table className="w-full border border-gray-300 rounded-lg">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">S.No.</th>
+                          <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">Title</th>
+                          <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">Time</th>
+                          <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">Created Date</th>
+                          <th className="px-4 py-3 text-sm font-medium text-left text-gray-700 border">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {eventSchedules.map((schedule, index) => (
+                          <tr key={index} className="transition-colors hover:bg-gray-50">
+                            <td className="px-4 py-3 text-sm border">{index + 1}</td>
+                            <td className="px-4 py-3 text-sm font-medium border">{schedule.Title}</td>
+                            <td className="px-4 py-3 text-sm border">{schedule.Time}</td>
+                            <td className="px-4 py-3 text-sm border">{schedule.CreatedDate}</td>
+                            <td className="px-4 py-3 text-sm border">
+                              <span className={`inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full ${schedule.ScheduleStatus?.toLowerCase() === 'open'
+                                ? 'bg-green-100 text-green-800'
+                                : schedule.ScheduleStatus?.toLowerCase() === 'closed'
+                                  ? 'bg-gray-100 text-gray-800'
+                                  : 'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                {schedule.ScheduleStatus}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <div className="py-12 text-center">
+                  <div className="inline-flex items-center justify-center w-16 h-16 mb-4 text-gray-400 bg-gray-100 rounded-full">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                    </svg>
+                  </div>
+                  <h4 className="mb-2 text-lg font-medium text-gray-700">No Schedules Found</h4>
+                  <p className="text-gray-500">There are no schedules available for this event.</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
-      ) : (
-        <div className="py-12 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 mb-4 text-gray-400 bg-gray-100 rounded-full">
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-          </div>
-          <h4 className="mb-2 text-lg font-medium text-gray-700">No Schedules Found</h4>
-          <p className="text-gray-500">There are no schedules available for this event.</p>
-        </div>
-      )}
-    </div>
-  </div>
-</div>
       ) : showUpload && selectedEvent ? (
         // Upload Media - Full page view (वैसे ही जैसा है)
         <div className="p-4">
@@ -364,9 +365,17 @@ const ClosedEvents = () => {
                 setImagePreviews([])
                 setVideoPreviews([])
               }}
-              className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
+              disabled={loading}
+              className="px-4 py-2 text-white bg-blue-500 rounded hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Submit
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <Spinner size={4} color="text-white" />
+                  <span>Uploading...</span>
+                </div>
+              ) : (
+                "Submit"
+              )}
             </button>
             <button
               onClick={() => {
@@ -377,7 +386,6 @@ const ClosedEvents = () => {
                 setVideoPreviews([])
               }}
               className="px-4 py-2 text-white bg-gray-500 rounded hover:bg-gray-600"
-              disabled={loading}
             >
               Cancel
             </button>

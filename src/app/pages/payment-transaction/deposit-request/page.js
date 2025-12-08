@@ -33,6 +33,7 @@ const DepositRequest = () => {
   const [toDate, setToDate] = useState('')
   const [userError, setUserError] = useState('')
   const [hasSearched, setHasSearched] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   const formatDate = (dateString) => {
     if (!dateString) return ''
@@ -73,7 +74,6 @@ const DepositRequest = () => {
       toDate: formatDate(toDate) || '',
     }
     dispatch(getAllFundRequestReportAdmin(payload))
-    setHasSearched(true)
   }
 
   const handleExport = () => {
@@ -106,7 +106,8 @@ const DepositRequest = () => {
     saveAs(data, 'Transactions.xlsx')
   }
 
-  const handleRefresh = () => {
+  const handleRefresh = async () => {
+    setRefreshing(true)
     setFromDate('')
     setToDate('')
     setUserId('')
@@ -115,11 +116,15 @@ const DepositRequest = () => {
     setCurrentPage(1)
     setHasSearched(false)
 
-    dispatch(getAllFundRequestReportAdmin({
-      authLogin: '',
-      fromDate: '',
-      toDate: ''
-    }))
+    try {
+      await dispatch(getAllFundRequestReportAdmin({
+        authLogin: '',
+        fromDate: '',
+        toDate: ''
+      }))
+    } finally {
+      setRefreshing(false)
+    }
   }
 
   const unApprovedRows = fundRequestData?.unApproveFundRequest || []
@@ -158,7 +163,7 @@ const DepositRequest = () => {
     setSelectedRequest({ authLoginId, id })
     setRejectPopupOpen(true)
   }
-
+  
   // Fixed: Include id in the approve request
   const handleApprove = async () => {
     if (selectedRequest.authLoginId && selectedRequest.id) {
@@ -348,10 +353,10 @@ const DepositRequest = () => {
       <div className="flex items-center justify-start mt-3 space-x-4 col-span-full">
         <button
           onClick={handleSearch}
-          disabled={loading}
-          className={`flex items-center gap-2 px-6 py-2 font-semibold text-white transition rounded-lg shadow ${loading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
+          disabled={loading && !refreshing}
+          className={`flex items-center gap-2 px-6 py-2 font-semibold text-white transition rounded-lg shadow ${loading && !refreshing ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
         >
-          {loading ? (
+          {loading && !refreshing ? (
             <>
               <RefreshCcw className="w-5 h-5 animate-spin" />
               Searching...
@@ -374,10 +379,20 @@ const DepositRequest = () => {
 
         <button
           onClick={handleRefresh}
-          className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+          disabled={refreshing}
+          className={`flex items-center gap-2 px-5 py-2 text-white transition shadow rounded-xl ${refreshing ? 'bg-gray-400 cursor-not-allowed' : 'bg-gray-600 hover:bg-gray-700'}`}
         >
-          <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
-          Refresh
+          {refreshing ? (
+            <>
+              <RefreshCcw className="w-4 h-4 animate-spin" />
+              Refreshing...
+            </>
+          ) : (
+            <>
+              <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
+              Refresh
+            </>
+          )}
         </button>
       </div>
 

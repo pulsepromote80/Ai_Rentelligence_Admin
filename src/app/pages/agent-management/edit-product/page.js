@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchActiveSellerList } from '@/app/redux/sellerSlice';
 import { toast } from 'react-toastify';
 import Tiptap from '@/app/common/rich-text-editor';
+import Spinner from '@/app/common/spinner';
 
 const EditProduct = ({ product, onClose }) => {
     const { sellerData } = useSelector((state) => state.sellers);
@@ -12,6 +13,7 @@ const EditProduct = ({ product, onClose }) => {
     const dispatch = useDispatch();
     const [mrpError, setMrpError] = useState(false);
     const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         category: '',
@@ -247,7 +249,7 @@ const EditProduct = ({ product, onClose }) => {
         const newErrors = {};
         const mrp = parseFloat(formData.mrp) || 0;
         const price = parseFloat(formData.price) || 0;
-        
+
         if (price > mrp) {
             newErrors.price = 'Price cannot be greater than MRP';
             isValid = false;
@@ -262,9 +264,11 @@ const EditProduct = ({ product, onClose }) => {
         setErrors(newErrors);
         if (!isValid) return;
 
+        setIsLoading(true);
         dispatch(updateProduct(updatedData))
             .unwrap()
             .then((response) => {
+                setIsLoading(false);
                 if (response.statusCode === 200) {
                     toast.success(response.message);
                 } else {
@@ -274,6 +278,7 @@ const EditProduct = ({ product, onClose }) => {
                 onClose();
             })
             .catch((error) => {
+                setIsLoading(false);
                 toast.error(error?.message || "Failed to update product");
             });
     };
@@ -629,16 +634,24 @@ const EditProduct = ({ product, onClose }) => {
                 <div className="flex flex-col col-span-1 gap-3 mt-4 md:col-span-3 md:flex-row md:justify-end">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-sm text-white rounded bg-cancel-btn md:text-base"
+                        disabled={isLoading}
+                        className="px-4 py-2 text-sm text-white rounded bg-cancel-btn md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         Close
                     </button>
                     <button
-                        className="px-4 py-2 text-sm text-white rounded bg-submit-btn md:text-base"
+                        className="px-4 py-2 text-sm text-white rounded bg-submit-btn md:text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                         type="submit"
-                        onClick={handleSubmit}
+                        disabled={isLoading}
                     >
-                        Update
+                        {isLoading ? (
+                            <>
+                                <Spinner size={4} color="text-white" />
+                                <span className="ml-2">Updating...</span>
+                            </>
+                        ) : (
+                            'Update'
+                        )}
                     </button>
                 </div>
             </form>

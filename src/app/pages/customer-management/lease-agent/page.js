@@ -133,6 +133,10 @@ const LeaseAgentPage = () => {
     { value: 1, label: 'Zero Pin' },
     { value: 2, label: 'Power' },
     { value: 3, label: 'Adjust Package 50-50' },
+    { value: 4, label: 'Adjust Package 10%-90%' },
+    { value: 5, label: 'Adjust Package 15%-85%' },
+    { value: 6, label: 'Adjust Package 20%-80%' },
+    { value: 7, label: 'Adjust Package 25%-75%' },
   ];
 
   // Form handlers
@@ -477,7 +481,10 @@ const LeaseAgentPage = () => {
               disabled={loading}
               className="px-6 py-3 text-sm font-semibold text-white transition-all rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Loading..." : "Submit"}
+              {loading ? <div className="flex items-center justify-center gap-2">
+              <Spinner size={4} color="text-white" />
+              <span>Loading...</span>
+            </div> : "Submit"}
             </button>
           </div>
         </form>

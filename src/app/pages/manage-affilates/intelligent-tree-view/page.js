@@ -299,7 +299,6 @@ useEffect(() => {
   setSearched(false);
 }, [userId]);
 
-
   useEffect(() => {
     if (treeData && treeData.length > 0 && containerRef.current) {
       const newTranslateX = containerRef.current.offsetWidth / 2;
@@ -342,7 +341,6 @@ useEffect(() => {
         </button>
       </div>
       </div>
-
         
       {searched && (
         <div

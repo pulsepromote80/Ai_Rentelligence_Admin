@@ -9,6 +9,7 @@ import * as XLSX from "xlsx";
 import { Search, FileSpreadsheet, RefreshCcw, Loader2 } from 'lucide-react'
 import { FaCalendarAlt, FaUser, FaIdBadge } from "react-icons/fa";
 import { FaSearch, FaFileExcel, FaSyncAlt, FaFilter } from 'react-icons/fa'
+import Spinner from '@/app/common/spinner';
 
 const WithdrawalHistory = () => {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ const WithdrawalHistory = () => {
   const [userError, setUserError] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
   const [statusFilter, setStatusFilter] = useState("")
+  const [refreshLoading, setRefreshLoading] = useState(false);
 
   const formatDate = (dateString) => {
     if (!dateString) return "";
@@ -100,6 +102,7 @@ const WithdrawalHistory = () => {
   };
 
   const handleRefresh = () => {
+    setRefreshLoading(true);
     setFromDate('')
     setToDate('')
     setUserId('')
@@ -108,6 +111,9 @@ const WithdrawalHistory = () => {
     setStatusFilter('')
     setCurrentPage(1)
     setHasSearched(false)
+    setTimeout(() => {
+      setRefreshLoading(false);
+    }, 1000); // Simulate loading for 1 second
   }
 
   const allRows = withdrawRequestData?.aprWithIncome || [];
@@ -266,10 +272,11 @@ const WithdrawalHistory = () => {
           </button>
           <button
             onClick={handleRefresh}
-            className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700"
+            disabled={refreshLoading}
+            className="flex items-center gap-2 px-5 py-2 text-white transition bg-gray-600 shadow rounded-xl hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />
-            Refresh
+            {refreshLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FaSyncAlt className="w-4 h-4 animate-spin-on-hover" />}
+            {refreshLoading ? 'Refreshing...' : 'Refresh'}
           </button>
         </div>
       </div>

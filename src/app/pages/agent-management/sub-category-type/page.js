@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 import { CloudHail } from 'lucide-react'
 import DeletePopup from '@/app/common/utils/delete-popup'
 import { limitToCharacters, validateRequiredField, validateRequiredSelect } from '@/app/common/utils/validationHelpers'
+import Spinner from '@/app/common/spinner'
 
 const SubCategoryType = () => {
   const dispatch = useDispatch()
@@ -25,14 +26,14 @@ const SubCategoryType = () => {
     subCategoryTypeName: '',
   })
 
-  const { categoryData, loading } = useSelector(
+  const { categoryData } = useSelector(
     (state) => state?.category ?? [],
   )
   const subCategoryList = useSelector((state) => state?.subCategory?.subCategoryData
     ?? [])
   const subcate = useSelector((state) => state)
 
-  const { subCategoryTypeList } = useSelector(
+  const { subCategoryTypeList, loading } = useSelector(
     (state) => state?.subCategoryType ?? [],
   )
   const [selectedCategory, setSelectedCategory] = useState(null)
@@ -266,16 +267,24 @@ const SubCategoryType = () => {
               onChange={(e) => setActive(e.target.checked)}
               className="w-5 h-5 mr-2 cursor-pointer"
             />
-            <label className="text-sm font-medium text-gray-700">Active</label>
+            <label className="text-sm font-medium text-gray-700">Active </label>
           </div>
 
           {/*  Submit and Cancel Buttons */}
           <div className="flex gap-3">
             <button
               type="submit"
-              className="px-4 py-2 text-white rounded bg-submit-btn hover:bg-green-600"
+              disabled={loading}
+              className="px-4 py-2 text-white flex gap-2 items-center rounded bg-submit-btn hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {editMode ? 'Update' : 'Submit'}
+              {loading ? (
+                <>
+                  <Spinner size={4} color='text-white' />
+                  {editMode ? 'Updating...' : 'Submitting...'}
+                </>
+              ) : (
+                editMode ? 'Update' : 'Submit'
+              )}
             </button>
             <button
               type="button"

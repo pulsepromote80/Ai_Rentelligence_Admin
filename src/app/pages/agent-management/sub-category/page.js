@@ -11,6 +11,7 @@ import { subCategoryLoading } from './subCategory-selectors';
 import DeletePopup from '@/app/common/utils/delete-popup';
 import Image from "next/image";
 import { limitToCharacters, validateRequiredField, validateRequiredSelect, validateRequiredImage } from '@/app/common/utils/validationHelpers';
+import Spinner from '@/app/common/spinner';
 
 const SubCategory = () => {
   const dispatch = useDispatch();
@@ -251,9 +252,10 @@ const SubCategory = () => {
             <div className="flex gap-3">
               <button
                 type="submit"
-                className="px-4 py-2 text-white rounded bg-submit-btn hover:bg-green-600"
+                className="px-4 py-2 text-white flex items-center gap-2 rounded bg-submit-btn hover:bg-green-600 disabled:opacity-50 diabled:cursor-not-allowed"
                 disabled={loading}
               >
+                {loading && <Spinner size={4} color='text-white'/>}
                 {submitButtonText}
               </button>
               <button

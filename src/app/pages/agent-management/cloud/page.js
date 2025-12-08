@@ -15,14 +15,15 @@ import Table from "@/app/common/datatable";
 import { Columns } from "@/app/constants/cloud-constant";
 import { toast } from "react-toastify";
 import DeletePopup from "@/app/common/utils/delete-popup";
-import { 
-  cloudData, 
-  cloudLoading, 
+import {
+  cloudData,
+  cloudLoading,
   cloudDeleteLoading,
   cloudDeleteSuccess,
   cloudDeleteError,
-  cloudEditingItem 
+  cloudEditingItem
 } from "./cloud-selectors";
+import Spinner from "@/app/common/spinner";
 
 const Cloud = () => {
   const dispatch = useDispatch();
@@ -240,13 +241,17 @@ const Cloud = () => {
           <div className="flex gap-2">
             <button
               type="submit"
-              className="px-4 py-2 text-white rounded-md bg-submit-btn hover:bg-green-700"
+              className="px-4 py-2 text-white rounded-md bg-submit-btn hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading}
             >
-              {loading 
-                ? (editingItem ? "Updating..." : "Uploading...") 
-                : (editingItem ? "Update" : "Submit")
-              }
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <Spinner size={4} color="text-white" />
+                  {editingItem ? "Updating..." : "Uploading..."}
+                </span>
+              ) : (
+                editingItem ? "Update" : "Submit"
+              )}
             </button>
             <button
               type="button"
