@@ -21,6 +21,25 @@ export const getevent = createAsyncThunk(
   }
 );
 
+
+// export const getBindAdminKit = createAsyncThunk(
+//   "event/getBindAdminKit",
+//   async (id, { rejectWithValue }) => {
+//     try {
+//       const endpoint = id
+//         ? `${API_ENDPOINTS.GET_ALL_EVENT_MASTER}/${id}`
+//         : API_ENDPOINTS.GET_ALL_EVENT_MASTER;
+
+//       const response = await getRequest(endpoint);
+//       return response;
+//     } catch (error) {
+//       return rejectWithValue(
+//         error.response?.data?.message || error.message || "Failed to fetch events"
+//       );
+//     }
+//   }
+// );
+
 export const addevent = createAsyncThunk(
   'event/addevent',
   async (formData, { rejectWithValue }) => {

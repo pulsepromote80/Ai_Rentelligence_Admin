@@ -1,4 +1,4 @@
-'use client'
+ 'use client'
 
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -8,18 +8,17 @@ import {
 } from '@/app/redux/fundManagerSlice'
 import { usernameLoginId } from '@/app/redux/adminMasterSlice'
 import { toast } from 'react-toastify'
-import { FaCopy } from 'react-icons/fa'
+import { FaCopy, FaSyncAlt } from 'react-icons/fa'
 import * as XLSX from 'xlsx'
 import { saveAs } from 'file-saver'
-import { Search, FileSpreadsheet, RefreshCcw } from 'lucide-react'
-import { Calendar, User, UserCircle2 } from 'lucide-react'
-import { FaSearch, FaFileExcel, FaSyncAlt } from 'react-icons/fa'
+import { Search, FileSpreadsheet, RefreshCcw, Calendar, User, UserCircle2 } from 'lucide-react'
 
 const DepositRequest = () => {
   const dispatch = useDispatch()
   const { fundRequestData, loading, error } = useSelector(
     (state) => state.fundManager,
   )
+
   const [approvePopupOpen, setApprovePopupOpen] = useState(false)
   const [rejectPopupOpen, setRejectPopupOpen] = useState(false)
   const [selectedRequest, setSelectedRequest] = useState({ authLoginId: null, id: null })
@@ -42,10 +41,11 @@ const DepositRequest = () => {
   }
 
   const totalRelease =
-    hasSearched && fundRequestData?.unApproveFundRequest ? fundRequestData.unApproveFundRequest.reduce(
-      (sum, txn) => sum + (Number(txn.Amount) || 0),
-      0,
-    )
+    hasSearched && fundRequestData?.unApproveFundRequest
+      ? fundRequestData.unApproveFundRequest.reduce(
+          (sum, txn) => sum + (Number(txn.Amount) || 0),
+          0,
+        )
       : 0
 
   useEffect(() => {
@@ -55,8 +55,10 @@ const DepositRequest = () => {
         setUserError('')
         return
       }
+
       const result = await dispatch(usernameLoginId(userId))
-      if (result?.payload && result.payload.name) {
+
+      if (result?.payload?.name) {
         setUsername(result.payload.name)
         setUserError('')
       } else {
@@ -64,44 +66,53 @@ const DepositRequest = () => {
         setUserError('Invalid User ID')
       }
     }
+
     fetchUsername()
   }, [userId, dispatch])
 
-  const handleSearch = () => {
-    const payload = {
-      authLogin: userId || '',
-      fromDate: formatDate(fromDate) || '',
-      toDate: formatDate(toDate) || '',
+  const handleSearch = async () => {
+    try {
+      setHasSearched(true)
+
+      const payload = {
+        authLogin: userId || '',
+        fromDate: formatDate(fromDate),
+        toDate: formatDate(toDate),
+      }
+
+      await dispatch(getAllFundRequestReportAdmin(payload))
+    } catch {
+      toast.error('Search failed')
     }
-    dispatch(getAllFundRequestReportAdmin(payload))
   }
 
   const handleExport = () => {
-    if (
-      !fundRequestData?.unApproveFundRequest ||
-      fundRequestData?.unApproveFundRequest?.length === 0
-    ) {
-      alert('No data available to export')
+    if (!fundRequestData?.unApproveFundRequest?.length) {
+      toast.error('No data available to export')
       return
     }
+
     const worksheet = XLSX.utils.json_to_sheet(
-      fundRequestData?.unApproveFundRequest?.map((txn, index) => ({
+      fundRequestData.unApproveFundRequest.map((txn, index) => ({
         'Sr.No.': index + 1,
         Username: txn.AuthLogin,
         Name: txn.Name,
         Email: txn.Email,
-        Amount: `$${txn.Amount}`,
+        Amount: txn.Amount,
         PaymentMode: txn.PaymentMode,
         TransactionHash: txn.RefrenceNo,
         PaymentDate: txn.PaymentDate,
       })),
     )
+
     const workbook = XLSX.utils.book_new()
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions')
+
     const excelBuffer = XLSX.write(workbook, {
       bookType: 'xlsx',
       type: 'array',
     })
+
     const data = new Blob([excelBuffer], { type: 'application/octet-stream' })
     saveAs(data, 'Transactions.xlsx')
   }
@@ -144,119 +155,82 @@ const DepositRequest = () => {
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage,
   )
-  const totalPages = Math.ceil(rowsToDisplay.length / rowsPerPage)
-  const startItem = (currentPage - 1) * rowsPerPage + 1
+
+  const totalPages = Math.max(1, Math.ceil(rowsToDisplay.length / rowsPerPage))
+  const startItem = rowsToDisplay.length ? (currentPage - 1) * rowsPerPage + 1 : 0
   const endItem = Math.min(currentPage * rowsPerPage, rowsToDisplay.length)
 
   useEffect(() => {
     setCurrentPage(1)
   }, [searchTerm])
 
-  // Fixed: Properly set selected request with both authLoginId and id
   const handleApproveClick = (authLoginId, id) => {
     setSelectedRequest({ authLoginId, id })
     setApprovePopupOpen(true)
   }
 
-  // Fixed: Properly set selected request with both authLoginId and id
   const handleRejectClick = (authLoginId, id) => {
     setSelectedRequest({ authLoginId, id })
     setRejectPopupOpen(true)
   }
-  
-  // Fixed: Include id in the approve request
+
   const handleApprove = async () => {
-    if (selectedRequest.authLoginId && selectedRequest.id) {
-      try {
-        await dispatch(
-          updateFundRequestStatusAdmin({
-            authLoginId: selectedRequest.authLoginId,
-            id: selectedRequest.id, // Include the id
-            rfstatus: 1,
-            remark: 'Approved by admin',
-          }),
-        )
-        setApprovePopupOpen(false)
-        setSelectedRequest({ authLoginId: null, id: null })
-        toast.success('Approved Successfully!', {
-          position: 'top-right',
-          autoClose: 3000,
-        })
-        dispatch(
-          getAllFundRequestReportAdmin({
-            authLogin: userId || '',
-            fromDate: formatDate(fromDate) || '',
-            toDate: formatDate(toDate) || '',
-          }),
-        )
-      } catch (error) {
-        toast.error('Failed to approve request', {
-          position: 'top-right',
-          autoClose: 3000,
-        })
-      }
+    if (!selectedRequest.authLoginId || !selectedRequest.id) return
+
+    try {
+      await dispatch(
+        updateFundRequestStatusAdmin({
+          authLoginId: selectedRequest.authLoginId,
+          id: selectedRequest.id,
+          rfstatus: 1,
+          remark: 'Approved by admin',
+        }),
+      )
+
+      toast.success('Approved Successfully!')
+      setApprovePopupOpen(false)
+      setSelectedRequest({ authLoginId: null, id: null })
+      handleSearch()
+    } catch {
+      toast.error('Approval failed')
     }
   }
 
-  // Fixed: Include id in the reject request
   const handleReject = async () => {
-    if (selectedRequest.authLoginId && selectedRequest.id && remark.trim()) {
-      try {
-        await dispatch(
-          updateFundRequestStatusAdmin({
-            authLoginId: selectedRequest.authLoginId,
-            id: selectedRequest.id, // Include the id
-            rfstatus: 2,
-            remark: remark,
-          }),
-        )
-        setRejectPopupOpen(false)
-        setSelectedRequest({ authLoginId: null, id: null })
-        setRemark('')
-        toast.success('Rejected Successfully!', {
-          position: 'top-right',
-          autoClose: 3000,
-        })
-        dispatch(
-          getAllFundRequestReportAdmin({
-            authLogin: userId || '',
-            fromDate: formatDate(fromDate) || '',
-            toDate: formatDate(toDate) || '',
-          }),
-        )
-      } catch (error) {
-        toast.error('Failed to reject request', {
-          position: 'top-right',
-          autoClose: 3000,
-        })
-      }
-    } else {
-      toast.error('Please enter a remark for rejection')
+    if (!remark.trim()) {
+      toast.error('Please enter a remark')
+      return
+    }
+
+    try {
+      await dispatch(
+        updateFundRequestStatusAdmin({
+          authLoginId: selectedRequest.authLoginId,
+          id: selectedRequest.id,
+          rfstatus: 2,
+          remark: remark,
+        }),
+      )
+
+      toast.success('Rejected Successfully!')
+      setRejectPopupOpen(false)
+      setRemark('')
+      setSelectedRequest({ authLoginId: null, id: null })
+      handleSearch()
+    } catch {
+      toast.error('Rejection failed')
     }
   }
 
-  const handleCancel = () => {
-    setApprovePopupOpen(false)
-    setRejectPopupOpen(false)
-    setSelectedRequest({ authLoginId: null, id: null })
-    setRemark('')
-  }
-
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text)
-    toast.success('Copied to Clipboard!', {
-      position: 'top-right',
-      autoClose: 2000,
-    })
+  const copyToClipboard = async (text) => {
+    await navigator.clipboard.writeText(text)
+    toast.success('Copied!')
   }
 
   return (
-    <div className="p-8 mx-auto mt-0 mb-12 border border-blue-100 shadow-2xl max-w-7xl bg-gradient-to-b from-white via-blue-50 to-white rounded-3xl">
+    <div className="p-8 mx-auto mb-12 border shadow-2xl max-w-7xl bg-white rounded-3xl">
       <h6 className="heading">
-        Fund Request:{' '}
-        <span className="text-green-600">
-          ${Number(totalRelease.toFixed(2))}
-        </span>
+        Fund Request: <span className="text-green-600">${totalRelease.toFixed(2)}</span>
       </h6>
 
       {/* Filters */}
