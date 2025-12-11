@@ -60,6 +60,11 @@ const EventBooking = () => {
         render: (value) => value || '—',
       },
       {
+        key: 'SessionTime',
+        label: 'Session Time',
+        render: (value) => value || "—"
+      },
+      {
         key: 'EventDateTime',
         label: 'Event Date & Time',
         render: (value) => value || '—',
@@ -69,35 +74,17 @@ const EventBooking = () => {
         label: 'Event Type',
         render: (value) => value || "—"
       },
+
       {
         key: 'location',
         label: 'Location',
         render: (value) => value || '—',
       },
-      // {
-      //   key: 'TicketType',
-      //   label: 'Plan Type',
-      //   render: (value) => {
-      //     const getPlanTypeClass = (TicketType) => {
-      //       switch(TicketType?.toLowerCase()) {
-      //         case 'vip':
-      //           return 'bg-purple-100 text-purple-800 border border-purple-200';
-      //         case 'premium':
-      //           return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
-      //         case 'standard':
-      //           return 'bg-blue-100 text-blue-800 border border-blue-200';
-      //         default:
-      //           return 'bg-gray-100 text-gray-800 border border-gray-200';
-      //       }
-      //     };
-
-      //     return (
-      //       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getPlanTypeClass(value)}`}>
-      //         {value || "—"}
-      //       </span>
-      //     );
-      //   }
-      // },
+      {
+        key: 'CreatedDate',
+        label: "Booking Date",
+        render: (value) => value || '—',
+      },
     ],
     [],
   )
@@ -484,6 +471,7 @@ const EventBooking = () => {
                       {selectedBooking.EventType || '—'}
                     </p>
                   </div>
+                  
                   <div>
                     <label className="block text-sm font-medium text-gray-600">
                       Location

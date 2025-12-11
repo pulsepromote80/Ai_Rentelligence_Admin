@@ -6,11 +6,14 @@ import { getProductList } from '@/app/redux/productSlice';
 import Spinner from '@/app/common/spinner';
 import Select from 'react-select';
 import { toast } from 'react-toastify';
+import { getBindAdminKit } from '@/app/redux/eventSlice';
 
 const LeaseAgentPage = () => {
   const dispatch = useDispatch();
   const { error: usernameError, rechargeTransactionData, usernameData } = useSelector((state) => state.adminMaster ?? {});
   const { data: productData } = useSelector((state) => state.product ?? {});
+  const { getKit } = useSelector((state) => state.event);
+  console.log(getKit)
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
@@ -25,8 +28,14 @@ const LeaseAgentPage = () => {
   const [submittedName, setSubmittedName] = useState('');
 
   useEffect(() => {
-    dispatch(getProductList());
+    const fetchData = async () => {
+      await dispatch(getProductList());
+      await dispatch(getBindAdminKit());
+    };
+
+    fetchData();
   }, [dispatch]);
+
 
   // Userid verification effect
   useEffect(() => {
@@ -128,14 +137,12 @@ const LeaseAgentPage = () => {
     label: `${i + 1} Hr`,
   }));
 
-  const packageOptions = [
-    { value: 1, label: 'Zero Pin' },
-    { value: 2, label: 'Power' },
-    { value: 3, label: 'Adjust Package 50-50' },
-    { value: 4, label: 'Adjust Pack 15% USDT Monthly  3%' },
-    { value: 5, label: 'Adjust Pack  20% USDT Monthly  4%' },
-    { value: 6, label: 'Adjust Pack  25% USDT Monthly  5%' },
-  ];
+  const packageOptions = getKit?.event?.map((kit, index) => {
+    return {
+      value: index,
+      label: kit.KitCode
+    };
+  });
 
   // Form handlers
   const handleUseridChange = (e) => {
@@ -164,7 +171,6 @@ const LeaseAgentPage = () => {
       toast.error('Please select package type');
       return;
     }
-
 
     // Check if usernameData exists and has urid
     if (!usernameData || !usernameData.urid) {
@@ -480,9 +486,9 @@ const LeaseAgentPage = () => {
               className="px-6 py-3 text-sm font-semibold text-white transition-all rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? <div className="flex items-center justify-center gap-2">
-              <Spinner size={4} color="text-white" />
-              <span>Loading...</span>
-            </div> : "Submit"}
+                <Spinner size={4} color="text-white" />
+                <span>Loading...</span>
+              </div> : "Submit"}
             </button>
           </div>
         </form>
@@ -581,8 +587,8 @@ const LeaseAgentPage = () => {
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className={`p-1 rounded ${currentPage === 1
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-blue-600 hover:text-blue-800"
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-blue-600 hover:text-blue-800"
                   }`}
               >
                 <svg
@@ -603,8 +609,8 @@ const LeaseAgentPage = () => {
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
                 className={`p-1 rounded ${currentPage === totalPages
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-blue-600 hover:text-blue-800"
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-blue-600 hover:text-blue-800"
                   }`}
               >
                 <svg
