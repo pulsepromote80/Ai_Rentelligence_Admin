@@ -13,7 +13,6 @@ const LeaseAgentPage = () => {
   const { error: usernameError, rechargeTransactionData, usernameData } = useSelector((state) => state.adminMaster ?? {});
   const { data: productData } = useSelector((state) => state.product ?? {});
   const { getKit } = useSelector((state) => state.event);
-  console.log(getKit)
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
@@ -23,6 +22,7 @@ const LeaseAgentPage = () => {
   const [durationHr, setDurationHr] = useState(null);
   const [userid, setUserid] = useState('');
   const [packageType, setPackageType] = useState(null);
+  console.log("123---->", packageType);
   const [useridError, setUseridError] = useState('');
   const [submittedUserid, setSubmittedUserid] = useState('');
   const [submittedName, setSubmittedName] = useState('');
@@ -139,7 +139,7 @@ const LeaseAgentPage = () => {
 
   const packageOptions = getKit?.event?.map((kit, index) => {
     return {
-      value: index,
+      value: index +1,
       label: kit.KitCode
     };
   });
@@ -187,6 +187,7 @@ const LeaseAgentPage = () => {
       leaseDuration: durationHr.value,
       packageType: packageType.value,
     };
+
     try {
       const result = await dispatch(getRechargeTransactionAdmin(rechargePayload));
       if (result.payload) {
