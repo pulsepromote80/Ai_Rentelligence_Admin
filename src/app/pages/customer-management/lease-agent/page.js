@@ -137,7 +137,7 @@ const LeaseAgentPage = () => {
     label: `${i + 1} Hr`,
   }));
 
-  const packageOptions = getKit.event.map((kit, index) => {
+  const packageOptions = getKit?.event?.map((kit, index) => {
     return {
       value: index,
       label: kit.KitCode
