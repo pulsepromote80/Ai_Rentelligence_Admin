@@ -22,23 +22,19 @@ export const getevent = createAsyncThunk(
 );
 
 
-// export const getBindAdminKit = createAsyncThunk(
-//   "event/getBindAdminKit",
-//   async (id, { rejectWithValue }) => {
-//     try {
-//       const endpoint = id
-//         ? `${API_ENDPOINTS.GET_ALL_EVENT_MASTER}/${id}`
-//         : API_ENDPOINTS.GET_ALL_EVENT_MASTER;
-
-//       const response = await getRequest(endpoint);
-//       return response;
-//     } catch (error) {
-//       return rejectWithValue(
-//         error.response?.data?.message || error.message || "Failed to fetch events"
-//       );
-//     }
-//   }
-// );
+export const getBindAdminKit = createAsyncThunk(
+  "event/getBindAdminKit",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getRequest(API_ENDPOINTS.BIND_ADMIN_KIT);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || error.message || "Failed to fetch events"
+      );
+    }
+  }
+);
 
 export const addevent = createAsyncThunk(
   'event/addevent',
@@ -202,7 +198,8 @@ const eventSlice = createSlice({
     Bookingdetails: null,
     eventImages: [],
     selectedSchedule: null,
-    closedEvents: []
+    closedEvents: [],
+    getKit:null
   },
   reducers: {
     clearError: (state) => {
@@ -232,6 +229,19 @@ const eventSlice = createSlice({
         state.data = Array.isArray(eventsData) ? eventsData : [];
       })
       .addCase(getevent.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(getBindAdminKit.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.success = null;
+      })
+      .addCase( getBindAdminKit.fulfilled, (state, action) => {
+        state.loading = false;
+        state.getKit = action.payload;
+      })
+      .addCase(getBindAdminKit.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
